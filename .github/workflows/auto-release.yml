@@ -1,0 +1,102 @@
+name: Auto Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_type:
+        description: 'Version bump type'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+        - patch
+        - minor
+        - major
+      prerelease:
+        description: 'Is this a prerelease?'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm install
+    
+    - name: Configure Git
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+    
+    - name: Bump version
+      id: version
+      run: |
+        NEW_VERSION=$(npm version ${{ github.event.inputs.version_type }} --no-git-tag-version)
+        echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+        echo "version_number=${NEW_VERSION#v}" >> $GITHUB_OUTPUT
+    
+    - name: Update changelog
+      run: |
+        echo "## [${{ steps.version.outputs.version_number }}] - $(date +%Y-%m-%d)" >> CHANGELOG_NEW.md
+        echo "" >> CHANGELOG_NEW.md
+        echo "### Added" >> CHANGELOG_NEW.md
+        echo "- New features in this release" >> CHANGELOG_NEW.md
+        echo "" >> CHANGELOG_NEW.md
+        echo "### Changed" >> CHANGELOG_NEW.md
+        echo "- Updated dependencies" >> CHANGELOG_NEW.md
+        echo "" >> CHANGELOG_NEW.md
+        echo "### Fixed" >> CHANGELOG_NEW.md
+        echo "- Bug fixes in this release" >> CHANGELOG_NEW.md
+        echo "" >> CHANGELOG_NEW.md
+        
+        if [ -f CHANGELOG.md ]; then
+          cat CHANGELOG.md >> CHANGELOG_NEW.md
+        fi
+        mv CHANGELOG_NEW.md CHANGELOG.md
+    
+    - name: Commit version bump
+      run: |
+        git add package.json CHANGELOG.md
+        git commit -m "chore: bump version to ${{ steps.version.outputs.new_version }}"
+        git push
+    
+    - name: Create and push tag
+      run: |
+        git tag ${{ steps.version.outputs.new_version }}
+        git push origin ${{ steps.version.outputs.new_version }}
+    
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ steps.version.outputs.new_version }}
+        name: Release ${{ steps.version.outputs.new_version }}
+        body: |
+          ## What's Changed
+          
+          Auto-generated release ${{ steps.version.outputs.new_version }}
+          
+          ### Downloads
+          - **macOS**: Download the `.dmg` file for your Mac (Intel or Apple Silicon)
+          - **Windows**: Download the `.exe` installer
+          - **Linux**: Download the `.AppImage` file
+          
+          See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for detailed changes.
+        draft: false
+        prerelease: ${{ github.event.inputs.prerelease }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

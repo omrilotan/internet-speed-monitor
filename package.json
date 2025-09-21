@@ -1,0 +1,115 @@
+{
+  "name": "internet-speed-monitor",
+  "version": "1.0.0",
+  "description": "Electron app for monitoring internet connectivity speed at set intervals",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --debug",
+    "prebuild": "rm -rf dist",
+    "build": "electron-builder",
+    "build:mac": "npm run build -- --mac",
+    "build:win": "npm run build -- --win",
+    "build:linux": "npm run build -- --linux",
+    "build:all": "npm run build -- --mac --win --linux",
+    "dist": "npm run build:all",
+    "pack": "npm run build -- --dir",
+    "release": "npm run build -- --publish=always",
+    "version": "auto-changelog -p && git add CHANGELOG.md"
+  },
+  "keywords": [
+    "electron",
+    "internet",
+    "speed",
+    "monitor",
+    "connectivity"
+  ],
+  "author": "Omri Lotan",
+  "license": "MIT",
+  "homepage": "https://github.com/omrilotan/internet-speed-monitor",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/omrilotan/internet-speed-monitor.git"
+  },
+  "bugs": {
+    "url": "https://github.com/omrilotan/internet-speed-monitor/issues"
+  },
+  "devDependencies": {
+    "electron": "^27.0.0",
+    "electron-builder": "^24.6.4"
+  },
+  "dependencies": {
+    "fast-speedtest-api": "^0.3.2",
+    "chart.js": "^4.4.0"
+  },
+  "build": {
+    "appId": "com.omrilotan.internet-speed-monitor",
+    "productName": "Internet Speed Monitor",
+    "directories": {
+      "output": "dist",
+      "buildResources": "assets"
+    },
+    "files": [
+      "**/*",
+      "!dist",
+      "!.git",
+      "!README.md",
+      "!*.log",
+      "!.github",
+      "!.nvmrc",
+      "!.npmrc"
+    ],
+    "asarUnpack": [
+      "node_modules/fast-speedtest-api/**/*"
+    ],
+    "mac": {
+      "category": "public.app-category.utilities",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": ["x64", "arm64"]
+        },
+        {
+          "target": "zip",
+          "arch": ["x64", "arm64"]
+        }
+      ]
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64", "ia32"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64", "ia32"]
+        }
+      ]
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": ["x64"]
+        },
+        {
+          "target": "deb",
+          "arch": ["x64"]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "omrilotan",
+      "repo": "internet-speed-monitor"
+    }
+  }
+}
