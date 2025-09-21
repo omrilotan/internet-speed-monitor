@@ -9,6 +9,8 @@ let isMonitoring = false;
 const startBtn = document.getElementById('start-btn');
 const stopBtn = document.getElementById('stop-btn');
 const debugBtn = document.getElementById('debug-btn');
+const clearHistoryBtn = document.getElementById('clear-history-btn');
+const exportCsvBtn = document.getElementById('export-csv-btn');
 const intervalInput = document.getElementById('interval');
 const statusText = document.getElementById('status-text');
 const statusDot = document.getElementById('status-dot');
@@ -30,6 +32,8 @@ document.addEventListener('DOMContentLoaded', () => {
 startBtn.addEventListener('click', startMonitoring);
 stopBtn.addEventListener('click', stopMonitoring);
 debugBtn.addEventListener('click', showDebugLog);
+clearHistoryBtn.addEventListener('click', clearHistory);
+exportCsvBtn.addEventListener('click', exportCSV);
 
 // IPC listeners
 ipcRenderer.on('speed-test-result', (event, result) => {
@@ -114,6 +118,45 @@ async function showDebugLog() {
     } catch (error) {
         console.error('Error getting debug log:', error);
         alert('Failed to get debug log: ' + error.message);
+    }
+}
+
+async function clearHistory() {
+    try {
+        // Confirm action with user
+        const confirmed = confirm('Are you sure you want to clear all speed test history? This action cannot be undone.');
+        if (!confirmed) {
+            return;
+        }
+
+        console.log('Clearing history...');
+        const response = await ipcRenderer.invoke('clear-history');
+        if (response.success) {
+            // Refresh the UI to show empty data
+            await loadHistoricalData();
+            updateChart([]);
+            alert('History cleared successfully!');
+        } else {
+            alert('Failed to clear history: ' + response.error);
+        }
+    } catch (error) {
+        console.error('Error clearing history:', error);
+        alert('Failed to clear history: ' + error.message);
+    }
+}
+
+async function exportCSV() {
+    try {
+        console.log('Exporting CSV...');
+        const response = await ipcRenderer.invoke('export-csv');
+        if (response.success) {
+            alert('Data exported successfully to: ' + response.filePath);
+        } else {
+            alert('Failed to export data: ' + response.error);
+        }
+    } catch (error) {
+        console.error('Error exporting CSV:', error);
+        alert('Failed to export data: ' + error.message);
     }
 }
 

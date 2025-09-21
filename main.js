@@ -237,3 +237,59 @@ ipcMain.handle('get-debug-log', async () => {
     return { success: false, error: error.message };
   }
 });
+
+// Clear history IPC handler
+ipcMain.handle('clear-history', async () => {
+  try {
+    if (!isInitialized || !dataStore) {
+      const initSuccess = await initializeModules();
+      if (!initSuccess) {
+        return { success: false, error: 'Failed to initialize data store' };
+      }
+    }
+    
+    const success = await dataStore.clearAllData();
+    return { success, error: success ? null : 'Failed to clear data' };
+  } catch (error) {
+    logError('Error clearing history:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Export CSV IPC handler
+ipcMain.handle('export-csv', async () => {
+  try {
+    if (!isInitialized || !dataStore) {
+      const initSuccess = await initializeModules();
+      if (!initSuccess) {
+        return { success: false, error: 'Failed to initialize data store' };
+      }
+    }
+    
+    const csvData = dataStore.exportAsCSV();
+    if (csvData) {
+      // Use Electron's dialog to save the file
+      const { dialog } = require('electron');
+      const result = await dialog.showSaveDialog(mainWindow, {
+        title: 'Export Speed Test Data',
+        defaultPath: `speed-test-data-${new Date().toISOString().split('T')[0]}.csv`,
+        filters: [
+          { name: 'CSV Files', extensions: ['csv'] },
+          { name: 'All Files', extensions: ['*'] }
+        ]
+      });
+      
+      if (!result.canceled && result.filePath) {
+        fs.writeFileSync(result.filePath, csvData);
+        return { success: true, filePath: result.filePath };
+      } else {
+        return { success: false, error: 'Export cancelled' };
+      }
+    } else {
+      return { success: false, error: 'No data to export' };
+    }
+  } catch (error) {
+    logError('Error exporting CSV:', error);
+    return { success: false, error: error.message };
+  }
+});

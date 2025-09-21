@@ -227,6 +227,52 @@ class DataStore {
         }
     }
 
+    /**
+     * Clear all speed test data
+     * @returns {Promise<boolean>} Success status
+     */
+    async clearAllData() {
+        try {
+            this.speedTests = [];
+            await this.saveData();
+            console.log('All speed test data cleared');
+            return true;
+        } catch (error) {
+            console.error('Error clearing data:', error);
+            return false;
+        }
+    }
+
+    /**
+     * Export all data as CSV format
+     * @returns {string} CSV formatted data
+     */
+    exportAsCSV() {
+        try {
+            const headers = ['Date', 'Time', 'Download Speed (Mbps)', 'Upload Speed (Mbps)', 'Ping (ms)'];
+            const csvRows = [headers.join(',')];
+
+            this.speedTests.forEach(test => {
+                const date = new Date(test.timestamp);
+                const dateStr = date.toLocaleDateString();
+                const timeStr = date.toLocaleTimeString();
+                const row = [
+                    `"${dateStr}"`,
+                    `"${timeStr}"`,
+                    test.downloadSpeed.toFixed(2),
+                    test.uploadSpeed.toFixed(2),
+                    test.ping.toFixed(0)
+                ];
+                csvRows.push(row.join(','));
+            });
+
+            return csvRows.join('\n');
+        } catch (error) {
+            console.error('Error exporting CSV:', error);
+            return '';
+        }
+    }
+
     close() {
         try {
             this.saveData();
