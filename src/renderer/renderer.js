@@ -150,7 +150,8 @@ async function exportCSV() {
         console.log('Exporting CSV...');
         const response = await ipcRenderer.invoke('export-csv');
         if (response.success) {
-            alert('Data exported successfully to: ' + response.filePath);
+            const message = response.message || 'Data exported successfully';
+            alert(message + '\nFile saved to: ' + response.filePath);
         } else {
             alert('Failed to export data: ' + response.error);
         }

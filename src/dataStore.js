@@ -249,22 +249,29 @@ class DataStore {
      */
     exportAsCSV() {
         try {
+            console.log('Exporting CSV, speedTests count:', this.data.speedTests.length);
+            
             const headers = ['Date', 'Time', 'Download Speed (Mbps)', 'Upload Speed (Mbps)', 'Ping (ms)'];
             const csvRows = [headers.join(',')];
 
-            this.speedTests.forEach(test => {
-                const date = new Date(test.timestamp);
-                const dateStr = date.toLocaleDateString();
-                const timeStr = date.toLocaleTimeString();
-                const row = [
-                    `"${dateStr}"`,
-                    `"${timeStr}"`,
-                    test.downloadSpeed.toFixed(2),
-                    test.uploadSpeed.toFixed(2),
-                    test.ping.toFixed(0)
-                ];
-                csvRows.push(row.join(','));
-            });
+            if (this.data.speedTests.length === 0) {
+                // Add a row indicating no data
+                csvRows.push('"No data available","Please run some speed tests first","","",""');
+            } else {
+                this.data.speedTests.forEach(test => {
+                    const date = new Date(test.timestamp);
+                    const dateStr = date.toLocaleDateString();
+                    const timeStr = date.toLocaleTimeString();
+                    const row = [
+                        `"${dateStr}"`,
+                        `"${timeStr}"`,
+                        test.download.toFixed(2),
+                        test.upload.toFixed(2),
+                        test.ping.toFixed(0)
+                    ];
+                    csvRows.push(row.join(','));
+                });
+            }
 
             return csvRows.join('\n');
         } catch (error) {

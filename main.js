@@ -266,8 +266,13 @@ ipcMain.handle('export-csv', async () => {
       }
     }
     
+    log('Getting data for CSV export...');
+    // Get all speed tests (no limit)
+    const speedTests = await dataStore.getSpeedTests(999999);
+    log('Speed tests found: ' + speedTests.length);
+    
     const csvData = dataStore.exportAsCSV();
-    if (csvData) {
+    if (csvData && csvData.length > 0) {
       // Use Electron's dialog to save the file
       const { dialog } = require('electron');
       const result = await dialog.showSaveDialog(mainWindow, {
@@ -281,12 +286,16 @@ ipcMain.handle('export-csv', async () => {
       
       if (!result.canceled && result.filePath) {
         fs.writeFileSync(result.filePath, csvData);
-        return { success: true, filePath: result.filePath };
+        if (speedTests.length === 0) {
+          return { success: true, filePath: result.filePath, message: 'Empty CSV file exported (no speed tests recorded yet)' };
+        } else {
+          return { success: true, filePath: result.filePath, message: `Exported ${speedTests.length} speed test records` };
+        }
       } else {
         return { success: false, error: 'Export cancelled' };
       }
     } else {
-      return { success: false, error: 'No data to export' };
+      return { success: false, error: 'Failed to generate CSV data' };
     }
   } catch (error) {
     logError('Error exporting CSV:', error);

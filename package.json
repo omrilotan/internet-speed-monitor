@@ -62,8 +62,10 @@
     "asarUnpack": [
       "node_modules/fast-speedtest-api/**/*"
     ],
+    "icon": "assets/icon",
     "mac": {
       "category": "public.app-category.utilities",
+      "icon": "assets/icon.icns",
       "target": [
         {
           "target": "dmg",
@@ -76,6 +78,7 @@
       ]
     },
     "win": {
+      "icon": "assets/icon.png",
       "target": [
         {
           "target": "nsis",
@@ -88,6 +91,7 @@
       ]
     },
     "linux": {
+      "icon": "assets/icon.png",
       "target": [
         {
           "target": "AppImage",

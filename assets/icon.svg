@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradient for the main circle -->
+    <radialGradient id="mainGradient" cx="0.3" cy="0.3" r="0.8">
+      <stop offset="0%" style="stop-color:#4A90E2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2C5AA0;stop-opacity:1" />
+    </radialGradient>
+    
+    <!-- Gradient for speed indicators -->
+    <linearGradient id="speedGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#FF6B35;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#F7931E;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#27AE60;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Main background circle -->
+  <circle cx="256" cy="256" r="240" fill="url(#mainGradient)" stroke="#1A4480" stroke-width="8"/>
+  
+  <!-- Speed gauge outer ring -->
+  <circle cx="256" cy="256" r="180" fill="none" stroke="#E8F4FD" stroke-width="12" opacity="0.3"/>
+  
+  <!-- Speed gauge active arc (showing speed) -->
+  <path d="M 76 256 A 180 180 0 1 1 436 256" 
+        fill="none" 
+        stroke="url(#speedGradient)" 
+        stroke-width="16" 
+        stroke-linecap="round"
+        opacity="0.9"/>
+  
+  <!-- Center hub -->
+  <circle cx="256" cy="256" r="45" fill="#FFFFFF" stroke="#2C5AA0" stroke-width="4"/>
+  
+  <!-- Speed indicator needle -->
+  <line x1="256" y1="256" x2="380" y2="180" 
+        stroke="#E74C3C" 
+        stroke-width="6" 
+        stroke-linecap="round"
+        transform="rotate(45 256 256)"/>
+  
+  <!-- WiFi signal waves -->
+  <g transform="translate(256, 320)">
+    <!-- Wave 1 -->
+    <path d="M -40 0 Q 0 -30 40 0" 
+          fill="none" 
+          stroke="#FFFFFF" 
+          stroke-width="4" 
+          opacity="0.8"/>
+    <!-- Wave 2 -->
+    <path d="M -25 0 Q 0 -18 25 0" 
+          fill="none" 
+          stroke="#FFFFFF" 
+          stroke-width="4" 
+          opacity="0.9"/>
+    <!-- Wave 3 -->
+    <path d="M -10 0 Q 0 -8 10 0" 
+          fill="none" 
+          stroke="#FFFFFF" 
+          stroke-width="4" 
+          opacity="1"/>
+    <!-- Signal dot -->
+    <circle cx="0" cy="0" r="3" fill="#FFFFFF"/>
+  </g>
+  
+  <!-- Speed text indicators -->
+  <g fill="#FFFFFF" font-family="Arial, sans-serif" font-weight="bold" text-anchor="middle">
+    <!-- Top speed label -->
+    <text x="256" y="120" font-size="24" opacity="0.8">SPEED</text>
+    <!-- Bottom monitoring label -->
+    <text x="256" y="420" font-size="18" opacity="0.7">MONITOR</text>
+  </g>
+  
+  <!-- Decorative speed marks -->
+  <g stroke="#FFFFFF" stroke-width="3" opacity="0.6">
+    <!-- Speed marks around the gauge -->
+    <line x1="128" y1="128" x2="138" y2="138"/>
+    <line x1="384" y1="128" x2="374" y2="138"/>
+    <line x1="76" y1="256" x2="96" y2="256"/>
+    <line x1="416" y1="256" x2="436" y2="256"/>
+    <line x1="128" y1="384" x2="138" y2="374"/>
+    <line x1="384" y1="384" x2="374" y2="374"/>
+  </g>
+</svg>
