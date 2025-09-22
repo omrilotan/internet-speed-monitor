@@ -1,5 +1,3 @@
-const { ipcRenderer } = require('electron');
-
 console.log('=== RENDERER.JS LOADED ===');
 
 let speedChart;
@@ -35,8 +33,8 @@ debugBtn.addEventListener('click', showDebugLog);
 clearHistoryBtn.addEventListener('click', clearHistory);
 exportCsvBtn.addEventListener('click', exportCSV);
 
-// IPC listeners
-ipcRenderer.on('speed-test-result', (event, result) => {
+// IPC listeners using electronAPI
+window.electronAPI.onSpeedTestResult((event, result) => {
     updateCurrentStats(result);
     addToTable(result);
     updateChart(result);
@@ -61,9 +59,9 @@ async function startMonitoring() {
         // Add a small delay to ensure main process is ready
         await new Promise(resolve => setTimeout(resolve, 1000));
         
-        console.log('Invoking start-monitoring IPC...');
-        const response = await ipcRenderer.invoke('start-monitoring', interval);
-        console.log('IPC response received:', response);
+        console.log('Invoking start-monitoring via electronAPI...');
+        const response = await window.electronAPI.startMonitoring(interval);
+        console.log('API response received:', response);
         
         if (response.success) {
             console.log('Monitoring started successfully');
@@ -85,7 +83,7 @@ async function startMonitoring() {
 
 async function stopMonitoring() {
     try {
-        const response = await ipcRenderer.invoke('stop-monitoring');
+        const response = await window.electronAPI.stopMonitoring();
         if (response.success) {
             isMonitoring = false;
             updateUI();
@@ -102,7 +100,7 @@ async function stopMonitoring() {
 async function showDebugLog() {
     try {
         console.log('Fetching debug log...');
-        const response = await ipcRenderer.invoke('get-debug-log');
+        const response = await window.electronAPI.getDebugLog();
         if (response.success) {
             // Create a popup window to show the log
             const popup = window.open('', '_blank', 'width=800,height=600,scrollbars=yes');
@@ -130,7 +128,7 @@ async function clearHistory() {
         }
 
         console.log('Clearing history...');
-        const response = await ipcRenderer.invoke('clear-history');
+        const response = await window.electronAPI.clearHistory();
         if (response.success) {
             // Refresh the UI to show empty data
             await loadHistoricalData();
@@ -148,7 +146,7 @@ async function clearHistory() {
 async function exportCSV() {
     try {
         console.log('Exporting CSV...');
-        const response = await ipcRenderer.invoke('export-csv');
+        const response = await window.electronAPI.exportCSV();
         if (response.success) {
             const message = response.message || 'Data exported successfully';
             alert(message + '\nFile saved to: ' + response.filePath);
@@ -169,7 +167,7 @@ async function updateMonitoringStatus() {
         
         while (attempts < 3) {
             try {
-                status = await ipcRenderer.invoke('get-monitoring-status');
+                status = await window.electronAPI.getMonitoringStatus();
                 break;
             } catch (error) {
                 attempts++;
@@ -297,7 +295,7 @@ function updateChart(result) {
 
 async function loadHistoricalData() {
     try {
-        const data = await ipcRenderer.invoke('get-historical-data', 10);
+        const data = await window.electronAPI.getSpeedTests(10);
         
         // Clear existing table data
         resultsTable.innerHTML = '';

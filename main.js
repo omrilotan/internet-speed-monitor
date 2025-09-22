@@ -44,8 +44,9 @@ function createWindow() {
     width: 1200,
     height: 800,
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false
+      nodeIntegration: false,
+      contextIsolation: true,
+      preload: path.join(__dirname, 'preload.js')
     }
   });
 
@@ -203,6 +204,17 @@ ipcMain.handle('stop-monitoring', () => {
 });
 
 ipcMain.handle('get-historical-data', async (event, limit) => {
+  if (!isInitialized) {
+    await initializeModules();
+  }
+  
+  if (dataStore && isInitialized) {
+    return await dataStore.getSpeedTests(limit);
+  }
+  return [];
+});
+
+ipcMain.handle('get-speed-tests', async (event, limit) => {
   if (!isInitialized) {
     await initializeModules();
   }
