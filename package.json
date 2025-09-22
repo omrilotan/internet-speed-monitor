@@ -96,6 +96,7 @@
     },
     "linux": {
       "icon": "assets/icon.png",
+      "maintainer": "Omri Lotan <omri@omrilotan.com>",
       "target": [
         {
           "target": "AppImage",
