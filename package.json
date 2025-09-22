@@ -24,7 +24,10 @@
     "monitor",
     "connectivity"
   ],
-  "author": "Omri Lotan",
+  "author": {
+    "name": "Omri Lotan",
+    "email": "omri@omrilotan.com"
+  },
   "license": "MIT",
   "homepage": "https://github.com/omrilotan/internet-speed-monitor",
   "repository": {
