@@ -28,7 +28,7 @@
     "name": "Omri Lotan",
     "email": "omri@omrilotan.com"
   },
-  "license": "MIT",
+  "license": "Unlicense",
   "homepage": "https://github.com/omrilotan/internet-speed-monitor",
   "repository": {
     "type": "git",
