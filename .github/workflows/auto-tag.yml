@@ -2,76 +2,75 @@ name: Auto Tag and Release
 
 on:
   push:
-    branches: [ main ]
-    paths: [ 'package.json' ]
+    branches: [ main ]  # Only run on main branch
+  workflow_dispatch:    # Allow manual triggering
+
+permissions:
+  contents: write
 
 jobs:
-  check-version:
+  check-and-tag:
     runs-on: ubuntu-latest
-    outputs:
-      version-changed: ${{ steps.check.outputs.version-changed }}
-      new-version: ${{ steps.check.outputs.new-version }}
-      
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 2
-        
-    - name: Check version change
-      id: check
-      run: |
-        # Get current version from package.json
-        CURRENT_VERSION=$(node -p "require('./package.json').version")
-        
-        # Get previous version from package.json
-        git checkout HEAD~1 -- package.json
-        PREVIOUS_VERSION=$(node -p "require('./package.json').version")
-        
-        # Restore current package.json
-        git checkout HEAD -- package.json
-        
-        echo "Previous version: $PREVIOUS_VERSION"
-        echo "Current version: $CURRENT_VERSION"
-        
-        if [ "$CURRENT_VERSION" != "$PREVIOUS_VERSION" ]; then
-          echo "version-changed=true" >> $GITHUB_OUTPUT
-          echo "new-version=v$CURRENT_VERSION" >> $GITHUB_OUTPUT
-          echo "Version changed from $PREVIOUS_VERSION to $CURRENT_VERSION"
-        else
-          echo "version-changed=false" >> $GITHUB_OUTPUT
-          echo "No version change detected"
-        fi
-
-  create-tag:
-    needs: check-version
-    runs-on: ubuntu-latest
-    if: needs.check-version.outputs.version-changed == 'true'
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      
+      with:
+        fetch-depth: 0  # Fetch all history and tags
+        
+    - name: Check if tag needed
+      id: check
+      run: |
+        # Get current version from package.json
+        CURRENT_VERSION=$(node -p "require('./package.json').version")
+        TAG_NAME="v$CURRENT_VERSION"
+        
+        echo "Current version: $CURRENT_VERSION"
+        echo "Expected tag: $TAG_NAME"
+        
+        # Fetch all tags
+        git fetch --tags
+        
+        # Check if tag already exists
+        if git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
+          echo "Tag $TAG_NAME already exists, no action needed"
+          echo "create-tag=false" >> $GITHUB_OUTPUT
+        else
+          echo "Tag $TAG_NAME does not exist, will create it"
+          echo "create-tag=true" >> $GITHUB_OUTPUT
+          echo "tag-name=$TAG_NAME" >> $GITHUB_OUTPUT
+          echo "version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+        fi
+
     - name: Configure Git
+      if: steps.check.outputs.create-tag == 'true'
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         
     - name: Create and push tag
+      if: steps.check.outputs.create-tag == 'true'
       run: |
-        TAG_NAME="${{ needs.check-version.outputs.new-version }}"
-        echo "Creating tag: $TAG_NAME"
+        TAG_NAME="${{ steps.check.outputs.tag-name }}"
+        VERSION="${{ steps.check.outputs.version }}"
         
-        # Check if tag already exists
-        if git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
-          echo "Tag $TAG_NAME already exists, skipping"
-          exit 0
-        fi
+        echo "Creating tag: $TAG_NAME for version $VERSION"
         
-        # Create annotated tag
-        git tag -a "$TAG_NAME" -m "Release $TAG_NAME"
+        # Create annotated tag with release notes
+        git tag -a "$TAG_NAME" -m "Release $TAG_NAME
+
+Automatically created tag for version $VERSION in package.json
+
+This tag will trigger the release workflow to build and publish:
+- macOS: DMG and ZIP installers
+- Windows: EXE and NSIS installers  
+- Linux: AppImage and DEB packages
+
+Download the built applications from the Releases page."
+        
         git push origin "$TAG_NAME"
         
         echo "Successfully created and pushed tag: $TAG_NAME"
+        echo "This will trigger the release workflow to build and publish the app"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
