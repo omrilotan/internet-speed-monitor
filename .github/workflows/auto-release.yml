@@ -1,4 +1,4 @@
-name: Auto Release
+name: Manual Release Creator
 
 on:
   workflow_dispatch:
@@ -17,6 +17,11 @@ on:
         required: false
         default: false
         type: boolean
+      release_notes:
+        description: 'Release notes (optional)'
+        required: false
+        default: ''
+        type: string
 
 jobs:
   release:
@@ -52,51 +57,41 @@ jobs:
     
     - name: Update changelog
       run: |
-        echo "## [${{ steps.version.outputs.version_number }}] - $(date +%Y-%m-%d)" >> CHANGELOG_NEW.md
+        # Create a basic changelog entry if none provided
+        RELEASE_NOTES="${{ github.event.inputs.release_notes }}"
+        if [ -z "$RELEASE_NOTES" ]; then
+          RELEASE_NOTES="- Version bump to ${{ steps.version.outputs.version_number }}"
+        fi
+        
+        # Prepare new changelog entry
+        echo "## [${{ steps.version.outputs.version_number }}] - $(date +%Y-%m-%d)" > CHANGELOG_NEW.md
         echo "" >> CHANGELOG_NEW.md
-        echo "### Added" >> CHANGELOG_NEW.md
-        echo "- New features in this release" >> CHANGELOG_NEW.md
-        echo "" >> CHANGELOG_NEW.md
-        echo "### Changed" >> CHANGELOG_NEW.md
-        echo "- Updated dependencies" >> CHANGELOG_NEW.md
-        echo "" >> CHANGELOG_NEW.md
-        echo "### Fixed" >> CHANGELOG_NEW.md
-        echo "- Bug fixes in this release" >> CHANGELOG_NEW.md
+        echo "### Changes" >> CHANGELOG_NEW.md
+        echo "$RELEASE_NOTES" >> CHANGELOG_NEW.md
         echo "" >> CHANGELOG_NEW.md
         
+        # Append existing changelog if it exists
         if [ -f CHANGELOG.md ]; then
-          cat CHANGELOG.md >> CHANGELOG_NEW.md
+          tail -n +2 CHANGELOG.md >> CHANGELOG_NEW.md
         fi
         mv CHANGELOG_NEW.md CHANGELOG.md
     
-    - name: Commit version bump
+    - name: Commit version bump and changelog
       run: |
         git add package.json CHANGELOG.md
-        git commit -m "chore: bump version to ${{ steps.version.outputs.new_version }}"
+        git commit -m "chore: release version ${{ steps.version.outputs.new_version }}
+
+        - Bump version to ${{ steps.version.outputs.new_version }}
+        - Update CHANGELOG.md with release notes"
         git push
     
     - name: Create and push tag
       run: |
-        git tag ${{ steps.version.outputs.new_version }}
+        git tag -a ${{ steps.version.outputs.new_version }} -m "Release ${{ steps.version.outputs.new_version }}"
         git push origin ${{ steps.version.outputs.new_version }}
     
-    - name: Create GitHub Release
-      uses: softprops/action-gh-release@v1
-      with:
-        tag_name: ${{ steps.version.outputs.new_version }}
-        name: Release ${{ steps.version.outputs.new_version }}
-        body: |
-          ## What's Changed
-          
-          Auto-generated release ${{ steps.version.outputs.new_version }}
-          
-          ### Downloads
-          - **macOS**: Download the `.dmg` file for your Mac (Intel or Apple Silicon)
-          - **Windows**: Download the `.exe` installer
-          - **Linux**: Download the `.AppImage` file
-          
-          See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for detailed changes.
-        draft: false
-        prerelease: ${{ github.event.inputs.prerelease }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Wait for tag-based workflow
+      run: |
+        echo "Tag ${{ steps.version.outputs.new_version }} created successfully!"
+        echo "The release workflow will now build and create the GitHub release automatically."
+        echo "Check the Actions tab to monitor the build progress."

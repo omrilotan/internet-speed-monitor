@@ -1,0 +1,77 @@
+name: Auto Tag and Release
+
+on:
+  push:
+    branches: [ main ]
+    paths: [ 'package.json' ]
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version-changed: ${{ steps.check.outputs.version-changed }}
+      new-version: ${{ steps.check.outputs.new-version }}
+      
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 2
+        
+    - name: Check version change
+      id: check
+      run: |
+        # Get current version from package.json
+        CURRENT_VERSION=$(node -p "require('./package.json').version")
+        
+        # Get previous version from package.json
+        git checkout HEAD~1 -- package.json
+        PREVIOUS_VERSION=$(node -p "require('./package.json').version")
+        
+        # Restore current package.json
+        git checkout HEAD -- package.json
+        
+        echo "Previous version: $PREVIOUS_VERSION"
+        echo "Current version: $CURRENT_VERSION"
+        
+        if [ "$CURRENT_VERSION" != "$PREVIOUS_VERSION" ]; then
+          echo "version-changed=true" >> $GITHUB_OUTPUT
+          echo "new-version=v$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          echo "Version changed from $PREVIOUS_VERSION to $CURRENT_VERSION"
+        else
+          echo "version-changed=false" >> $GITHUB_OUTPUT
+          echo "No version change detected"
+        fi
+
+  create-tag:
+    needs: check-version
+    runs-on: ubuntu-latest
+    if: needs.check-version.outputs.version-changed == 'true'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Configure Git
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        
+    - name: Create and push tag
+      run: |
+        TAG_NAME="${{ needs.check-version.outputs.new-version }}"
+        echo "Creating tag: $TAG_NAME"
+        
+        # Check if tag already exists
+        if git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
+          echo "Tag $TAG_NAME already exists, skipping"
+          exit 0
+        fi
+        
+        # Create annotated tag
+        git tag -a "$TAG_NAME" -m "Release $TAG_NAME"
+        git push origin "$TAG_NAME"
+        
+        echo "Successfully created and pushed tag: $TAG_NAME"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

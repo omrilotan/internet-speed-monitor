@@ -6,6 +6,9 @@ on:
       - 'v*' # Triggers on version tags like v1.0.0, v1.2.3, etc.
   workflow_dispatch: # Allows manual triggering
 
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -39,6 +42,7 @@ jobs:
       shell: bash
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        CSC_IDENTITY_AUTO_DISCOVERY: false  # Disable code signing for now
     
     - name: Upload artifacts (macOS)
       if: matrix.os == 'macos-latest'
@@ -84,16 +88,55 @@ jobs:
     
     - name: Download all artifacts
       uses: actions/download-artifact@v4
-    
+      
+    - name: Display structure of downloaded files
+      run: ls -la
+      
     - name: Create Release
-      uses: softprops/action-gh-release@v1
+      id: create_release
+      uses: softprops/action-gh-release@v2
       with:
         files: |
           macos-builds/*
           windows-builds/*
           linux-builds/*
-        generate_release_notes: true
+        name: Release ${{ github.ref_name }}
+        body: |
+          ## Internet Speed Monitor ${{ github.ref_name }}
+          
+          ### 🚀 What's New
+          
+          Check out the [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for detailed changes.
+          
+          ### 📥 Downloads
+          
+          Choose the appropriate download for your operating system:
+          
+          #### macOS
+          - **Internet Speed Monitor-X.X.X.dmg** - Standard installer for macOS (Intel & Apple Silicon)
+          - **Internet Speed Monitor-X.X.X-mac.zip** - Portable application archive
+          
+          #### Windows
+          - **Internet Speed Monitor Setup X.X.X.exe** - Windows installer (recommended)
+          - **Internet Speed Monitor X.X.X.exe** - Portable executable
+          
+          #### Linux
+          - **Internet Speed Monitor-X.X.X.AppImage** - Universal Linux application (recommended)
+          - **internet-speed-monitor_X.X.X_amd64.deb** - Debian/Ubuntu package
+          
+          ### 🔧 Installation
+          
+          1. **macOS**: Download the .dmg file and drag the app to Applications
+          2. **Windows**: Download and run the .exe installer
+          3. **Linux**: Download the .AppImage, make it executable (`chmod +x`), and run
+          
+          ### 📋 System Requirements
+          
+          - **macOS**: 10.14 (Mojave) or later
+          - **Windows**: Windows 10 or later
+          - **Linux**: Ubuntu 16.04+, Fedora 24+, Debian 9+ or equivalent
         draft: false
         prerelease: false
+        generate_release_notes: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
