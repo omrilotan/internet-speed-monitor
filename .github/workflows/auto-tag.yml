@@ -4,6 +4,7 @@ on:
   push:
     branches: [ main ]  # Only run on main branch
   workflow_dispatch:    # Allow manual triggering
+    inputs: {}
 
 permissions:
   contents: write
