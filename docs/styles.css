@@ -219,6 +219,122 @@ body {
     line-height: 1.6;
 }
 
+.feature-card a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.feature-card a:hover {
+    text-decoration: underline;
+}
+
+/* Technology Section */
+.technology {
+    padding: 100px 0;
+    background: var(--surface);
+}
+
+.tech-intro {
+    text-align: center;
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    margin-bottom: 48px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.tech-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 32px;
+    margin-bottom: 48px;
+}
+
+.tech-card {
+    padding: 32px;
+    background: var(--background);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border);
+    transition: all 0.2s;
+    text-align: center;
+}
+
+.tech-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.tech-icon {
+    font-size: 3rem;
+    margin-bottom: 16px;
+    color: var(--primary-color);
+    display: flex;
+    justify-content: center;
+}
+
+.tech-icon svg {
+    color: var(--primary-color);
+}
+
+.tech-card h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+}
+
+.tech-card h3 a {
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.tech-card h3 a:hover {
+    color: var(--primary-color);
+    text-decoration: underline;
+}
+
+.tech-card p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+.tech-benefits {
+    background: var(--background);
+    padding: 32px;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border);
+}
+
+.tech-benefits h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: var(--text-primary);
+    text-align: center;
+}
+
+.tech-benefits ul {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+}
+
+.tech-benefits li {
+    padding: 12px 0;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.tech-benefits strong {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
 /* Use Cases */
 .use-cases {
     padding: 100px 0;
@@ -495,6 +611,14 @@ body {
     }
     
     .features-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .tech-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .tech-benefits ul {
         grid-template-columns: 1fr;
     }
     

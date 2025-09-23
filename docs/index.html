@@ -1,23 +1,104 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" prefix="og: http://ogp.me/ns#">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Internet Speed Monitor - Track Your Connection Performance</title>
-    <meta name="description" content="A beautiful desktop application that monitors your internet connection speed automatically. Track network performance with real-time charts and detailed analytics.">
-    <meta name="keywords" content="internet speed monitor, network performance, connectivity tracker, speed test, desktop app">
-    <meta name="author" content="Omri Lotan">
     
-    <!-- Open Graph -->
-    <meta property="og:title" content="Internet Speed Monitor">
-    <meta property="og:description" content="Monitor your internet connection speed automatically with beautiful visualizations and detailed analytics.">
+    <!-- Primary Meta Tags -->
+    <title>Internet Speed Monitor - Free Desktop App for Network Performance Tracking</title>
+    <meta name="title" content="Internet Speed Monitor - Free Desktop App for Network Performance Tracking">
+    <meta name="description" content="Download our free Internet Speed Monitor desktop app for Windows, macOS & Linux. Automatic speed testing, real-time charts, local data storage. Built with Electron, Chart.js & Fast.com API.">
+    <meta name="keywords" content="internet speed monitor, network performance tracker, speed test app, connectivity monitor, bandwidth tracker, ISP monitoring, internet speed test, network diagnostics, electron app, desktop speed test, automatic speed monitoring, chart.js visualization, fast.com api, network analytics">
+    <meta name="author" content="Omri Lotan">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="English">
+    <meta name="revisit-after" content="7 days">
+    
+    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://omrilotan.github.io/internet-speed-monitor/">
+    <meta property="og:title" content="Internet Speed Monitor - Free Desktop App for Network Performance Tracking">
+    <meta property="og:description" content="Download our free Internet Speed Monitor desktop app for Windows, macOS & Linux. Automatic speed testing, real-time charts, local data storage.">
+    <meta property="og:image" content="https://omrilotan.github.io/internet-speed-monitor/screenshot.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:site_name" content="Internet Speed Monitor">
+    <meta property="og:locale" content="en_US">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://omrilotan.github.io/internet-speed-monitor/">
+    <meta property="twitter:title" content="Internet Speed Monitor - Free Desktop App for Network Performance Tracking">
+    <meta property="twitter:description" content="Download our free Internet Speed Monitor desktop app for Windows, macOS & Linux. Automatic speed testing, real-time charts, local data storage.">
+    <meta property="twitter:image" content="https://omrilotan.github.io/internet-speed-monitor/screenshot.png">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://omrilotan.github.io/internet-speed-monitor/">
+    
+    <!-- Robots and Sitemap -->
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml">
     
     <!-- Favicons -->
     <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
     <link rel="icon" type="image/png" sizes="32x32" href="assets/icon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="assets/icon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/icon-256x256.png">
+    <link rel="mask-icon" href="assets/icon.svg" color="#007bff">
+    <meta name="theme-color" content="#007bff">
+    <meta name="msapplication-TileColor" content="#007bff">
+    
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://github.com">
+    
+    <!-- DNS Prefetch -->
+    <link rel="dns-prefetch" href="//github.com">
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Internet Speed Monitor",
+      "description": "A free desktop application that monitors internet connection speed automatically with real-time charts and detailed analytics. Cross-platform support for Windows, macOS, and Linux.",
+      "url": "https://omrilotan.github.io/internet-speed-monitor/",
+      "downloadUrl": "https://github.com/omrilotan/internet-speed-monitor/releases",
+      "screenshot": "https://omrilotan.github.io/internet-speed-monitor/screenshot.png",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": ["Windows", "macOS", "Linux"],
+      "softwareVersion": "1.0.2",
+      "datePublished": "2024-01-01",
+      "dateModified": "2025-09-23",
+      "author": {
+        "@type": "Person",
+        "name": "Omri Lotan",
+        "url": "https://github.com/omrilotan"
+      },
+      "publisher": {
+        "@type": "Person",
+        "name": "Omri Lotan"
+      },
+      "license": "https://unlicense.org/",
+      "programmingLanguage": "JavaScript",
+      "runtimePlatform": "Electron",
+      "codeRepository": "https://github.com/omrilotan/internet-speed-monitor",
+      "softwareRequirements": "Windows 10+, macOS 10.15+, or Linux",
+      "installUrl": "https://github.com/omrilotan/internet-speed-monitor/releases",
+      "softwareHelp": "https://omrilotan.github.io/internet-speed-monitor/user-manual/",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Automatic speed monitoring",
+        "Real-time charts",
+        "Performance tracking",
+        "Local data storage",
+        "CSV export",
+        "Cross-platform support"
+      ]
+    }
+    </script>
     
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -78,7 +159,7 @@
                 <div class="feature-card">
                     <div class="feature-icon">📊</div>
                     <h3>Real-time Charts</h3>
-                    <p>Beautiful visualizations of your internet speed over time with interactive charts and trend analysis.</p>
+                    <p>Beautiful visualizations of your internet speed over time with interactive charts powered by <a href="https://www.chartjs.org/" target="_blank" rel="noopener nofollow">Chart.js</a> for professional data visualization and trend analysis.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">📈</div>
@@ -99,6 +180,57 @@
                     <div class="feature-icon">🔄</div>
                     <h3>Cross-platform</h3>
                     <p>Available for Windows, macOS, and Linux. Works seamlessly across all major operating systems.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Technology Section -->
+    <section class="technology">
+        <div class="container">
+            <h2 class="section-title">🛠️ Built with Modern Technology</h2>
+            <div class="tech-content">
+                <p class="tech-intro">Internet Speed Monitor is built using industry-leading open source technologies to deliver reliable performance and beautiful user experience.</p>
+                
+                <div class="tech-grid">
+                    <div class="tech-card">
+                        <div class="tech-icon">
+                            <svg viewBox="0 0 24 24" fill="currentColor" width="48" height="48">
+                                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                            </svg>
+                        </div>
+                        <h3><a href="https://www.electronjs.org/" target="_blank" rel="noopener nofollow">Electron Framework</a></h3>
+                        <p>Cross-platform desktop app development with web technologies. Enables native-like performance across Windows, macOS, and Linux.</p>
+                    </div>
+                    
+                    <div class="tech-card">
+                        <div class="tech-icon">📊</div>
+                        <h3><a href="https://www.chartjs.org/" target="_blank" rel="noopener nofollow">Chart.js</a></h3>
+                        <p>Professional data visualization library providing beautiful, responsive charts for real-time speed monitoring and historical trend analysis.</p>
+                    </div>
+                    
+                    <div class="tech-card">
+                        <div class="tech-icon">⚡</div>
+                        <h3><a href="https://www.npmjs.com/package/fast-speedtest-api" target="_blank" rel="noopener nofollow">Fast Speedtest API</a></h3>
+                        <p>Reliable internet speed testing powered by Netflix's Fast.com infrastructure for accurate download speed measurements worldwide.</p>
+                    </div>
+                    
+                    <div class="tech-card">
+                        <div class="tech-icon">🌐</div>
+                        <h3><a href="https://fast.com/" target="_blank" rel="noopener nofollow">Fast.com by Netflix</a></h3>
+                        <p>Trusted speed testing service used by millions. Provides accurate, unthrottled speed measurements from Netflix's global CDN network.</p>
+                    </div>
+                </div>
+                
+                <div class="tech-benefits">
+                    <h3>Why These Technologies?</h3>
+                    <ul>
+                        <li><strong>Reliability:</strong> Proven technologies used by millions of developers and applications worldwide</li>
+                        <li><strong>Performance:</strong> Optimized for speed and efficiency with minimal resource usage</li>
+                        <li><strong>Accuracy:</strong> Netflix's Fast.com provides the most accurate speed measurements available</li>
+                        <li><strong>Privacy:</strong> All processing happens locally on your device - no data sent to third parties</li>
+                        <li><strong>Open Source:</strong> Built on open source foundations you can trust and verify</li>
+                    </ul>
                 </div>
             </div>
         </div>
