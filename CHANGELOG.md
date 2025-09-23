@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.2]
+
+### Bug Fixes
+- **Fixed GitHub Actions workflow permissions** - Added `contents: write` permission to allow automatic release creation
+- **Resolved 403 Forbidden error** when electron-builder attempts to publish releases to GitHub
+- **Enhanced workflow reliability** with proper permission scopes for issues and pull-requests
+
+### Infrastructure
+- **Improved CI/CD pipeline** - GitHub Actions now successfully creates releases with downloadable binaries
+- **Cross-platform builds** working correctly for macOS (DMG/ZIP), Windows (EXE/NSIS), and Linux (AppImage/DEB)
+
 ## [1.0.1]
 
 ### Major Updates
