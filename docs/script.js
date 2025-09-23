@@ -218,30 +218,35 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     `;
     document.head.appendChild(style);
-    
-    // Easter egg: Konami code
-    let konamiCode = [];
-    const konamiSequence = [
-        'ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown',
-        'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight',
-        'KeyB', 'KeyA'
-    ];
-    
-    document.addEventListener('keydown', (e) => {
-        konamiCode.push(e.code);
-        if (konamiCode.length > konamiSequence.length) {
-            konamiCode.shift();
+
+    function konamiCode(callback, { once = false } = {}) {
+        const sequence = [];
+        const konamiCombo = 'ArrowUp,ArrowUp,ArrowDown,ArrowDown,ArrowLeft,ArrowRight,ArrowLeft,ArrowRight,KeyB,KeyA';
+        function keydownHandler(event) {
+            sequence.push(event.code);
+            const combo = sequence.join(',');
+            if (!konamiCombo.startsWith(combo)) {
+                sequence.length = 0;
+                return;
+            }
+            if (combo === konamiCombo) {
+                sequence.length = 0;
+                if (once) document.removeEventListener('keydown', keydownHandler);
+                callback();
+            }
         }
-        
-        if (konamiCode.join(',') === konamiSequence.join(',')) {
-            // Easter egg activated
-            document.body.style.animation = 'rainbow 2s linear infinite';
-            setTimeout(() => {
-                document.body.style.animation = '';
-            }, 10000);
-        }
+        document.addEventListener('keydown', keydownHandler);
+    };
+
+    konamiCode(() => {
+        const { animation } = document.body.style;
+        if (animation) return;
+        document.body.style.animation = 'rainbow 2s linear infinite';
+        setTimeout(() => {
+            document.body.style.animation = '';
+        }, 10000);
     });
-    
+
     // Add rainbow animation CSS
     const rainbowStyle = document.createElement('style');
     rainbowStyle.textContent = `
