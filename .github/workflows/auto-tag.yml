@@ -58,17 +58,9 @@ jobs:
         echo "Creating tag: $TAG_NAME for version $VERSION"
         
         # Create annotated tag with release notes
-        git tag -a "$TAG_NAME" -m "Release $TAG_NAME
-
-Automatically created tag for version $VERSION in package.json
-
-This tag will trigger the release workflow to build and publish:
-- macOS: DMG and ZIP installers
-- Windows: EXE and NSIS installers  
-- Linux: AppImage and DEB packages
-
-Download the built applications from the Releases page."
+        TAG_MESSAGE="Release $TAG_NAME - Automatically created tag for version $VERSION in package.json. This tag will trigger the release workflow to build and publish applications for macOS, Windows, and Linux."
         
+        git tag -a "$TAG_NAME" -m "$TAG_MESSAGE"
         git push origin "$TAG_NAME"
         
         echo "Successfully created and pushed tag: $TAG_NAME"
