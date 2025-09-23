@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Manual - Internet Speed Monitor</title>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .manual-content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .manual-section {
+            margin-bottom: 48px;
+        }
+        .manual-section h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 8px;
+            margin-bottom: 24px;
+        }
+        .manual-section h3 {
+            color: var(--text-primary);
+            margin: 24px 0 12px 0;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 24px 0;
+        }
+        .feature-item {
+            padding: 16px;
+            background: var(--surface);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border);
+        }
+        .feature-item h4 {
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+        .screenshot-placeholder {
+            background: var(--surface);
+            border: 2px dashed var(--border);
+            border-radius: var(--border-radius);
+            padding: 40px;
+            text-align: center;
+            color: var(--text-secondary);
+            margin: 20px 0;
+        }
+        .keyboard-key {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-family: monospace;
+            font-size: 0.9em;
+            box-shadow: 0 1px 0 #cbd5e1;
+        }
+        .table-responsive {
+            overflow-x: auto;
+        }
+        .settings-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .settings-table th,
+        .settings-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        .settings-table th {
+            background: var(--surface);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="nav">
+                <div class="logo">
+                    <img src="../assets/icon-64x64.png" alt="Internet Speed Monitor" class="logo-icon">
+                    <span class="logo-text">Internet Speed Monitor</span>
+                </div>
+                <nav class="nav-links">
+                    <a href="../">Home</a>
+                    <a href="../quick-start/">Quick Start</a>
+                    <a href="../faq/">FAQ</a>
+                    <a href="https://github.com/omrilotan/internet-speed-monitor" target="_blank" rel="noopener">GitHub</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="manual-content">
+        <h1>📖 User Manual</h1>
+        <p>Complete guide to using Internet Speed Monitor effectively.</p>
+
+        <div class="manual-section">
+            <h2>🖥️ Interface Overview</h2>
+            <p>Internet Speed Monitor features a clean, intuitive interface designed for easy monitoring of your internet connection performance.</p>
+            
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <h4>📊 Current Speed Display</h4>
+                    <p>Real-time view of your latest speed test results including download, upload, and ping measurements.</p>
+                </div>
+                <div class="feature-item">
+                    <h4>📈 Speed History Chart</h4>
+                    <p>Interactive chart showing your internet performance over time with customizable time ranges.</p>
+                </div>
+                <div class="feature-item">
+                    <h4>⚙️ Monitoring Controls</h4>
+                    <p>Easy-to-use controls for starting/stopping monitoring and configuring test intervals.</p>
+                </div>
+                <div class="feature-item">
+                    <h4>📋 Recent Tests Table</h4>
+                    <p>Detailed table of your most recent speed test results with timestamps and complete metrics.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="manual-section">
+            <h2>🚀 Getting Started</h2>
+            
+            <h3>Initial Setup</h3>
+            <ol>
+                <li><strong>Launch the Application:</strong> Open Internet Speed Monitor from your Applications folder, Start Menu, or desktop shortcut.</li>
+                <li><strong>Grant Permissions:</strong> If prompted, allow the application to access the internet for speed testing.</li>
+                <li><strong>Choose Settings:</strong> Configure your preferred test interval and monitoring preferences.</li>
+                <li><strong>Start Monitoring:</strong> Click "Start Monitoring" to begin automatic speed testing.</li>
+            </ol>
+
+            <h3>First Speed Test</h3>
+            <p>When you first start monitoring, the application will:</p>
+            <ul>
+                <li>Run an initial speed test to establish baseline performance</li>
+                <li>Display results in the Current Speed section</li>
+                <li>Begin plotting data on the Speed History chart</li>
+                <li>Continue testing at your specified interval</li>
+            </ul>
+        </div>
+
+        <div class="manual-section">
+            <h2>⚙️ Configuration Options</h2>
+            
+            <h3>Test Interval Settings</h3>
+            <div class="table-responsive">
+                <table class="settings-table">
+                    <thead>
+                        <tr>
+                            <th>Interval</th>
+                            <th>Best For</th>
+                            <th>Bandwidth Usage</th>
+                            <th>Data Points/Day</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1-5 minutes</td>
+                            <td>Troubleshooting connectivity issues</td>
+                            <td>High (200-500 MB/day)</td>
+                            <td>288-1440</td>
+                        </tr>
+                        <tr>
+                            <td>15-30 minutes</td>
+                            <td>Regular monitoring</td>
+                            <td>Medium (50-100 MB/day)</td>
+                            <td>48-96</td>
+                        </tr>
+                        <tr>
+                            <td>60 minutes</td>
+                            <td>Long-term trend analysis</td>
+                            <td>Low (25-50 MB/day)</td>
+                            <td>24</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Monitoring Controls</h3>
+            <ul>
+                <li><strong>Start/Stop Monitoring:</strong> Toggle automatic speed testing on or off</li>
+                <li><strong>Manual Test:</strong> Run a single speed test immediately</li>
+                <li><strong>Interval Selection:</strong> Choose how frequently to run automatic tests</li>
+                <li><strong>Clear Data:</strong> Remove all stored speed test history</li>
+            </ul>
+        </div>
+
+        <div class="manual-section">
+            <h2>📊 Understanding Your Data</h2>
+            
+            <h3>Speed Metrics Explained</h3>
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <h4>📥 Download Speed</h4>
+                    <p>Measures how quickly you can receive data from the internet. Important for streaming, browsing, and downloading files.</p>
+                </div>
+                <div class="feature-item">
+                    <h4>📤 Upload Speed</h4>
+                    <p>Measures how quickly you can send data to the internet. Critical for video calls, cloud backups, and content sharing.</p>
+                </div>
+                <div class="feature-item">
+                    <h4>⚡ Ping/Latency</h4>
+                    <p>Measures response time to servers. Lower is better for gaming, video calls, and real-time applications.</p>
+                </div>
+                <div class="feature-item">
+                    <h4>📈 Jitter</h4>
+                    <p>Variation in ping times. Consistent low jitter indicates a stable connection quality.</p>
+                </div>
+            </div>
+
+            <h3>Interpreting Speed Results</h3>
+            <ul>
+                <li><strong>Good Performance:</strong> Speeds within 80-100% of your ISP's advertised speeds</li>
+                <li><strong>Moderate Performance:</strong> Speeds between 50-80% of advertised speeds</li>
+                <li><strong>Poor Performance:</strong> Speeds below 50% of advertised speeds</li>
+                <li><strong>Ping Guidelines:</strong> <20ms excellent, 20-50ms good, 50-100ms fair, >100ms poor</li>
+            </ul>
+
+            <h3>Chart Features</h3>
+            <ul>
+                <li><strong>Zoom:</strong> Click and drag to zoom into specific time periods</li>
+                <li><strong>Hover Details:</strong> Mouse over data points for exact values and timestamps</li>
+                <li><strong>Legend:</strong> Click legend items to show/hide specific metrics</li>
+                <li><strong>Time Range:</strong> Select from predefined ranges or set custom periods</li>
+            </ul>
+        </div>
+
+        <div class="manual-section">
+            <h2>📤 Data Export and Backup</h2>
+            
+            <h3>CSV Export</h3>
+            <p>Export your speed test data for analysis in external tools:</p>
+            <ol>
+                <li>Click the "Export CSV" button in the monitoring controls</li>
+                <li>Choose a location and filename for your export</li>
+                <li>Open the file in Excel, Google Sheets, or other spreadsheet applications</li>
+            </ol>
+
+            <h3>Export Data Format</h3>
+            <p>The exported CSV contains the following columns:</p>
+            <ul>
+                <li><code>timestamp</code> - Date and time of the test (ISO 8601 format)</li>
+                <li><code>download_speed</code> - Download speed in Mbps</li>
+                <li><code>upload_speed</code> - Upload speed in Mbps</li>
+                <li><code>ping</code> - Ping time in milliseconds</li>
+                <li><code>jitter</code> - Jitter in milliseconds (if available)</li>
+                <li><code>server_location</code> - Test server location</li>
+            </ul>
+
+            <h3>Data Backup</h3>
+            <p>Your speed test data is automatically backed up locally. Database locations:</p>
+            <ul>
+                <li><strong>macOS:</strong> <code>~/Library/Application Support/Internet Speed Monitor/</code></li>
+                <li><strong>Windows:</strong> <code>%APPDATA%\Internet Speed Monitor\</code></li>
+                <li><strong>Linux:</strong> <code>~/.config/Internet Speed Monitor/</code></li>
+            </ul>
+        </div>
+
+        <div class="manual-section">
+            <h2>🔧 Troubleshooting</h2>
+            
+            <h3>Common Issues and Solutions</h3>
+            
+            <h4>Speed Tests Failing</h4>
+            <ul>
+                <li>Check your internet connection</li>
+                <li>Verify firewall isn't blocking the application</li>
+                <li>Try disabling VPN temporarily</li>
+                <li>Restart your router/modem</li>
+                <li>Contact your ISP if issues persist</li>
+            </ul>
+
+            <h4>Inaccurate Results</h4>
+            <ul>
+                <li>Close bandwidth-intensive applications during testing</li>
+                <li>Connect directly to your router via Ethernet if possible</li>
+                <li>Ensure no other devices are heavily using the network</li>
+                <li>Run multiple tests to establish a baseline</li>
+            </ul>
+
+            <h4>Application Performance</h4>
+            <ul>
+                <li>Reduce test frequency if system performance is affected</li>
+                <li>Clear old data periodically to maintain performance</li>
+                <li>Ensure adequate disk space for data storage</li>
+                <li>Restart the application if it becomes unresponsive</li>
+            </ul>
+
+            <h3>Getting Help</h3>
+            <p>If you continue experiencing issues:</p>
+            <ul>
+                <li>Check the <a href="../faq/">FAQ page</a> for solutions to common problems</li>
+                <li>Report bugs on <a href="https://github.com/omrilotan/internet-speed-monitor/issues" target="_blank">GitHub Issues</a></li>
+                <li>Include your operating system, app version, and error details</li>
+                <li>Provide steps to reproduce the issue</li>
+            </ul>
+        </div>
+
+        <div class="manual-section">
+            <h2>🔒 Privacy and Security</h2>
+            
+            <h3>Data Privacy</h3>
+            <ul>
+                <li><strong>Local Storage:</strong> All data is stored locally on your device</li>
+                <li><strong>No Cloud Sync:</strong> No data is transmitted to external servers</li>
+                <li><strong>No Tracking:</strong> The application doesn't track user behavior</li>
+                <li><strong>No Personal Data:</strong> Only speed test metrics are collected</li>
+            </ul>
+
+            <h3>Network Security</h3>
+            <ul>
+                <li><strong>HTTPS Only:</strong> All speed tests use encrypted connections</li>
+                <li><strong>Minimal Permissions:</strong> App only requests necessary network access</li>
+                <li><strong>Open Source:</strong> Code is publicly auditable on GitHub</li>
+                <li><strong>Regular Updates:</strong> Security patches are released promptly</li>
+            </ul>
+        </div>
+
+        <div class="manual-section">
+            <h2>⌨️ Keyboard Shortcuts</h2>
+            
+            <div class="table-responsive">
+                <table class="settings-table">
+                    <thead>
+                        <tr>
+                            <th>Action</th>
+                            <th>Windows/Linux</th>
+                            <th>macOS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Start/Stop Monitoring</td>
+                            <td><span class="keyboard-key">Space</span></td>
+                            <td><span class="keyboard-key">Space</span></td>
+                        </tr>
+                        <tr>
+                            <td>Run Manual Test</td>
+                            <td><span class="keyboard-key">Ctrl</span> + <span class="keyboard-key">T</span></td>
+                            <td><span class="keyboard-key">⌘</span> + <span class="keyboard-key">T</span></td>
+                        </tr>
+                        <tr>
+                            <td>Export Data</td>
+                            <td><span class="keyboard-key">Ctrl</span> + <span class="keyboard-key">E</span></td>
+                            <td><span class="keyboard-key">⌘</span> + <span class="keyboard-key">E</span></td>
+                        </tr>
+                        <tr>
+                            <td>Clear Data</td>
+                            <td><span class="keyboard-key">Ctrl</span> + <span class="keyboard-key">Shift</span> + <span class="keyboard-key">Delete</span></td>
+                            <td><span class="keyboard-key">⌘</span> + <span class="keyboard-key">Shift</span> + <span class="keyboard-key">Delete</span></td>
+                        </tr>
+                        <tr>
+                            <td>Quit Application</td>
+                            <td><span class="keyboard-key">Ctrl</span> + <span class="keyboard-key">Q</span></td>
+                            <td><span class="keyboard-key">⌘</span> + <span class="keyboard-key">Q</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 60px;">
+            <p>Need more help? Check our <a href="../faq/">FAQ</a> or <a href="https://github.com/omrilotan/internet-speed-monitor/issues" target="_blank">report an issue</a>.</p>
+            <a href="../" class="btn btn-primary">← Back to Home</a>
+            <a href="../quick-start/" class="btn btn-secondary">Quick Start Guide</a>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2025 Omri Lotan. Internet Speed Monitor Documentation.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

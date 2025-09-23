@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ - Internet Speed Monitor</title>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .faq-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .faq-item {
+            margin-bottom: 24px;
+            background: var(--surface);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+        .faq-question {
+            padding: 20px;
+            background: var(--background);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: var(--text-primary);
+            transition: background-color 0.2s;
+        }
+        .faq-question:hover {
+            background: var(--surface);
+        }
+        .faq-question::after {
+            content: '+';
+            font-size: 1.5rem;
+            transition: transform 0.2s;
+        }
+        .faq-question.active::after {
+            transform: rotate(45deg);
+        }
+        .faq-answer {
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .faq-answer.active {
+            padding: 20px;
+            max-height: 500px;
+        }
+        .faq-category {
+            margin: 40px 0 20px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 8px;
+        }
+        .code {
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="nav">
+                <div class="logo">
+                    <img src="../assets/icon-64x64.png" alt="Internet Speed Monitor" class="logo-icon">
+                    <span class="logo-text">Internet Speed Monitor</span>
+                </div>
+                <nav class="nav-links">
+                    <a href="../">Home</a>
+                    <a href="../quick-start/">Quick Start</a>
+                    <a href="../user-manual/">Manual</a>
+                    <a href="https://github.com/omrilotan/internet-speed-monitor" target="_blank" rel="noopener">GitHub</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="faq-content">
+        <h1>❓ Frequently Asked Questions</h1>
+        <p>Find answers to common questions about Internet Speed Monitor.</p>
+
+        <div class="faq-category">Installation & Setup</div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                How do I install Internet Speed Monitor on macOS?
+            </div>
+            <div class="faq-answer">
+                <p>Download the <span class="code">.dmg</span> file from our releases page, double-click it, and drag the app to your Applications folder. If you see a security warning, go to System Preferences > Security & Privacy and click "Open Anyway".</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                Why can't I open the app on macOS?
+            </div>
+            <div class="faq-answer">
+                <p>This is likely due to macOS Gatekeeper security. Right-click the app and select "Open", then click "Open" in the dialog. Alternatively, go to System Preferences > Security & Privacy > General and click "Open Anyway" after attempting to launch the app.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                How do I make the Linux AppImage executable?
+            </div>
+            <div class="faq-answer">
+                <p>Open a terminal, navigate to where you downloaded the file, and run: <span class="code">chmod +x Internet-Speed-Monitor.AppImage</span>. Then you can double-click to run it or execute it from the terminal.</p>
+            </div>
+        </div>
+
+        <div class="faq-category">Usage & Features</div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                How accurate are the speed test results?
+            </div>
+            <div class="faq-answer">
+                <p>Internet Speed Monitor uses the same testing methodology as popular online speed tests. Results are typically within 5-10% of your actual connection speed. Factors like network congestion, server location, and other device usage can affect results.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                What's the minimum and maximum test interval?
+            </div>
+            <div class="faq-answer">
+                <p>You can set test intervals from 1 minute to 60 minutes. For continuous monitoring, we recommend 15-30 minutes to balance data collection with bandwidth usage and system resources.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                Where is my speed test data stored?
+            </div>
+            <div class="faq-answer">
+                <p>All data is stored locally on your device in a SQLite database. No data is sent to external servers. The database location varies by operating system:
+                <ul>
+                    <li><strong>macOS:</strong> <span class="code">~/Library/Application Support/Internet Speed Monitor/</span></li>
+                    <li><strong>Windows:</strong> <span class="code">%APPDATA%\Internet Speed Monitor\</span></li>
+                    <li><strong>Linux:</strong> <span class="code">~/.config/Internet Speed Monitor/</span></li>
+                </ul>
+                </p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                Can I export my speed test data?
+            </div>
+            <div class="faq-answer">
+                <p>Yes! Click the "Export CSV" button to save all your speed test data to a CSV file. This includes timestamps, download speeds, upload speeds, and ping times. You can then open this file in Excel, Google Sheets, or any spreadsheet application.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                How much bandwidth does continuous monitoring use?
+            </div>
+            <div class="faq-answer">
+                <p>Each speed test uses approximately 10-50 MB depending on your connection speed. With a 15-minute interval, this equals roughly 2-10 GB per month. You can adjust the interval to control bandwidth usage.</p>
+            </div>
+        </div>
+
+        <div class="faq-category">Troubleshooting</div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                The app won't start or crashes on startup
+            </div>
+            <div class="faq-answer">
+                <p>Try these steps:
+                <ol>
+                    <li>Restart your computer</li>
+                    <li>Make sure you have the latest version installed</li>
+                    <li>Check if antivirus software is blocking the app</li>
+                    <li>On Windows, try running as administrator</li>
+                    <li>If the issue persists, create an issue on our GitHub page with details about your system</li>
+                </ol>
+                </p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                Speed tests are failing or showing "Connection Error"
+            </div>
+            <div class="faq-answer">
+                <p>This usually indicates a network connectivity issue:
+                <ul>
+                    <li>Check your internet connection</li>
+                    <li>Verify firewall settings aren't blocking the app</li>
+                    <li>Try temporarily disabling VPN if you're using one</li>
+                    <li>Restart your router/modem</li>
+                    <li>Contact your ISP if problems persist</li>
+                </ul>
+                </p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                The chart isn't updating or shows no data
+            </div>
+            <div class="faq-answer">
+                <p>Ensure monitoring is running by checking that the "Start Monitoring" button shows "Running" status. If monitoring is active but no data appears, try:
+                <ul>
+                    <li>Stopping and restarting monitoring</li>
+                    <li>Restarting the application</li>
+                    <li>Checking if your firewall is blocking network requests</li>
+                </ul>
+                </p>
+            </div>
+        </div>
+
+        <div class="faq-category">Privacy & Security</div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                What data does the app collect?
+            </div>
+            <div class="faq-answer">
+                <p>Internet Speed Monitor only collects speed test measurements (download speed, upload speed, ping, timestamp). No personal information, browsing data, or other private information is collected. All data stays on your device.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                Is my data shared with third parties?
+            </div>
+            <div class="faq-answer">
+                <p>No. All speed test data is stored locally on your device. The app does not send any data to external servers or third parties. We respect your privacy completely.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                Can I delete my stored data?
+            </div>
+            <div class="faq-answer">
+                <p>Yes. You can clear all stored data by deleting the application's data folder (see "Where is my data stored?" above) or by uninstalling and reinstalling the application.</p>
+            </div>
+        </div>
+
+        <div class="faq-category">Technical Support</div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                How do I report a bug or request a feature?
+            </div>
+            <div class="faq-answer">
+                <p>Visit our <a href="https://github.com/omrilotan/internet-speed-monitor/issues" target="_blank">GitHub Issues page</a> to report bugs or request new features. Please include:
+                <ul>
+                    <li>Your operating system and version</li>
+                    <li>App version (shown in About dialog)</li>
+                    <li>Steps to reproduce the issue</li>
+                    <li>Any error messages you see</li>
+                </ul>
+                </p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                Is the source code available?
+            </div>
+            <div class="faq-answer">
+                <p>Yes! Internet Speed Monitor is open source. You can view the source code, contribute, or build your own version on our <a href="https://github.com/omrilotan/internet-speed-monitor" target="_blank">GitHub repository</a>.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                How can I contribute to the project?
+            </div>
+            <div class="faq-answer">
+                <p>We welcome contributions! Check out our <a href="https://github.com/omrilotan/internet-speed-monitor/blob/main/CONTRIBUTING.md" target="_blank">Contributing Guide</a> for information on:
+                <ul>
+                    <li>Reporting issues</li>
+                    <li>Submitting pull requests</li>
+                    <li>Coding standards</li>
+                    <li>Development setup</li>
+                </ul>
+                </p>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 60px;">
+            <p>Still have questions? <a href="https://github.com/omrilotan/internet-speed-monitor/issues" target="_blank">Ask on GitHub</a></p>
+            <a href="../" class="btn btn-primary">← Back to Home</a>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2025 Omri Lotan. Internet Speed Monitor Documentation.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // FAQ accordion functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const faqQuestions = document.querySelectorAll('.faq-question');
+            
+            faqQuestions.forEach(question => {
+                question.addEventListener('click', function() {
+                    const answer = this.nextElementSibling;
+                    const isActive = this.classList.contains('active');
+                    
+                    // Close all other FAQ items
+                    faqQuestions.forEach(q => {
+                        q.classList.remove('active');
+                        q.nextElementSibling.classList.remove('active');
+                    });
+                    
+                    // Toggle current item
+                    if (!isActive) {
+                        this.classList.add('active');
+                        answer.classList.add('active');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

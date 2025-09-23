@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Start Guide - Internet Speed Monitor</title>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .guide-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .guide-step {
+            margin-bottom: 40px;
+            padding: 24px;
+            background: var(--surface);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border);
+        }
+        .guide-step h3 {
+            color: var(--primary-color);
+            margin-bottom: 16px;
+        }
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 16px;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 14px;
+            margin: 16px 0;
+            overflow-x: auto;
+        }
+        .note {
+            background: #dbeafe;
+            border-left: 4px solid var(--primary-color);
+            padding: 16px;
+            margin: 16px 0;
+            border-radius: 0 6px 6px 0;
+        }
+        .warning {
+            background: #fef3c7;
+            border-left: 4px solid #d97706;
+            padding: 16px;
+            margin: 16px 0;
+            border-radius: 0 6px 6px 0;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="nav">
+                <div class="logo">
+                    <img src="../assets/icon-64x64.png" alt="Internet Speed Monitor" class="logo-icon">
+                    <span class="logo-text">Internet Speed Monitor</span>
+                </div>
+                <nav class="nav-links">
+                    <a href="../index.html">Home</a>
+                    <a href="../user-manual/">Manual</a>
+                    <a href="../faq/">FAQ</a>
+                    <a href="https://github.com/omrilotan/internet-speed-monitor" target="_blank" rel="noopener">GitHub</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="guide-content">
+        <h1>🚀 Quick Start Guide</h1>
+        <p>Get up and running with Internet Speed Monitor in just a few minutes!</p>
+
+        <div class="guide-step">
+            <h3>Step 1: Download the Application</h3>
+            <p>Choose the appropriate version for your operating system:</p>
+            <ul>
+                <li><strong>macOS:</strong> Download the <code>.dmg</code> file from the <a href="https://github.com/omrilotan/internet-speed-monitor/releases" target="_blank">releases page</a></li>
+                <li><strong>Windows:</strong> Download the <code>.exe</code> installer</li>
+                <li><strong>Linux:</strong> Download the <code>.AppImage</code> file</li>
+            </ul>
+            
+            <div class="note">
+                <strong>💡 Tip:</strong> Always download from the official GitHub releases page to ensure you get the latest, secure version.
+            </div>
+        </div>
+
+        <div class="guide-step">
+            <h3>Step 2: Install the Application</h3>
+            
+            <h4>macOS Installation:</h4>
+            <ol>
+                <li>Double-click the downloaded <code>.dmg</code> file</li>
+                <li>Drag the Internet Speed Monitor app to your Applications folder</li>
+                <li>Launch from Applications or Spotlight search</li>
+            </ol>
+            
+            <h4>Windows Installation:</h4>
+            <ol>
+                <li>Double-click the downloaded <code>.exe</code> file</li>
+                <li>Follow the installation wizard</li>
+                <li>Launch from Start Menu or Desktop shortcut</li>
+            </ol>
+            
+            <h4>Linux Installation:</h4>
+            <ol>
+                <li>Make the AppImage executable: <code>chmod +x Internet-Speed-Monitor.AppImage</code></li>
+                <li>Double-click to run, or execute from terminal</li>
+            </ol>
+            
+            <div class="warning">
+                <strong>⚠️ Security Note:</strong> On macOS, you may need to allow the app in System Preferences > Security & Privacy if you see a security warning.
+            </div>
+        </div>
+
+        <div class="guide-step">
+            <h3>Step 3: First Launch</h3>
+            <p>When you first open Internet Speed Monitor, you'll see:</p>
+            <ul>
+                <li><strong>Current Speed section:</strong> Shows real-time speed measurements</li>
+                <li><strong>Speed History chart:</strong> Visual representation of your connection over time</li>
+                <li><strong>Monitoring Controls:</strong> Set your testing preferences</li>
+            </ul>
+            
+            <div class="note">
+                <strong>📊 Data Storage:</strong> All your speed test data is stored locally on your device. No data is sent to external servers.
+            </div>
+        </div>
+
+        <div class="guide-step">
+            <h3>Step 4: Configure Monitoring Settings</h3>
+            <p>Set up automatic monitoring to track your internet performance:</p>
+            
+            <h4>Choose Test Interval:</h4>
+            <ul>
+                <li>Click the interval dropdown (default: 5 minutes)</li>
+                <li>Select from 1-60 minutes based on your needs</li>
+                <li>Shorter intervals = more data points, but more bandwidth usage</li>
+            </ul>
+            
+            <h4>Start Monitoring:</h4>
+            <ol>
+                <li>Click the "Start Monitoring" button</li>
+                <li>The app will begin running speed tests automatically</li>
+                <li>Speed data will appear in real-time on the dashboard</li>
+            </ol>
+            
+            <div class="note">
+                <strong>🔋 Performance Tip:</strong> For continuous monitoring, consider starting with 15-30 minute intervals to balance data collection with system resources.
+            </div>
+        </div>
+
+        <div class="guide-step">
+            <h3>Step 5: Understanding Your Data</h3>
+            
+            <h4>Speed Metrics:</h4>
+            <ul>
+                <li><strong>Download Speed:</strong> How fast you can receive data (Mbps)</li>
+                <li><strong>Upload Speed:</strong> How fast you can send data (Mbps)</li>
+                <li><strong>Ping:</strong> Network latency/response time (milliseconds)</li>
+            </ul>
+            
+            <h4>Reading the Chart:</h4>
+            <ul>
+                <li>Blue line shows download speeds over time</li>
+                <li>Green line shows upload speeds over time</li>
+                <li>Hover over points to see exact values and timestamps</li>
+            </ul>
+        </div>
+
+        <div class="guide-step">
+            <h3>Step 6: Export Your Data</h3>
+            <p>Save your speed test results for further analysis:</p>
+            
+            <ol>
+                <li>Click the "Export CSV" button</li>
+                <li>Choose a location to save the file</li>
+                <li>Open in Excel, Google Sheets, or any spreadsheet application</li>
+            </ol>
+            
+            <p>The exported CSV contains:</p>
+            <ul>
+                <li>Timestamp of each test</li>
+                <li>Download speed (Mbps)</li>
+                <li>Upload speed (Mbps)</li>
+                <li>Ping time (ms)</li>
+            </ul>
+        </div>
+
+        <div class="guide-step">
+            <h3>Next Steps</h3>
+            <p>Now that you're up and running:</p>
+            <ul>
+                <li>📖 Read the <a href="../user-manual/">User Manual</a> for detailed features</li>
+                <li>❓ Check the <a href="../faq/">FAQ</a> for common questions</li>
+                <li>🐛 Report issues on <a href="https://github.com/omrilotan/internet-speed-monitor/issues" target="_blank">GitHub</a></li>
+                <li>⭐ Star the project if you find it useful!</li>
+            </ul>
+        </div>
+
+        <div style="text-align: center; margin-top: 60px;">
+            <a href="../index.html" class="btn btn-primary">← Back to Home</a>
+            <a href="../user-manual/" class="btn btn-secondary">User Manual →</a>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2025 Omri Lotan. Internet Speed Monitor Documentation.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
