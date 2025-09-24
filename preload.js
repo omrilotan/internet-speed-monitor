@@ -19,6 +19,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getDebugLog: () => ipcRenderer.invoke('get-debug-log'),
   clearDebugLog: () => ipcRenderer.invoke('clear-debug-log'),
   
+  // External links
+  openExternal: (url) => ipcRenderer.invoke('open-external', url),
+  
   // Events
   onSpeedTestResult: (callback) => ipcRenderer.on('speed-test-result', callback),
   onSpeedTestStarted: (callback) => ipcRenderer.on('speed-test-started', callback),

@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, shell, Menu } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
@@ -65,6 +65,129 @@ function createWindow() {
     console.log('Window closed');
     mainWindow = null;
   });
+}
+
+// Create application menu
+function createMenu() {
+  const template = [
+    ...(process.platform === 'darwin' ? [{
+      label: app.getName(),
+      submenu: [
+        { role: 'about' },
+        { type: 'separator' },
+        { role: 'services' },
+        { type: 'separator' },
+        { role: 'hide' },
+        { role: 'hideothers' },
+        { role: 'unhide' },
+        { type: 'separator' },
+        { role: 'quit' }
+      ]
+    }] : []),
+    {
+      label: 'File',
+      submenu: [
+        process.platform === 'darwin' ? { role: 'close' } : { role: 'quit' }
+      ]
+    },
+    {
+      label: 'Edit',
+      submenu: [
+        { role: 'undo' },
+        { role: 'redo' },
+        { type: 'separator' },
+        { role: 'cut' },
+        { role: 'copy' },
+        { role: 'paste' },
+        ...(process.platform === 'darwin' ? [
+          { role: 'pasteandmatchstyle' },
+          { role: 'delete' },
+          { role: 'selectall' },
+          { type: 'separator' },
+          {
+            label: 'Speech',
+            submenu: [
+              { role: 'startspeaking' },
+              { role: 'stopspeaking' }
+            ]
+          }
+        ] : [
+          { role: 'delete' },
+          { type: 'separator' },
+          { role: 'selectall' }
+        ])
+      ]
+    },
+    {
+      label: 'View',
+      submenu: [
+        { role: 'reload' },
+        { role: 'forceReload' },
+        { role: 'toggleDevTools' },
+        { type: 'separator' },
+        { role: 'resetZoom' },
+        { role: 'zoomIn' },
+        { role: 'zoomOut' },
+        { type: 'separator' },
+        { role: 'togglefullscreen' }
+      ]
+    },
+    {
+      label: 'Window',
+      submenu: [
+        { role: 'minimize' },
+        { role: 'close' },
+        ...(process.platform === 'darwin' ? [
+          { type: 'separator' },
+          { role: 'front' },
+          { type: 'separator' },
+          { role: 'window' }
+        ] : [])
+      ]
+    },
+    {
+      role: 'help',
+      submenu: [
+        {
+          label: 'About Internet Speed Monitor',
+          click: () => {
+            const { dialog } = require('electron');
+            dialog.showMessageBox(mainWindow, {
+              type: 'info',
+              title: 'About Internet Speed Monitor',
+              message: 'Internet Speed Monitor v1.1.3',
+              detail: `A simple tool to monitor your internet connection speed at regular intervals.
+
+Features:
+• Automated speed testing at set intervals
+• Real-time speed monitoring display
+• Historical data visualization with charts
+• CSV export functionality
+• Debug logging for troubleshooting
+
+Licensed under Unlicense`,
+              buttons: ['OK']
+            });
+          }
+        },
+        {
+          label: 'GitHub Repository',
+          click: async () => {
+            await shell.openExternal('https://github.com/omrilotan/internet-speed-monitor');
+          }
+        },
+        {
+          label: 'Documentation',
+          click: async () => {
+            await shell.openExternal('https://omrilotan.github.io/internet-speed-monitor/');
+          }
+        }
+      ]
+    }
+  ];
+
+  const menu = Menu.buildFromTemplate(template);
+  Menu.setApplicationMenu(menu);
 }
 
 // Send speed test results to renderer
@@ -140,6 +263,9 @@ app.whenReady().then(async () => {
   log('=== APP READY ===');
   log('Creating window...');
   createWindow();
+  
+  // Create application menu with Help section
+  createMenu();
   
   log('Starting module initialization...');
   const initSuccess = await initializeModules();
@@ -360,6 +486,17 @@ ipcMain.handle('test-once-now', async () => {
     }
   } catch (error) {
     logError('Error running manual test:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Handle opening external links
+ipcMain.handle('open-external', async (event, url) => {
+  try {
+    await shell.openExternal(url);
+    return { success: true };
+  } catch (error) {
+    logError('Error opening external link:', error);
     return { success: false, error: error.message };
   }
 });

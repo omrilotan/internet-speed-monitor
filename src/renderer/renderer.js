@@ -47,6 +47,21 @@ clearDebugBtn.addEventListener('click', clearDebugLog);
 clearHistoryBtn.addEventListener('click', clearHistory);
 exportCsvBtn.addEventListener('click', exportCSV);
 
+// Footer links
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('github-link').addEventListener('click', (e) => {
+        e.preventDefault();
+        window.electronAPI.openExternal('https://github.com/omrilotan/internet-speed-monitor');
+    });
+    
+    document.getElementById('website-link').addEventListener('click', (e) => {
+        e.preventDefault();
+        window.electronAPI.openExternal('https://omrilotan.github.io/internet-speed-monitor/');
+    });
+});
+
+// Initialize the app
+
 // IPC listeners using electronAPI
 window.electronAPI.onSpeedTestStarted((event) => {
     showTestRunningIndicator(); // Show the running indicator when any test starts
@@ -353,7 +368,13 @@ function updateCurrentStats(result) {
     downloadSpeed.textContent = `${result.download.toFixed(2)} Mbps`;
     uploadSpeed.textContent = `${result.upload.toFixed(2)} Mbps`;
     ping.textContent = `${result.ping.toFixed(2)} ms`;
-    lastTest.textContent = new Date(result.timestamp).toLocaleTimeString();
+    // Use 24-hour format for last test time
+    lastTest.textContent = new Date(result.timestamp).toLocaleTimeString([], { 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        second: '2-digit',
+        hour12: false 
+    });
     
     // Show "Sleeping" status if monitoring is active but test just completed
     if (isMonitoring) {
@@ -485,6 +506,22 @@ async function loadHistoricalData() {
         // Update median stats
         updateMedianStats();
         
+        // Update the "Last Test" display with the most recent test (24-hour format)
+        if (data.length > 0) {
+            const mostRecentTest = data[data.length - 1];
+            lastTest.textContent = new Date(mostRecentTest.timestamp).toLocaleTimeString([], { 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit',
+                hour12: false 
+            });
+            
+            // Also update current stats with most recent data
+            downloadSpeed.textContent = `${mostRecentTest.download.toFixed(2)} Mbps`;
+            uploadSpeed.textContent = `${mostRecentTest.upload.toFixed(2)} Mbps`;
+            ping.textContent = `${mostRecentTest.ping.toFixed(2)} ms`;
+        }
+        
     } catch (error) {
         console.error('Error loading historical data:', error);
     }
@@ -538,12 +575,12 @@ function updateNextTestDisplay() {
         nextTestTimestamp = new Date(Date.now() + interval * 60 * 1000);
     }
     
-    // Display the actual time when the test will run
+    // Display the actual time when the test will run (24-hour format)
     const nextTestTime_element = nextTestTime;
     const timeString = nextTestTimestamp.toLocaleTimeString([], { 
         hour: '2-digit', 
         minute: '2-digit',
-        hour12: true 
+        hour12: false 
     });
     
     nextTestTime_element.textContent = timeString;

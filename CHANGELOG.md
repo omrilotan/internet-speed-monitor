@@ -5,25 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.3] - 2025-09-24
+
+### ✨ User Experience Improvements
+- **24-Hour Time Format** - Updated "Next Test" and "Last Test" displays to use 24-hour format for consistency and clarity
+- **Historical Data on Startup** - "Last Test" now automatically loads and displays the most recent test data when the app starts
+- **Native Application Help Menu** - Added proper application Help menu with "About" dialog, GitHub repository link, and documentation link
+- **Footer Links** - Added footer with clickable links to GitHub repository and project website
+
+### 🌐 Website Enhancements
+- **Clickable Logo Navigation** - Logo and icon in documentation pages (Quick Start, User Manual, FAQ) now link back to homepage
+- **Logo Hover Effects** - Added subtle hover effects to improve user interaction feedback
+- **Copyright Removal** - Removed all copyright mentions from website and app interface per user request
+
+### 🔧 Technical Improvements
+- **External Link Handling** - Enhanced IPC communication to handle external link opening from renderer process
+- **Menu System** - Implemented native Electron menu system with proper macOS integration
+- **Navigation Enhancement** - Improved website navigation consistency across all documentation pages
+
 ## [1.1.2] - 2025-09-24
 
-### 🎯 macOS Security Improvements
-- **Simplified Build Configuration** - Removed hardened runtime settings that were causing unnecessary security dialogs
-- **Multiple Installation Methods** - Added Homebrew Cask support for seamless macOS installation without security warnings
-- **Easy Install Script** - Created automated installation script (`install.sh`) for simplified setup
-
-### 📦 Distribution Enhancements
-- **Homebrew Support** - Users can now install via `brew tap omrilotan/internet-speed-monitor && brew install --cask internet-speed-monitor`
-- **Build from Source** - Added comprehensive build instructions for users who prefer compiling locally
-- **Alternative Installation** - Multiple pathways to avoid macOS security dialogs entirely
-
 ### 📚 Documentation Updates
-- **Comprehensive Security Guide** - Detailed solutions for all macOS security dialog variations
-- **Installation Options** - Clear documentation of Direct Download, Homebrew, and Build from Source methods
 - **User Experience** - Improved README with better organization and troubleshooting guidance
 
 ### 🔧 Technical Changes
-- **macOS Build Settings** - Changed from distribution to development type to reduce Gatekeeper interference
 - **Debug Configuration** - Enhanced build pipeline with better debugging capabilities
 - **Asset Management** - Maintained unified icon asset structure
 
