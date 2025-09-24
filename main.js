@@ -74,6 +74,13 @@ function sendSpeedTestResult(result) {
   }
 }
 
+// Send speed test started notification to renderer
+function sendSpeedTestStarted() {
+  if (mainWindow && mainWindow.webContents) {
+    mainWindow.webContents.send('speed-test-started');
+  }
+}
+
 async function initializeModules() {
   try {
     log('Starting module initialization...');
@@ -112,7 +119,7 @@ async function initializeModules() {
     log('DataStore initialized');
 
     log('Creating SpeedMonitor instance...');
-    speedMonitor = new SpeedMonitor(dataStore, sendSpeedTestResult);
+    speedMonitor = new SpeedMonitor(dataStore, sendSpeedTestResult, sendSpeedTestStarted);
     log('SpeedMonitor instance created');
     
     isInitialized = true;
@@ -250,6 +257,22 @@ ipcMain.handle('get-debug-log', async () => {
   }
 });
 
+// Clear debug log IPC handler
+ipcMain.handle('clear-debug-log', async () => {
+  try {
+    if (fs.existsSync(logFile)) {
+      fs.writeFileSync(logFile, '');
+      log('Debug log cleared by user');
+      return { success: true };
+    } else {
+      return { success: true }; // Consider it successful if file doesn't exist
+    }
+  } catch (error) {
+    log('Error clearing debug log: ' + error.message);
+    return { success: false, error: error.message };
+  }
+});
+
 // Clear history IPC handler
 ipcMain.handle('clear-history', async () => {
   try {
@@ -311,6 +334,32 @@ ipcMain.handle('export-csv', async () => {
     }
   } catch (error) {
     logError('Error exporting CSV:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Test once now handler
+ipcMain.handle('test-once-now', async () => {
+  log('Manual test requested via IPC');
+  try {
+    if (!speedMonitor) {
+      // If monitoring isn't started, create a temporary speed monitor instance
+      const sendResultCallback = (result) => {
+        if (mainWindow && !mainWindow.isDestroyed()) {
+          mainWindow.webContents.send('speed-test-result', result);
+        }
+      };
+      
+      const tempSpeedMonitor = new SpeedMonitor(dataStore, sendResultCallback);
+      await tempSpeedMonitor.runSpeedTest();
+      return { success: true, message: 'Manual test completed' };
+    } else {
+      // Use existing monitor instance
+      await speedMonitor.runSpeedTest();
+      return { success: true, message: 'Manual test completed' };
+    }
+  } catch (error) {
+    logError('Error running manual test:', error);
     return { success: false, error: error.message };
   }
 });

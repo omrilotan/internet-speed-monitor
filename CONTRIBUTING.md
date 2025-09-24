@@ -51,9 +51,15 @@ The main process handles:
 Key IPC handlers:
 - `start-monitoring` - Begins periodic speed tests
 - `stop-monitoring` - Stops monitoring
-- `get-history` - Retrieves stored speed data
+- `test-once-now` - Performs single speed test without starting monitoring
+- `speed-test-started` - Event sent when any test begins
+- `get-monitoring-status` - Retrieves current monitoring state
+- `get-speed-tests` - Retrieves stored speed data
+- `get-historical-data` - Gets historical data for charts
 - `clear-history` - Removes all stored data
 - `export-csv` - Exports data to CSV format
+- `get-debug-log` - Retrieves debug log contents
+- `clear-debug-log` - Clears the debug log file
 
 ### Preload Script (`preload.js`)
 
@@ -61,12 +67,25 @@ The preload script provides a secure API bridge between the main and renderer pr
 
 ```javascript
 window.electronAPI = {
+  // Speed monitoring
   startMonitoring: (interval) => ipcRenderer.invoke('start-monitoring', interval),
   stopMonitoring: () => ipcRenderer.invoke('stop-monitoring'),
-  getHistory: () => ipcRenderer.invoke('get-history'),
+  getMonitoringStatus: () => ipcRenderer.invoke('get-monitoring-status'),
+  testOnceNow: () => ipcRenderer.invoke('test-once-now'),
+  
+  // Data management
+  getSpeedTests: (limit) => ipcRenderer.invoke('get-speed-tests', limit),
+  getHistoricalData: (limit) => ipcRenderer.invoke('get-historical-data', limit),
   clearHistory: () => ipcRenderer.invoke('clear-history'),
   exportCSV: () => ipcRenderer.invoke('export-csv'),
-  onSpeedUpdate: (callback) => ipcRenderer.on('speed-update', callback),
+  
+  // Debug
+  getDebugLog: () => ipcRenderer.invoke('get-debug-log'),
+  clearDebugLog: () => ipcRenderer.invoke('clear-debug-log'),
+  
+  // Events
+  onSpeedTestResult: (callback) => ipcRenderer.on('speed-test-result', callback),
+  onSpeedTestStarted: (callback) => ipcRenderer.on('speed-test-started', callback),
   onMonitoringStatus: (callback) => ipcRenderer.on('monitoring-status', callback)
 }
 ```
@@ -131,8 +150,34 @@ Data is stored in JSON format in the user's application data directory:
 #### UI Framework
 - **Base**: HTML5, CSS3, Vanilla JavaScript
 - **Charts**: Chart.js v4.4.0 for data visualization
-- **Styling**: Custom CSS with modern design patterns
-- **Responsive**: Adapts to different window sizes
+- **Styling**: Custom CSS with modern design patterns and responsive breakpoints
+- **Layout**: CSS Grid and Flexbox for responsive design
+- **Responsive**: Adapts to desktop, tablet, and mobile screen sizes
+
+#### Key UI Features
+- **Primary Controls**: Start/Stop monitoring and Test Once Now in main control row
+- **Utility Controls**: Debug, clear, and export functions in secondary row
+- **Status Management**: Real-time status indicators with color coding:
+  - Green: Running test or active monitoring
+  - Orange: Sleeping (monitoring active, between tests)
+  - Gray: Stopped
+- **Test Progress**: Running indicator with emoji and countdown to next test
+- **Median Statistics**: Dedicated section showing median performance across all data
+- **Mutual Exclusivity**: Smart display logic prevents conflicting UI elements
+
+#### State Management
+```javascript
+// Status states with proper transitions
+const STATUS_STATES = {
+  STOPPED: 'stopped',
+  INITIALIZING: 'initializing', 
+  RUNNING: 'running',
+  SLEEPING: 'sleeping'
+};
+
+// Status transition flow
+// Stopped → Initializing → Running (during test) → Sleeping (between tests) → Running (next test)
+```
 
 #### Chart Implementation
 ```javascript
@@ -312,11 +357,19 @@ To add new export formats:
 ### Manual Testing Checklist
 - [ ] App starts without errors
 - [ ] Speed monitoring starts/stops correctly
+- [ ] "Test Once Now" button works without starting monitoring
+- [ ] Status indicators show correct states (Stopped/Running/Sleeping)
+- [ ] Next test countdown displays and updates correctly
+- [ ] Test running indicator shows during active tests
+- [ ] Test running indicator and next test display are mutually exclusive
+- [ ] Median statistics calculate and display correctly
 - [ ] Data persists between sessions
-- [ ] Charts update in real-time
-- [ ] Export functionality works
-- [ ] Clear data functionality works
-- [ ] UI responsive to window resizing
+- [ ] Charts update in real-time with new data
+- [ ] Export functionality works (CSV format)
+- [ ] Clear history functionality works and resets all UI elements
+- [ ] Debug log shows/clears correctly
+- [ ] UI responsive to window resizing (desktop/tablet/mobile)
+- [ ] All buttons and controls work as expected
 
 ### Debug Mode
 Enable debug logging by running:

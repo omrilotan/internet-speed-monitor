@@ -7,6 +7,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   startMonitoring: (interval) => ipcRenderer.invoke('start-monitoring', interval),
   stopMonitoring: () => ipcRenderer.invoke('stop-monitoring'),
   getMonitoringStatus: () => ipcRenderer.invoke('get-monitoring-status'),
+  testOnceNow: () => ipcRenderer.invoke('test-once-now'),
   
   // Data management
   getSpeedTests: (limit) => ipcRenderer.invoke('get-speed-tests', limit),
@@ -16,9 +17,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
   
   // Debug
   getDebugLog: () => ipcRenderer.invoke('get-debug-log'),
+  clearDebugLog: () => ipcRenderer.invoke('clear-debug-log'),
   
   // Events
   onSpeedTestResult: (callback) => ipcRenderer.on('speed-test-result', callback),
+  onSpeedTestStarted: (callback) => ipcRenderer.on('speed-test-started', callback),
   onMonitoringStatus: (callback) => ipcRenderer.on('monitoring-status', callback),
   
   // Remove listeners

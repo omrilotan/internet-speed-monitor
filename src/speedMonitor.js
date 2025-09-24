@@ -1,7 +1,7 @@
 const FastSpeedtest = require('fast-speedtest-api');
 
 class SpeedMonitor {
-    constructor(dataStore, sendResultCallback) {
+    constructor(dataStore, sendResultCallback, sendStartedCallback = null) {
         console.log('SpeedMonitor constructor called');
         
         if (!dataStore) {
@@ -14,6 +14,7 @@ class SpeedMonitor {
         
         this.dataStore = dataStore;
         this.sendResultCallback = sendResultCallback;
+        this.sendStartedCallback = sendStartedCallback;
         this.isRunning = false;
         this.interval = null;
         this.testInterval = 5; // minutes
@@ -83,10 +84,15 @@ class SpeedMonitor {
     async runSpeedTest() {
         if (this.currentTest) {
             console.log('Speed test already in progress, skipping...');
-            return;
+            return null; // Return null to indicate test was skipped
         }
 
         console.log('Starting speed test...');
+        
+        // Send test started notification if callback is available
+        if (this.sendStartedCallback) {
+            this.sendStartedCallback();
+        }
         
         try {
             this.currentTest = true;
@@ -123,6 +129,8 @@ class SpeedMonitor {
                 this.sendResultCallback(speedTestResult);
             }
 
+            return speedTestResult; // Return the result
+
         } catch (error) {
             console.error('Speed test failed:', error);
             
@@ -139,6 +147,8 @@ class SpeedMonitor {
             if (this.sendResultCallback) {
                 this.sendResultCallback(errorResult);
             }
+
+            return errorResult; // Return the error result
         } finally {
             this.currentTest = null;
         }

@@ -1,12 +1,18 @@
 console.log('=== RENDERER.JS LOADED ===');
 
 let speedChart;
+// Global variables for next test tracking
 let isMonitoring = false;
+let nextTestTimer = null;
+let nextTestTimestamp = null;
+let allSpeedTests = []; // Store all tests for median calculation
 
 // DOM elements
 const startBtn = document.getElementById('start-btn');
 const stopBtn = document.getElementById('stop-btn');
+const testNowBtn = document.getElementById('test-now-btn');
 const debugBtn = document.getElementById('debug-btn');
+const clearDebugBtn = document.getElementById('clear-debug-btn');
 const clearHistoryBtn = document.getElementById('clear-history-btn');
 const exportCsvBtn = document.getElementById('export-csv-btn');
 const intervalInput = document.getElementById('interval');
@@ -16,6 +22,12 @@ const downloadSpeed = document.getElementById('download-speed');
 const uploadSpeed = document.getElementById('upload-speed');
 const ping = document.getElementById('ping');
 const lastTest = document.getElementById('last-test');
+const testRunning = document.getElementById('test-running');
+const nextTest = document.getElementById('next-test');
+const nextTestTime = document.getElementById('next-test-time');
+const medianDownload = document.getElementById('median-download');
+const medianUpload = document.getElementById('median-upload');
+const medianPing = document.getElementById('median-ping');
 const resultsTable = document.getElementById('results-tbody');
 
 // Initialize the app
@@ -29,16 +41,51 @@ document.addEventListener('DOMContentLoaded', () => {
 // Event listeners
 startBtn.addEventListener('click', startMonitoring);
 stopBtn.addEventListener('click', stopMonitoring);
+testNowBtn.addEventListener('click', testOnceNow);
 debugBtn.addEventListener('click', showDebugLog);
+clearDebugBtn.addEventListener('click', clearDebugLog);
 clearHistoryBtn.addEventListener('click', clearHistory);
 exportCsvBtn.addEventListener('click', exportCSV);
 
 // IPC listeners using electronAPI
+window.electronAPI.onSpeedTestStarted((event) => {
+    showTestRunningIndicator(); // Show the running indicator when any test starts
+    // Show "Running" status when test starts
+    if (isMonitoring) {
+        showStatus('Running', 'running');
+    } else {
+        showStatus('Testing...', 'running');
+    }
+});
+
 window.electronAPI.onSpeedTestResult((event, result) => {
-    updateCurrentStats(result);
+    hideTestRunningIndicator(); // Hide the running indicator when test completes
+    updateCurrentStatsEnhanced(result);
     addToTable(result);
     updateChart(result);
 });
+
+// Functions to manage test running indicator
+function showTestRunningIndicator() {
+    if (testRunning) {
+        testRunning.style.display = 'block';
+        // Hide next test info when showing test running
+        if (nextTest) {
+            nextTest.style.display = 'none';
+        }
+    }
+}
+
+function hideTestRunningIndicator() {
+    if (testRunning) {
+        testRunning.style.display = 'none';
+        // Only show next test info if monitoring is active and there's a valid timestamp
+        // Let updateNextTestDisplay handle the actual display logic
+        if (isMonitoring && nextTestTimestamp) {
+            updateNextTestDisplay();
+        }
+    }
+}
 
 async function startMonitoring() {
     console.log('=== START MONITORING CLICKED ===');
@@ -68,6 +115,7 @@ async function startMonitoring() {
             isMonitoring = true;
             updateUI();
             showStatus('Starting monitoring...', 'running');
+            startNextTestTimer(interval);
         } else {
             console.error('Monitoring failed to start:', response.error);
             showStatus('Stopped', 'stopped');
@@ -88,12 +136,67 @@ async function stopMonitoring() {
             isMonitoring = false;
             updateUI();
             showStatus('Stopped', 'stopped');
+            stopNextTestTimer();
         } else {
             alert('Failed to stop monitoring: ' + response.error);
         }
     } catch (error) {
         console.error('Error stopping monitoring:', error);
         alert('Failed to stop monitoring');
+    }
+}
+
+async function testOnceNow() {
+    console.log('=== TEST ONCE NOW CLICKED ===');
+    
+    try {
+        // Disable button to prevent multiple clicks
+        testNowBtn.disabled = true;
+        testNowBtn.textContent = 'Testing...';
+        
+        // Show the test running indicator
+        showTestRunningIndicator();
+        
+        // Show temporary testing status if not monitoring
+        const wasShowingStatus = !isMonitoring;
+        if (wasShowingStatus) {
+            showStatus('Testing...', 'running');
+        }
+        
+        console.log('Invoking test-once-now via electronAPI...');
+        const response = await window.electronAPI.testOnceNow();
+        console.log('Test once response:', response);
+        
+        if (response.success) {
+            console.log('Manual test completed successfully');
+            // The result will come through the speed-test-result event
+        } else {
+            console.error('Manual test failed:', response.error);
+            alert('Failed to run test: ' + response.error);
+            
+            // Hide test running indicator on failure
+            hideTestRunningIndicator();
+            
+            // Restore status if we were showing testing status
+            if (wasShowingStatus) {
+                showStatus('Stopped', 'stopped');
+            }
+        }
+    } catch (error) {
+        console.error('Error running manual test:', error);
+        alert('Failed to run test: ' + error.message);
+        
+        // Hide test running indicator on error
+        hideTestRunningIndicator();
+        
+        // Restore status if not monitoring
+        if (!isMonitoring) {
+            showStatus('Stopped', 'stopped');
+        }
+    } finally {
+        // Re-enable button
+        testNowBtn.disabled = false;
+        testNowBtn.textContent = 'Test Once Now';
     }
 }
 
@@ -119,6 +222,21 @@ async function showDebugLog() {
     }
 }
 
+async function clearDebugLog() {
+    try {
+        console.log('Clearing debug log...');
+        const response = await window.electronAPI.clearDebugLog();
+        if (response.success) {
+            alert('Debug log cleared successfully');
+        } else {
+            alert('Failed to clear debug log: ' + response.error);
+        }
+    } catch (error) {
+        console.error('Error clearing debug log:', error);
+        alert('Failed to clear debug log: ' + error.message);
+    }
+}
+
 async function clearHistory() {
     try {
         // Confirm action with user
@@ -130,9 +248,35 @@ async function clearHistory() {
         console.log('Clearing history...');
         const response = await window.electronAPI.clearHistory();
         if (response.success) {
+            // Reset all data arrays
+            allSpeedTests = [];
+            
+            // Clear current stats display
+            document.getElementById('download-speed').textContent = '-- Mbps';
+            document.getElementById('upload-speed').textContent = '-- Mbps';
+            document.getElementById('ping').textContent = '-- ms';
+            document.getElementById('last-test').textContent = 'Never';
+            
+            // Hide test running indicator
+            hideTestRunningIndicator();
+            
+            // Clear median stats
+            updateMedianStats();
+            
+            // Clear table
+            resultsTable.innerHTML = '';
+            
+            // Clear and reset chart
+            if (speedChart) {
+                speedChart.data.labels = [];
+                speedChart.data.datasets[0].data = [];
+                speedChart.data.datasets[1].data = [];
+                speedChart.update();
+            }
+            
             // Refresh the UI to show empty data
             await loadHistoricalData();
-            updateChart([]);
+            
             alert('History cleared successfully!');
         } else {
             alert('Failed to clear history: ' + response.error);
@@ -181,7 +325,13 @@ async function updateMonitoringStatus() {
         
         isMonitoring = status.isRunning;
         updateUI();
-        showStatus(isMonitoring ? 'Running' : 'Stopped', isMonitoring ? 'running' : 'stopped');
+        showStatus(isMonitoring ? 'Sleeping' : 'Stopped', isMonitoring ? 'sleeping' : 'stopped');
+        
+        // If monitoring is active, start the next test timer
+        if (isMonitoring) {
+            const interval = parseInt(intervalInput.value) || 5;
+            startNextTestTimer(interval);
+        }
     } catch (error) {
         console.error('Error getting monitoring status:', error);
         showStatus('Error', 'stopped');
@@ -205,7 +355,12 @@ function updateCurrentStats(result) {
     ping.textContent = `${result.ping.toFixed(2)} ms`;
     lastTest.textContent = new Date(result.timestamp).toLocaleTimeString();
     
-    showStatus('Running', 'running');
+    // Show "Sleeping" status if monitoring is active but test just completed
+    if (isMonitoring) {
+        showStatus('Sleeping', 'sleeping');
+    } else {
+        showStatus('Stopped', 'stopped');
+    }
 }
 
 function addToTable(result) {
@@ -295,22 +450,164 @@ function updateChart(result) {
 
 async function loadHistoricalData() {
     try {
-        const data = await window.electronAPI.getSpeedTests(10);
+        const data = await window.electronAPI.getSpeedTests(100); // Get more data for median calculation
+        
+        // Store all data for median calculation
+        allSpeedTests = [...data];
         
         // Clear existing table data
         resultsTable.innerHTML = '';
         
-        // Add data to table (reverse to show newest first)
-        data.reverse().forEach(result => {
+        // Reset current stats display if no data
+        if (!data || data.length === 0) {
+            document.getElementById('download-speed').textContent = '-- Mbps';
+            document.getElementById('upload-speed').textContent = '-- Mbps';
+            document.getElementById('ping').textContent = '-- ms';
+            document.getElementById('last-test').textContent = 'Never';
+            
+            // Hide median stats if no data
+            updateMedianStats();
+            return;
+        }
+        
+        // Add data to table (reverse to show newest first, but limit to 10)
+        const recentData = data.slice(-10).reverse();
+        recentData.forEach(result => {
             addToTable(result);
         });
         
-        // Add to chart (keep original order for chronological chart)
-        data.reverse().forEach(result => {
+        // Add to chart (keep original order for chronological chart, limit to 20)
+        const chartData = data.slice(-20);
+        chartData.forEach(result => {
             updateChart(result);
         });
+        
+        // Update median stats
+        updateMedianStats();
         
     } catch (error) {
         console.error('Error loading historical data:', error);
     }
 }
+
+// Next test timer functions
+function startNextTestTimer(intervalMinutes) {
+    stopNextTestTimer(); // Clear any existing timer
+    
+    // Calculate next test time
+    nextTestTimestamp = new Date(Date.now() + intervalMinutes * 60 * 1000);
+    
+    // Show next test info
+    nextTest.style.display = 'block';
+    updateNextTestDisplay();
+    
+    // Update display every 30 seconds (less frequent since we show actual time, not countdown)
+    nextTestTimer = setInterval(() => {
+        updateNextTestDisplay();
+    }, 30000); // 30 seconds instead of 1 second
+}
+
+function stopNextTestTimer() {
+    if (nextTestTimer) {
+        clearInterval(nextTestTimer);
+        nextTestTimer = null;
+    }
+    nextTest.style.display = 'none';
+    nextTestTimestamp = null;
+}
+
+function updateNextTestDisplay() {
+    if (!nextTestTimestamp || !isMonitoring) {
+        nextTest.style.display = 'none';
+        return;
+    }
+    
+    // Don't show next test display if test running indicator is visible
+    if (testRunning && testRunning.style.display === 'block') {
+        nextTest.style.display = 'none';
+        return;
+    }
+    
+    const now = Date.now();
+    const timeLeft = nextTestTimestamp.getTime() - now;
+    
+    if (timeLeft <= 0) {
+        // Test should have run, update for next cycle
+        const intervalInput = document.getElementById('interval');
+        const interval = parseInt(intervalInput.value) || 5;
+        nextTestTimestamp = new Date(Date.now() + interval * 60 * 1000);
+    }
+    
+    // Display the actual time when the test will run
+    const nextTestTime_element = nextTestTime;
+    const timeString = nextTestTimestamp.toLocaleTimeString([], { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        hour12: true 
+    });
+    
+    nextTestTime_element.textContent = timeString;
+    
+    // Show the next test display (it will only show if not blocked by earlier checks)
+    nextTest.style.display = 'block';
+}
+
+// Median calculation functions
+function calculateMedian(values) {
+    if (values.length === 0) return 0;
+    
+    const sorted = [...values].sort((a, b) => a - b);
+    const mid = Math.floor(sorted.length / 2);
+    
+    if (sorted.length % 2 === 0) {
+        return (sorted[mid - 1] + sorted[mid]) / 2;
+    } else {
+        return sorted[mid];
+    }
+}
+
+function updateMedianStats() {
+    if (allSpeedTests.length === 0) {
+        medianDownload.textContent = '-- Mbps';
+        medianUpload.textContent = '-- Mbps';
+        medianPing.textContent = '-- ms';
+        return;
+    }
+    
+    const downloadSpeeds = allSpeedTests.map(test => test.download);
+    const uploadSpeeds = allSpeedTests.map(test => test.upload);
+    const pings = allSpeedTests.map(test => test.ping);
+    
+    const medianDownloadSpeed = calculateMedian(downloadSpeeds);
+    const medianUploadSpeed = calculateMedian(uploadSpeeds);
+    const medianPingValue = calculateMedian(pings);
+    
+    medianDownload.textContent = `${medianDownloadSpeed.toFixed(2)} Mbps`;
+    medianUpload.textContent = `${medianUploadSpeed.toFixed(2)} Mbps`;
+    medianPing.textContent = `${medianPingValue.toFixed(2)} ms`;
+}
+
+// Update the existing updateCurrentStats function to also update medians
+function updateCurrentStatsEnhanced(result) {
+    updateCurrentStats(result);
+    
+    // Add to all tests array for median calculation
+    allSpeedTests.push(result);
+    
+    // Keep only last 100 tests for median calculation
+    if (allSpeedTests.length > 100) {
+        allSpeedTests = allSpeedTests.slice(-100);
+    }
+    
+    updateMedianStats();
+    
+    // Reset next test timer if monitoring is active
+    if (isMonitoring) {
+        const intervalInput = document.getElementById('interval');
+        const interval = parseInt(intervalInput.value) || 5;
+        startNextTestTimer(interval);
+    }
+}
+
+// Override the existing speed test result handler
+// (This is already handled above in the IPC listeners section)

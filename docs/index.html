@@ -65,9 +65,9 @@
       "screenshot": "https://omrilotan.github.io/internet-speed-monitor/screenshot.png",
       "applicationCategory": "UtilitiesApplication",
       "operatingSystem": ["Windows", "macOS", "Linux"],
-      "softwareVersion": "1.0.2",
+      "softwareVersion": "1.1.0",
       "datePublished": "2024-01-01",
-      "dateModified": "2025-09-23",
+      "dateModified": "2025-09-24",
       "author": {
         "@type": "Person",
         "name": "Omri Lotan",
@@ -91,16 +91,22 @@
       },
       "featureList": [
         "Automatic speed monitoring",
-        "Real-time charts",
-        "Performance tracking",
+        "Manual speed testing with Test Once Now",
+        "Real-time charts and visualizations",
+        "Median statistics tracking",
+        "Performance tracking with status indicators",
+        "Smart status management (Running/Sleeping/Stopped)",
+        "Next test countdown display",
         "Local data storage",
-        "CSV export",
-        "Cross-platform support"
+        "CSV export functionality",
+        "Debug log management",
+        "Cross-platform support",
+        "Responsive design for all screen sizes"
       ]
     }
     </script>
     
-    <link rel="stylesheet" href="styles.css?v=1.0.2-20250923">
+    <link rel="stylesheet" href="styles.css?v=1.1.0-20250924">
 </head>
 <body>
     <!-- Header -->
@@ -157,12 +163,27 @@
                     <p>Set intervals from 1-60 minutes for hands-free speed testing. Let the app track your connection while you work.</p>
                 </div>
                 <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Instant Testing</h3>
+                    <p>Test Once Now button for immediate speed tests without starting monitoring. Get instant results when you need them.</p>
+                </div>
+                <div class="feature-card">
                     <div class="feature-icon">📊</div>
                     <h3>Real-time Charts</h3>
                     <p>Beautiful visualizations of your internet speed over time with interactive charts powered by <a href="https://www.chartjs.org/" target="_blank" rel="noopener nofollow">Chart.js</a> for professional data visualization and trend analysis.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">📈</div>
+                    <div class="feature-icon">�</div>
+                    <h3>Median Statistics</h3>
+                    <p>Track median performance across all historical data for better insights into your typical internet speeds.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⏱️</div>
+                    <h3>Smart Status</h3>
+                    <p>Real-time status indicators with countdown to next test and visual feedback during active testing.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">�📈</div>
                     <h3>Performance Tracking</h3>
                     <p>Keep detailed history of download speeds, upload speeds, and ping measurements for complete insights.</p>
                 </div>
@@ -175,6 +196,11 @@
                     <div class="feature-icon">📤</div>
                     <h3>Easy Export</h3>
                     <p>Export your speed data to CSV for further analysis in spreadsheets or other tools.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🧹</div>
+                    <h3>Data Management</h3>
+                    <p>Clear history and debug logs with dedicated buttons. Full control over your app's data and logs.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">🔄</div>
@@ -323,7 +349,7 @@
                 </div>
                 
                 <p class="version-info">
-                    Current version: <strong>v1.0.2</strong> • 
+                    Current version: <strong>v1.1.0</strong> • 
                     <a href="https://github.com/omrilotan/internet-speed-monitor/releases" target="_blank" rel="noopener">View all releases</a>
                 </p>
             </div>
@@ -403,6 +429,6 @@
         </div>
     </footer>
 
-    <script src="script.js?v=1.0.2-20250923"></script>
+    <script src="script.js?v=1.1.0-20250924"></script>
 </body>
 </html>

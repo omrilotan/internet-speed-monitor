@@ -233,8 +233,8 @@ class DataStore {
      */
     async clearAllData() {
         try {
-            this.speedTests = [];
-            await this.saveData();
+            this.data.speedTests = [];
+            this.saveData();
             console.log('All speed test data cleared');
             return true;
         } catch (error) {

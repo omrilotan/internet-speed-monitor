@@ -19,22 +19,36 @@
 
         <main>
             <section class="controls">
-                <div class="control-group">
-                    <label for="interval">Test Interval (minutes):</label>
-                    <input type="number" id="interval" min="1" max="60" value="5">
+                <div class="controls-row">
+                    <div class="control-group">
+                        <label for="interval">Test Interval (minutes):</label>
+                        <input type="number" id="interval" min="1" max="60" value="5">
+                    </div>
+                    <div class="control-buttons">
+                        <button id="start-btn" class="btn btn-primary">Start Monitoring</button>
+                        <button id="stop-btn" class="btn btn-secondary" disabled>Stop Monitoring</button>
+                        <button id="test-now-btn" class="btn btn-accent">Test Once Now</button>
+                    </div>
                 </div>
-                <div class="control-buttons">
-                    <button id="start-btn" class="btn btn-primary">Start Monitoring</button>
-                    <button id="stop-btn" class="btn btn-secondary" disabled>Stop Monitoring</button>
-                    <button id="debug-btn" class="btn btn-secondary">Show Debug Log</button>
-                </div>
-                <div class="control-buttons">
-                    <button id="clear-history-btn" class="btn btn-warning">Clear History</button>
-                    <button id="export-csv-btn" class="btn btn-success">Export as CSV</button>
+                <div class="control-buttons secondary-buttons">
+                    <button id="debug-btn" class="btn btn-secondary btn-small">Show Debug Log</button>
+                    <button id="clear-debug-btn" class="btn btn-secondary btn-small">Clear Debug Log</button>
+                    <button id="clear-history-btn" class="btn btn-warning btn-small">Clear History</button>
+                    <button id="export-csv-btn" class="btn btn-success btn-small">Export as CSV</button>
                 </div>
             </section>
 
             <section class="current-stats">
+                <div class="stat-card">
+                    <h3>Last Test</h3>
+                    <div id="last-test" class="speed-value">Never</div>
+                    <div id="test-running" class="test-running-info" style="display: none;">
+                        <small>🔄 Running speed test...</small>
+                    </div>
+                    <div id="next-test" class="next-test-info" style="display: none;">
+                        <small>Next test: <span id="next-test-time">--</span></small>
+                    </div>
+                </div>
                 <div class="stat-card">
                     <h3>Download Speed</h3>
                     <div id="download-speed" class="speed-value">-- Mbps</div>
@@ -47,9 +61,20 @@
                     <h3>Ping</h3>
                     <div id="ping" class="speed-value">-- ms</div>
                 </div>
-                <div class="stat-card">
-                    <h3>Last Test</h3>
-                    <div id="last-test" class="speed-value">Never</div>
+            </section>
+
+            <section class="median-stats">
+                <div class="median-card">
+                    <h4>Median Download</h4>
+                    <div id="median-download" class="median-value">-- Mbps</div>
+                </div>
+                <div class="median-card">
+                    <h4>Median Upload</h4>
+                    <div id="median-upload" class="median-value">-- Mbps</div>
+                </div>
+                <div class="median-card">
+                    <h4>Median Ping</h4>
+                    <div id="median-ping" class="median-value">-- ms</div>
                 </div>
             </section>
 
