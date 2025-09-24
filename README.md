@@ -22,6 +22,7 @@ A beautiful, easy-to-use desktop application that monitors your internet connect
 
 ### Download & Install
 
+#### Option 1: Direct Download (Most Users)
 1. **Go to [Releases](https://github.com/omrilotan/internet-speed-monitor/releases)**
 2. **Download for your platform:**
    - 🍎 **macOS**: Download `.dmg` file
@@ -30,13 +31,65 @@ A beautiful, easy-to-use desktop application that monitors your internet connect
 
 3. **Install and run** - Double-click the downloaded file and follow the installation prompts
 
-### 🍎 macOS Users
+#### Option 2: Homebrew (macOS - Recommended for avoiding security dialogs)
+```bash
+# Add this repository as a tap
+brew tap omrilotan/internet-speed-monitor
 
-If you see a security warning about the app being "damaged" or "from an unidentified developer":
+# Install the app
+brew install --cask internet-speed-monitor
+```
 
+#### Option 3: Build from Source
+```bash
+# Clone the repository
+git clone https://github.com/omrilotan/internet-speed-monitor.git
+cd internet-speed-monitor
+
+# Install dependencies
+npm install
+
+# Run in development
+npm start
+
+# Or build for your platform
+npm run build:mac    # macOS
+npm run build:win    # Windows
+npm run build:linux  # Linux
+```
+
+### 🍎 macOS Security Dialogs
+
+macOS may show security warnings like "cannot verify the app is free of malware" or "app is damaged". This is normal for apps not distributed through the Mac App Store. The app is completely safe and open source.
+
+**📋 Solutions (choose any one):**
+
+**🎯 Best Solution: Use Homebrew** (No security dialogs)
+```bash
+brew tap omrilotan/internet-speed-monitor
+brew install --cask internet-speed-monitor
+```
+
+**Method 1: Right-click to Open**
 1. **Right-click** (or Control-click) the app in Finder
 2. **Select "Open"** from the context menu
-3. **Click "Open"** in the security dialog that appears
+3. **Click "Open"** in the security dialog
+
+**Method 2: System Preferences**
+1. Open **System Preferences** → **Security & Privacy** → **General**
+2. Click **"Open Anyway"** next to the blocked app message
+3. **Confirm** by clicking "Open"
+
+**Method 3: Terminal Command** (Advanced Users)
+```bash
+sudo xattr -rd com.apple.quarantine "/Applications/Internet Speed Monitor.app"
+```
+
+**Method 4: Build from Source** (No security warnings)
+```bash
+git clone https://github.com/omrilotan/internet-speed-monitor.git
+cd internet-speed-monitor && npm install && npm start
+```
 
 This is normal for apps not distributed through the Mac App Store. The app is safe and open source.
 

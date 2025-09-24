@@ -1,6 +1,6 @@
 {
   "name": "internet-speed-monitor",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Electron app for monitoring internet connectivity speed at set intervals",
   "main": "main.js",
   "scripts": {
@@ -70,10 +70,20 @@
     "mac": {
       "category": "public.app-category.utilities",
       "icon": "assets/icon.icns",
-      "hardenedRuntime": true,
+      "hardenedRuntime": false,
       "gatekeeperAssess": false,
-      "entitlements": "entitlements.mac.plist",
-      "entitlementsInherit": "entitlements.mac.plist",
+      "darkModeSupport": true,
+      "type": "development",
+      "extendInfo": {
+        "NSRequiresAquaSystemAppearance": false,
+        "LSUIElement": false,
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLName": "Internet Speed Monitor",
+            "CFBundleURLSchemes": ["internet-speed-monitor"]
+          }
+        ]
+      },
       "target": [
         {
           "target": "dmg",

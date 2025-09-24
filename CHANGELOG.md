@@ -5,15 +5,43 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.2] - 2025-09-24
+
+### 🎯 macOS Security Improvements
+- **Simplified Build Configuration** - Removed hardened runtime settings that were causing unnecessary security dialogs
+- **Multiple Installation Methods** - Added Homebrew Cask support for seamless macOS installation without security warnings
+- **Easy Install Script** - Created automated installation script (`install.sh`) for simplified setup
+
+### 📦 Distribution Enhancements
+- **Homebrew Support** - Users can now install via `brew tap omrilotan/internet-speed-monitor && brew install --cask internet-speed-monitor`
+- **Build from Source** - Added comprehensive build instructions for users who prefer compiling locally
+- **Alternative Installation** - Multiple pathways to avoid macOS security dialogs entirely
+
+### 📚 Documentation Updates
+- **Comprehensive Security Guide** - Detailed solutions for all macOS security dialog variations
+- **Installation Options** - Clear documentation of Direct Download, Homebrew, and Build from Source methods
+- **User Experience** - Improved README with better organization and troubleshooting guidance
+
+### 🔧 Technical Changes
+- **macOS Build Settings** - Changed from distribution to development type to reduce Gatekeeper interference
+- **Debug Configuration** - Enhanced build pipeline with better debugging capabilities
+- **Asset Management** - Maintained unified icon asset structure
+
 ## [1.1.1] - 2025-01-22
 
 ### 🔧 Bug Fixes
-- **macOS Security Fix** - Resolved macOS security warnings by implementing proper app signing and notarization
+- **macOS Security Fix** - Enhanced macOS security configuration with proper entitlements and code signing settings
 - **Icon Path Fix** - Fixed app icon access by creating proper asset symlinks to ensure icons display correctly across all platforms
+- **Gatekeeper Compatibility** - Improved macOS Gatekeeper compatibility with additional security configurations
 
 ### 📦 Distribution
-- **macOS Compatibility** - Improved macOS app compatibility to prevent "damaged app" security dialogs
+- **macOS Installation** - Added comprehensive macOS installation instructions with multiple security workaround methods
 - **Asset Management** - Unified icon asset management between app and documentation
+- **Build System** - Enhanced GitHub Actions workflow with improved macOS build configurations
+
+### 📚 Documentation
+- **Security Guide** - Detailed macOS security dialog workarounds including right-click method, System Preferences, and Terminal commands
+- **Installation** - Comprehensive installation instructions explaining why security warnings occur and how to resolve them
 
 ## [1.1.0] - 2025-09-24
 
