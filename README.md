@@ -30,6 +30,16 @@ A beautiful, easy-to-use desktop application that monitors your internet connect
 
 3. **Install and run** - Double-click the downloaded file and follow the installation prompts
 
+### 🍎 macOS Users
+
+If you see a security warning about the app being "damaged" or "from an unidentified developer":
+
+1. **Right-click** (or Control-click) the app in Finder
+2. **Select "Open"** from the context menu
+3. **Click "Open"** in the security dialog that appears
+
+This is normal for apps not distributed through the Mac App Store. The app is safe and open source.
+
 ### Using the App
 
 1. **Set Your Interval** - Choose how often you want to test your speed (1-60 minutes)

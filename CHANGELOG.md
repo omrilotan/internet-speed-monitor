@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2025-01-22
+
+### 🔧 Bug Fixes
+- **macOS Security Fix** - Resolved macOS security warnings by implementing proper app signing and notarization
+- **Icon Path Fix** - Fixed app icon access by creating proper asset symlinks to ensure icons display correctly across all platforms
+
+### 📦 Distribution
+- **macOS Compatibility** - Improved macOS app compatibility to prevent "damaged app" security dialogs
+- **Asset Management** - Unified icon asset management between app and documentation
+
 ## [1.1.0] - 2025-09-24
 
 ### ✨ New Features

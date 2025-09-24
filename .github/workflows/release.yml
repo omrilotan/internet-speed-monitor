@@ -47,7 +47,7 @@ jobs:
       shell: bash
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        CSC_IDENTITY_AUTO_DISCOVERY: false  # Disable code signing for now
+        CSC_IDENTITY_AUTO_DISCOVERY: false  # Use ad-hoc signing for now
     
     - name: Upload artifacts (macOS)
       if: matrix.os == 'macos-latest'
