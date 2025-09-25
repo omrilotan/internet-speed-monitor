@@ -497,8 +497,8 @@ async function loadHistoricalData() {
             addToTable(result);
         });
         
-        // Add to chart (keep original order for chronological chart, limit to 20)
-        const chartData = data.slice(-20);
+        // Add to chart (reverse for chronological order - oldest to newest, limit to 20)
+        const chartData = data.slice(-20).reverse();
         chartData.forEach(result => {
             updateChart(result);
         });
@@ -508,7 +508,7 @@ async function loadHistoricalData() {
         
         // Update the "Last Test" display with the most recent test (24-hour format)
         if (data.length > 0) {
-            const mostRecentTest = data[data.length - 1];
+            const mostRecentTest = data[0]; // First item in descending order is most recent
             lastTest.textContent = new Date(mostRecentTest.timestamp).toLocaleTimeString([], { 
                 hour: '2-digit', 
                 minute: '2-digit', 
