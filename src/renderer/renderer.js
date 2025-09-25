@@ -6,6 +6,7 @@ let isMonitoring = false;
 let nextTestTimer = null;
 let nextTestTimestamp = null;
 let allSpeedTests = []; // Store all tests for median calculation
+let lastChartDate = null; // Track last date shown on chart for date labeling
 
 // DOM elements
 const startBtn = document.getElementById('start-btn');
@@ -29,6 +30,11 @@ const medianDownload = document.getElementById('median-download');
 const medianUpload = document.getElementById('median-upload');
 const medianPing = document.getElementById('median-ping');
 const resultsTable = document.getElementById('results-tbody');
+const updateNotification = document.getElementById('update-notification');
+const downloadUpdateBtn = document.getElementById('download-update-btn');
+const dismissUpdateBtn = document.getElementById('dismiss-update-btn');
+const updateMessage = document.getElementById('update-message');
+const appVersion = document.getElementById('app-version');
 
 // Initialize the app
 document.addEventListener('DOMContentLoaded', () => {
@@ -36,6 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeChart();
     loadHistoricalData();
     updateMonitoringStatus();
+    loadAppVersion();
 });
 
 // Event listeners
@@ -46,6 +53,15 @@ debugBtn.addEventListener('click', showDebugLog);
 clearDebugBtn.addEventListener('click', clearDebugLog);
 clearHistoryBtn.addEventListener('click', clearHistory);
 exportCsvBtn.addEventListener('click', exportCSV);
+
+// Update notification event listeners
+dismissUpdateBtn.addEventListener('click', () => {
+    updateNotification.style.display = 'none';
+});
+
+downloadUpdateBtn.addEventListener('click', () => {
+    window.electronAPI.openExternal('https://github.com/omrilotan/internet-speed-monitor/releases/latest');
+});
 
 // Footer links
 document.addEventListener('DOMContentLoaded', () => {
@@ -78,6 +94,11 @@ window.electronAPI.onSpeedTestResult((event, result) => {
     updateCurrentStatsEnhanced(result);
     addToTable(result);
     updateChart(result);
+});
+
+// Listen for update notifications
+window.electronAPI.ipcRenderer.on('update-available', (event, updateInfo) => {
+    showUpdateNotification(updateInfo);
 });
 
 // Functions to manage test running indicator
@@ -453,9 +474,29 @@ function initializeChart() {
 }
 
 function updateChart(result) {
-    const time = new Date(result.timestamp).toLocaleTimeString();
+    const timestamp = new Date(result.timestamp);
+    const currentDate = timestamp.toDateString(); // "Mon Sep 25 2025"
+    const time = timestamp.toLocaleTimeString([], { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        hour12: false 
+    });
     
-    speedChart.data.labels.push(time);
+    // Check if this is the first measurement of a new day
+    let label;
+    if (lastChartDate !== currentDate) {
+        // Include date for first measurement of a new day
+        label = `${timestamp.toLocaleDateString([], { 
+            month: 'short', 
+            day: 'numeric' 
+        })} ${time}`;
+        lastChartDate = currentDate;
+    } else {
+        // Just time for subsequent measurements of the same day
+        label = time;
+    }
+    
+    speedChart.data.labels.push(label);
     speedChart.data.datasets[0].data.push(result.download);
     speedChart.data.datasets[1].data.push(result.upload);
     
@@ -475,6 +516,14 @@ async function loadHistoricalData() {
         
         // Store all data for median calculation
         allSpeedTests = [...data];
+        
+        // Reset chart date tracking when loading historical data
+        lastChartDate = null;
+        
+        // Clear existing chart data
+        speedChart.data.labels = [];
+        speedChart.data.datasets[0].data = [];
+        speedChart.data.datasets[1].data = [];
         
         // Clear existing table data
         resultsTable.innerHTML = '';
@@ -648,3 +697,31 @@ function updateCurrentStatsEnhanced(result) {
 
 // Override the existing speed test result handler
 // (This is already handled above in the IPC listeners section)
+
+// Load and display app version
+async function loadAppVersion() {
+    try {
+        const version = await window.electronAPI.getCurrentVersion();
+        if (appVersion && version) {
+            appVersion.textContent = `Version ${version}`;
+        }
+    } catch (error) {
+        console.error('Failed to load app version:', error);
+        if (appVersion) {
+            appVersion.textContent = 'Version --';
+        }
+    }
+}
+
+// Function to show inline update notification within version info
+function showUpdateNotification(updateInfo) {
+    if (!updateNotification || !updateMessage) {
+        console.error('Update notification elements not found');
+        return;
+    }
+    
+    updateMessage.textContent = `🎉 v${updateInfo.latestVersion} available!`;
+    updateNotification.style.display = 'block';
+    
+    console.log(`Update notification shown: ${updateInfo.currentVersion} -> ${updateInfo.latestVersion}`);
+}

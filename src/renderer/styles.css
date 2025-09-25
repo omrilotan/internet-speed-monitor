@@ -21,11 +21,36 @@ header {
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     margin-bottom: 20px;
+    min-height: 60px;
+    overflow: hidden;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0; /* Allow flex child to shrink below content size */
+    overflow: hidden;
 }
 
 h1 {
     margin: 0;
     color: #2c3e50;
+    font-size: 24px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+}
+
+.header-left small {
+    color: #7f8c8d;
+    font-size: 12px;
+    font-weight: 500;
+    opacity: 0.8;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .status-indicator {
@@ -53,6 +78,127 @@ h1 {
 
 .status-dot.stopped {
     background-color: #e74c3c;
+}
+
+/* Update Banner Styles */
+.update-banner {
+    background: linear-gradient(135deg, #4a90e2, #5ba3f5);
+    color: white;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid #357abd;
+    margin-bottom: 20px;
+    animation: slideIn 0.3s ease-out;
+}
+
+.update-banner span {
+    font-weight: 500;
+    margin: 0;
+    flex: 1;
+}
+
+.update-banner .btn-mini {
+    padding: 6px 12px;
+    font-size: 11px;
+    font-weight: 500;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-left: 8px;
+    white-space: nowrap;
+}
+
+.update-banner .btn-mini:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive header layout */
+@media (max-width: 900px) {
+    .header-left {
+        gap: 6px;
+    }
+}
+
+@media (max-width: 768px) {
+    header {
+        padding: 15px;
+        flex-wrap: wrap;
+        min-height: auto;
+    }
+    
+    .header-left {
+        flex: 1 1 100%;
+        margin-bottom: 8px;
+        justify-content: flex-start;
+        gap: 8px;
+    }
+    
+    .status-indicator {
+        flex: 0 0 auto;
+    }
+    
+    h1 {
+        font-size: 18px;
+    }
+    
+    .header-left small {
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 600px) {
+    .header-left {
+        gap: 4px;
+    }
+    
+    h1 {
+        font-size: 16px;
+        max-width: 60%;
+    }
+}
+
+@media (max-width: 480px) {
+    header {
+        padding: 12px;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+    
+    .header-left {
+        order: 1;
+        justify-content: space-between;
+        flex-wrap: nowrap;
+        gap: 8px;
+    }
+    
+    .status-indicator {
+        order: 2;
+        align-self: center;
+    }
+    
+    h1 {
+        font-size: 16px;
+        max-width: none;
+    }
 }
 
 .controls {

@@ -22,11 +22,21 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // External links
   openExternal: (url) => ipcRenderer.invoke('open-external', url),
   
+  // Version checking
+  checkForUpdates: () => ipcRenderer.invoke('check-for-updates'),
+  getCurrentVersion: () => ipcRenderer.invoke('get-current-version'),
+  
   // Events
   onSpeedTestResult: (callback) => ipcRenderer.on('speed-test-result', callback),
   onSpeedTestStarted: (callback) => ipcRenderer.on('speed-test-started', callback),
   onMonitoringStatus: (callback) => ipcRenderer.on('monitoring-status', callback),
   
   // Remove listeners
-  removeAllListeners: (channel) => ipcRenderer.removeAllListeners(channel)
+  removeAllListeners: (channel) => ipcRenderer.removeAllListeners(channel),
+  
+  // Direct ipcRenderer access for update notifications
+  ipcRenderer: {
+    on: (channel, callback) => ipcRenderer.on(channel, callback),
+    removeAllListeners: (channel) => ipcRenderer.removeAllListeners(channel)
+  }
 });

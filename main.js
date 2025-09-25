@@ -1,6 +1,15 @@
 const { app, BrowserWindow, ipcMain, shell, Menu } = require('electron');
 const path = require('path');
 const fs = require('fs');
+const https = require('https');
+
+// Get current version from package.json
+const packageJson = require('./package.json');
+const CURRENT_VERSION = packageJson.version;
+
+// Version check configuration
+const VERSION_CHECK_URL = 'https://api.github.com/repos/omrilotan/internet-speed-monitor/releases/latest';
+const VERSION_CHECK_FILE = path.join(app.getPath('userData'), 'last-version-check.json');
 
 // Setup logging to file for debugging
 const logFile = path.join(app.getPath('userData'), 'debug.log');
@@ -23,6 +32,127 @@ function log(message) {
 function logError(message, error) {
   console.error(message, error);
   logToFile(`ERROR: ${message} - ${error?.message || error}`);
+}
+
+// Version checking functions
+async function checkForUpdates() {
+  try {
+    if (!shouldCheckForUpdates()) {
+      log('Skipping update check (checked within last 24 hours)');
+      return null;
+    }
+    
+    log('Checking for updates...');
+    
+    const latestVersion = await fetchLatestVersion();
+    saveLastCheckDate(); // Save check date regardless of result
+    
+    if (latestVersion && isNewerVersion(latestVersion, CURRENT_VERSION)) {
+      log(`New version available: ${latestVersion} (current: ${CURRENT_VERSION})`);
+      
+      // Create update info object
+      const updateInfo = {
+        latestVersion,
+        currentVersion: CURRENT_VERSION,
+        checkDate: new Date().toISOString()
+      };
+      
+      return updateInfo;
+    } else {
+      log(`No updates available. Current version ${CURRENT_VERSION} is latest.`);
+      return null;
+    }
+  } catch (error) {
+    logError('Error checking for updates:', error);
+    return null;
+  }
+}
+
+function fetchLatestVersion() {
+  return new Promise((resolve, reject) => {
+    const options = {
+      hostname: 'api.github.com',
+      path: '/repos/omrilotan/internet-speed-monitor/releases/latest',
+      headers: {
+        'User-Agent': 'Internet-Speed-Monitor-App'
+      }
+    };
+
+    const req = https.get(options, (res) => {
+      let data = '';
+      
+      res.on('data', (chunk) => {
+        data += chunk;
+      });
+      
+      res.on('end', () => {
+        try {
+          const release = JSON.parse(data);
+          const version = release.tag_name?.replace('v', ''); // Remove 'v' prefix if present
+          resolve(version);
+        } catch (error) {
+          reject(error);
+        }
+      });
+    });
+    
+    req.on('error', (error) => {
+      reject(error);
+    });
+    
+    req.setTimeout(10000, () => {
+      req.destroy();
+      reject(new Error('Request timeout'));
+    });
+  });
+}
+
+function isNewerVersion(latest, current) {
+  const parseVersion = (version) => {
+    return version.split('.').map(num => parseInt(num, 10));
+  };
+  
+  const latestParts = parseVersion(latest);
+  const currentParts = parseVersion(current);
+  
+  for (let i = 0; i < Math.max(latestParts.length, currentParts.length); i++) {
+    const latestPart = latestParts[i] || 0;
+    const currentPart = currentParts[i] || 0;
+    
+    if (latestPart > currentPart) return true;
+    if (latestPart < currentPart) return false;
+  }
+  
+  return false;
+}
+
+function shouldCheckForUpdates() {
+  try {
+    if (!fs.existsSync(VERSION_CHECK_FILE)) {
+      return true; // First time, should check
+    }
+    
+    const data = JSON.parse(fs.readFileSync(VERSION_CHECK_FILE, 'utf8'));
+    const lastCheck = new Date(data.lastCheckDate);
+    const now = new Date();
+    const daysSinceLastCheck = (now - lastCheck) / (1000 * 60 * 60 * 24);
+    
+    return daysSinceLastCheck >= 1; // Check once per day
+  } catch (error) {
+    return true; // If error reading file, should check
+  }
+}
+
+function saveLastCheckDate() {
+  try {
+    const data = {
+      lastCheckDate: new Date().toISOString(),
+      currentVersion: CURRENT_VERSION
+    };
+    fs.writeFileSync(VERSION_CHECK_FILE, JSON.stringify(data, null, 2));
+  } catch (error) {
+    logError('Error saving last check date:', error);
+  }
 }
 
 log('=== MAIN.JS LOADED ===');
@@ -155,7 +285,7 @@ function createMenu() {
             dialog.showMessageBox(mainWindow, {
               type: 'info',
               title: 'About Internet Speed Monitor',
-              message: 'Internet Speed Monitor v1.1.3',
+              message: 'Internet Speed Monitor v1.1.4',
               detail: `A simple tool to monitor your internet connection speed at regular intervals.
 
 Features:
@@ -273,6 +403,23 @@ app.whenReady().then(async () => {
   
   if (!initSuccess) {
     logError('CRITICAL: Failed to initialize modules on app start');
+  }
+  
+  // Check for updates on app start (respects daily frequency limit)
+  try {
+    log('Checking for updates...');
+    const updateInfo = await checkForUpdates();
+    if (updateInfo && updateInfo.latestVersion) {
+      log(`Update available: v${updateInfo.latestVersion}`);
+      // Send update info to renderer if window is ready
+      if (mainWindow) {
+        mainWindow.webContents.send('update-available', updateInfo);
+      }
+    } else {
+      log('No updates available');
+    }
+  } catch (error) {
+    logError('Failed to check for updates:', error.message);
   }
   
   app.on('activate', () => {
@@ -499,4 +646,20 @@ ipcMain.handle('open-external', async (event, url) => {
     logError('Error opening external link:', error);
     return { success: false, error: error.message };
   }
+});
+
+// Handle version checking
+ipcMain.handle('check-for-updates', async () => {
+  try {
+    const updateInfo = await checkForUpdates();
+    saveLastCheckDate();
+    return updateInfo;
+  } catch (error) {
+    logError('Error in check-for-updates handler:', error);
+    return null;
+  }
+});
+
+ipcMain.handle('get-current-version', async () => {
+  return CURRENT_VERSION;
 });
