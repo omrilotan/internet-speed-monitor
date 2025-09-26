@@ -2,7 +2,7 @@
 
 A beautiful, easy-to-use desktop application that monitors your internet connection speed automatically and helps you track your network performance over time.
 
-![Internet Speed Monitor Screenshot](https://github.com/user-attachments/assets/9ec86a95-2764-457e-ad6c-210abf822ae2)
+![Internet Speed Monitor Screenshot](./docs/screenshot.png)
 
 ## ✨ Features
 
