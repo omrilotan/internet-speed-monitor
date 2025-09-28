@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.2.1] - 2025-09-28
 
+## [1.2.2] - 2025-09-28
+
+### 🐛 Bug Fixes
+- **Cron Scheduling** - Fixed cron next-run calculation by moving cron parsing to main process and using the correct cron-parser API
+- **Cron Behavior** - Cron mode no longer runs an immediate test at startup; the first test runs at the next scheduled occurrence
+- **Status Display** - Ensure status shows "Sleeping" when monitoring is active but waiting for next scheduled test; "Running" is shown only during an active test
+
+### 🔧 Technical Fixes
+- **Security/IPC** - Exposed a safe `getNextTestTime` IPC endpoint in the preload script for accurate next-run calculations from the renderer
+- **API Compatibility** - Updated code to use `CronExpressionParser.parse(...)` to match the installed cron-parser API and avoid runtime errors
+
+
 ### 🐛 Bug Fixes
 - **UI Improvements** - Fixed hamburger dropdown visibility issue in header by removing overflow hidden
 - **Status Text** - Changed "Starting monitoring..." to cleaner "Running" status for better UX
