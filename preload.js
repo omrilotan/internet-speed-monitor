@@ -13,6 +13,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getSpeedTests: (limit) => ipcRenderer.invoke('get-speed-tests', limit),
   getHistoricalData: (limit) => ipcRenderer.invoke('get-historical-data', limit),
   clearHistory: () => ipcRenderer.invoke('clear-history'),
+  clearDataUntilDate: (cutoffDate) => ipcRenderer.invoke('clear-data-until-date', cutoffDate),
   exportCSV: () => ipcRenderer.invoke('export-csv'),
   
   // Debug

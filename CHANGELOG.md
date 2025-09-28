@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.7] - 2025-09-28
+
+### 🐛 Critical Bug Fix
+- **Data Loading Issue Fixed** - Resolved critical issue where app was displaying oldest data instead of most recent speed test results
+- **Chart Display Correction** - Fixed chart to show the latest 20 speed tests instead of the oldest 20 entries
+- **Data Ordering Enhancement** - Improved data storage to maintain proper chronological order in JSON file
+- **Real-time Updates** - Ensured new speed test results are properly added to data arrays and displayed immediately
+
+### 🔧 Technical Improvements
+- **Backend Data Sorting** - Added automatic sorting during data initialization and save operations
+- **Frontend Data Processing** - Corrected slice operations to display newest data first in both chart and table
+- **Data Persistence** - Enhanced data storage consistency to prevent ordering issues
+
+## [1.1.6] - 2025-09-28
+
+### 🎨 UI Modernization
+- **Icon-Only Controls** - Modernized interface with clean icon-only buttons (▶️ Start/Stop, ⏺️ Test)
+- **Reorganized Hamburger Menu** - Streamlined dropdown menu order: Export → Clear All → Clear Until
+- **Enhanced Menu Integration** - Moved debug functions to application menu under Help for cleaner interface
+- **Improved Button Styling** - Larger 44px icons with zero padding for better touch targets
+- **Cleaner Layout** - Removed footer links and simplified control area for focused user experience
+
+### 🔧 Technical Improvements
+- **Menu System Overhaul** - Integrated debug functions into native application menu with proper IPC handling
+- **UI Code Cleanup** - Removed deprecated DOM element references and improved JavaScript error handling
+- **Enhanced Accessibility** - Better hover effects and visual feedback for interactive elements
+- **Data Management** - Confirmed robust data persistence and loading functionality
+
 ## [1.1.5] - 2025-09-28
 
 ### ✨ User Experience Enhancements

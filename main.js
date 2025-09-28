@@ -285,7 +285,7 @@ function createMenu() {
             dialog.showMessageBox(mainWindow, {
               type: 'info',
               title: 'About Internet Speed Monitor',
-              message: 'Internet Speed Monitor v1.1.5',
+              message: 'Internet Speed Monitor v1.1.7',
               detail: `A simple tool to monitor your internet connection speed at regular intervals.
 
 Features:
@@ -299,6 +299,28 @@ Licensed under Unlicense`,
               buttons: ['OK']
             });
           }
+        },
+        {
+          type: 'separator'
+        },
+        {
+          label: 'Show Debug Log',
+          click: () => {
+            if (mainWindow) {
+              mainWindow.webContents.send('show-debug-log');
+            }
+          }
+        },
+        {
+          label: 'Clear Debug Log',
+          click: () => {
+            if (mainWindow) {
+              mainWindow.webContents.send('clear-debug-log');
+            }
+          }
+        },
+        {
+          type: 'separator'
         },
         {
           label: 'GitHub Repository',
@@ -556,10 +578,28 @@ ipcMain.handle('clear-history', async () => {
       }
     }
     
-    const success = await dataStore.clearAllData();
-    return { success, error: success ? null : 'Failed to clear data' };
+    const result = await dataStore.clearAllData();
+    return { success: true, ...result };
   } catch (error) {
     logError('Error clearing history:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Clear data until date IPC handler
+ipcMain.handle('clear-data-until-date', async (event, cutoffDate) => {
+  try {
+    if (!isInitialized || !dataStore) {
+      const initSuccess = await initializeModules();
+      if (!initSuccess) {
+        return { success: false, error: 'Failed to initialize data store' };
+      }
+    }
+    
+    const result = await dataStore.clearDataUntilDate(cutoffDate);
+    return { success: true, ...result };
+  } catch (error) {
+    logError('Error clearing data until date:', error);
     return { success: false, error: error.message };
   }
 });

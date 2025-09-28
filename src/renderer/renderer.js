@@ -9,13 +9,13 @@ let allSpeedTests = []; // Store all tests for median calculation
 let lastChartDate = null; // Track last date shown on chart for date labeling
 
 // DOM elements
-const startBtn = document.getElementById('start-btn');
-const stopBtn = document.getElementById('stop-btn');
+const startStopBtn = document.getElementById('start-stop-btn');
 const testNowBtn = document.getElementById('test-now-btn');
-const debugBtn = document.getElementById('debug-btn');
-const clearDebugBtn = document.getElementById('clear-debug-btn');
 const clearHistoryBtn = document.getElementById('clear-history-btn');
+const clearSelectiveBtn = document.getElementById('clear-selective-btn');
 const exportCsvBtn = document.getElementById('export-csv-btn');
+const hamburgerBtn = document.getElementById('hamburger-btn');
+const hamburgerDropdown = document.getElementById('hamburger-dropdown');
 const intervalInput = document.getElementById('interval');
 const statusText = document.getElementById('status-text');
 const statusDot = document.getElementById('status-dot');
@@ -28,6 +28,15 @@ const nextTest = document.getElementById('next-test');
 const nextTestTime = document.getElementById('next-test-time');
 const medianDownload = document.getElementById('median-download');
 const medianUpload = document.getElementById('median-upload');
+
+// Modal elements
+const clearDataModal = document.getElementById('clear-data-modal');
+const modalClose = clearDataModal.querySelector('.modal-close');
+const cutoffDateInput = document.getElementById('cutoff-date');
+const previewClearBtn = document.getElementById('preview-clear-btn');
+const confirmClearBtn = document.getElementById('confirm-clear-btn');
+const cancelClearBtn = document.getElementById('cancel-clear-btn');
+const clearPreview = document.getElementById('clear-preview');
 const medianPing = document.getElementById('median-ping');
 const resultsTable = document.getElementById('results-tbody');
 const updateNotification = document.getElementById('update-notification');
@@ -47,13 +56,32 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Event listeners
-startBtn.addEventListener('click', startMonitoring);
-stopBtn.addEventListener('click', stopMonitoring);
+startStopBtn.addEventListener('click', toggleMonitoring);
 testNowBtn.addEventListener('click', testOnceNow);
-debugBtn.addEventListener('click', showDebugLog);
-clearDebugBtn.addEventListener('click', clearDebugLog);
+hamburgerBtn.addEventListener('click', toggleHamburgerMenu);
 clearHistoryBtn.addEventListener('click', clearHistory);
+clearSelectiveBtn.addEventListener('click', showClearDataModal);
 exportCsvBtn.addEventListener('click', exportCSV);
+
+// Close hamburger menu when clicking outside
+document.addEventListener('click', (e) => {
+    if (!hamburgerBtn.contains(e.target) && !hamburgerDropdown.contains(e.target)) {
+        hamburgerDropdown.style.display = 'none';
+    }
+});
+
+// Modal event listeners
+modalClose.addEventListener('click', hideClearDataModal);
+cancelClearBtn.addEventListener('click', hideClearDataModal);
+previewClearBtn.addEventListener('click', previewClearData);
+confirmClearBtn.addEventListener('click', confirmClearData);
+
+// Close modal when clicking outside
+clearDataModal.addEventListener('click', (e) => {
+    if (e.target === clearDataModal) {
+        hideClearDataModal();
+    }
+});
 
 // Update notification event listeners
 dismissUpdateBtn.addEventListener('click', () => {
@@ -62,19 +90,6 @@ dismissUpdateBtn.addEventListener('click', () => {
 
 downloadUpdateBtn.addEventListener('click', () => {
     window.electronAPI.openExternal('https://github.com/omrilotan/internet-speed-monitor/releases/latest');
-});
-
-// Footer links
-document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('github-link').addEventListener('click', (e) => {
-        e.preventDefault();
-        window.electronAPI.openExternal('https://github.com/omrilotan/internet-speed-monitor');
-    });
-    
-    document.getElementById('website-link').addEventListener('click', (e) => {
-        e.preventDefault();
-        window.electronAPI.openExternal('https://omrilotan.github.io/internet-speed-monitor/');
-    });
 });
 
 // Initialize the app
@@ -92,14 +107,35 @@ window.electronAPI.onSpeedTestStarted((event) => {
 
 window.electronAPI.onSpeedTestResult((event, result) => {
     hideTestRunningIndicator(); // Hide the running indicator when test completes
+    
+    // Add the new result to the allSpeedTests array at the beginning (most recent first)
+    allSpeedTests.unshift(result);
+    
+    // Keep only the last 100 results to match loadHistoricalData behavior
+    if (allSpeedTests.length > 100) {
+        allSpeedTests = allSpeedTests.slice(0, 100);
+    }
+    
     updateCurrentStatsEnhanced(result);
     addToTable(result);
     updateChart(result);
+    
+    // Update median stats with the new data
+    updateMedianStats();
 });
 
 // Listen for update notifications
 window.electronAPI.ipcRenderer.on('update-available', (event, updateInfo) => {
     showUpdateNotification(updateInfo);
+});
+
+// Listen for menu-triggered debug actions
+window.electronAPI.ipcRenderer.on('show-debug-log', () => {
+    showDebugLog();
+});
+
+window.electronAPI.ipcRenderer.on('clear-debug-log', () => {
+    clearDebugLog();
 });
 
 // Functions to manage test running indicator
@@ -183,13 +219,22 @@ async function stopMonitoring() {
     }
 }
 
+async function toggleMonitoring() {
+    if (isMonitoring) {
+        await stopMonitoring();
+    } else {
+        await startMonitoring();
+    }
+}
+
 async function testOnceNow() {
     console.log('=== TEST ONCE NOW CLICKED ===');
     
     try {
         // Disable button to prevent multiple clicks
         testNowBtn.disabled = true;
-        testNowBtn.textContent = 'Testing...';
+        testNowBtn.textContent = '⏺️';
+        testNowBtn.title = 'Test in progress...';
         
         // Show the test running indicator
         showTestRunningIndicator();
@@ -233,7 +278,8 @@ async function testOnceNow() {
     } finally {
         // Re-enable button
         testNowBtn.disabled = false;
-        testNowBtn.textContent = 'Test Once Now';
+        testNowBtn.textContent = '⏺️';
+        testNowBtn.title = 'Run a single speed test now';
     }
 }
 
@@ -376,8 +422,15 @@ async function updateMonitoringStatus() {
 }
 
 function updateUI() {
-    startBtn.disabled = isMonitoring;
-    stopBtn.disabled = !isMonitoring;
+    // Update start/stop button icon and tooltip
+    if (isMonitoring) {
+        startStopBtn.textContent = '⏹️';
+        startStopBtn.title = 'Stop automatic speed testing';
+    } else {
+        startStopBtn.textContent = '▶️';
+        startStopBtn.title = 'Start automatic speed testing';
+    }
+    
     intervalInput.disabled = isMonitoring;
 }
 
@@ -515,6 +568,13 @@ async function loadHistoricalData() {
     try {
         const data = await window.electronAPI.getSpeedTests(100); // Get more data for median calculation
         
+        console.log('=== LOAD HISTORICAL DATA ===');
+        console.log('Received data count:', data ? data.length : 0);
+        if (data && data.length > 0) {
+            console.log('Most recent test:', data[0]);
+            console.log('Oldest test:', data[data.length - 1]);
+        }
+        
         // Store all data for median calculation
         allSpeedTests = [...data];
         
@@ -541,14 +601,14 @@ async function loadHistoricalData() {
             return;
         }
         
-        // Add data to table (reverse to show newest first, but limit to 10)
-        const recentData = data.slice(-10).reverse();
+        // Add data to table (newest first, limit to 10)
+        const recentData = data.slice(0, 10);
         recentData.forEach(result => {
             addToTable(result);
         });
         
-        // Add to chart (reverse for chronological order - oldest to newest, limit to 20)
-        const chartData = data.slice(-20).reverse();
+        // Add to chart (take first 20 newest, then reverse for chronological display)
+        const chartData = data.slice(0, 20).reverse();
         chartData.forEach(result => {
             updateChart(result);
         });
@@ -926,4 +986,200 @@ function showUpdateNotification(updateInfo) {
     updateNotification.style.display = 'block';
     
     console.log(`Update notification shown: ${updateInfo.currentVersion} -> ${updateInfo.latestVersion}`);
+}
+
+// Clear data until date functions
+async function showClearDataModal() {
+    try {
+        // Get all data to find the earliest and latest test dates
+        const allData = await window.electronAPI.getSpeedTests(10000);
+        
+        if (allData.length === 0) {
+            alert('No data available to clear.');
+            return;
+        }
+        
+        // Find the earliest test date (last item in descending order)
+        const earliestTest = allData[allData.length - 1];
+        const earliestDate = new Date(earliestTest.created_at || earliestTest.timestamp);
+        
+        // Find the latest test date (first item in descending order)
+        const latestTest = allData[0];
+        const latestDate = new Date(latestTest.created_at || latestTest.timestamp);
+        
+        // Set minimum and maximum dates
+        const minDate = earliestDate.toISOString().slice(0, 16);
+        const maxDate = latestDate.toISOString().slice(0, 16);
+        cutoffDateInput.min = minDate;
+        cutoffDateInput.max = maxDate;
+        
+        // Set default date to 30 days ago or earliest date, whichever is later
+        // but not later than the latest test
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        
+        let defaultDate;
+        if (thirtyDaysAgo < earliestDate) {
+            defaultDate = earliestDate;
+        } else if (thirtyDaysAgo > latestDate) {
+            defaultDate = latestDate;
+        } else {
+            defaultDate = thirtyDaysAgo;
+        }
+        
+        cutoffDateInput.value = defaultDate.toISOString().slice(0, 16);
+        
+        // Reset modal state
+        clearPreview.style.display = 'none';
+        confirmClearBtn.disabled = true;
+        
+        clearDataModal.style.display = 'block';
+        
+        // Update the hint text to show the valid range
+        const hintElement = cutoffDateInput.nextElementSibling;
+        if (hintElement && hintElement.classList.contains('input-hint')) {
+            hintElement.textContent = `Valid range: ${earliestDate.toLocaleString()} to ${latestDate.toLocaleString()}`;
+        }
+        
+    } catch (error) {
+        console.error('Error loading data for modal:', error);
+        alert('Error loading data. Please try again.');
+    }
+}
+
+function hideClearDataModal() {
+    clearDataModal.style.display = 'none';
+    clearPreview.style.display = 'none';
+    confirmClearBtn.disabled = true;
+}
+
+async function previewClearData() {
+    const cutoffDate = cutoffDateInput.value;
+    
+    if (!cutoffDate) {
+        alert('Please select a date and time.');
+        return;
+    }
+    
+    try {
+        previewClearBtn.disabled = true;
+        previewClearBtn.textContent = 'Calculating...';
+        
+        // Get current data to calculate what would be removed
+        const allData = await window.electronAPI.getSpeedTests(10000); // Get all data
+        const cutoff = new Date(cutoffDate);
+        
+        if (allData.length === 0) {
+            clearPreview.innerHTML = '<strong style="color: #666;">No data available.</strong>';
+            clearPreview.style.display = 'block';
+            confirmClearBtn.disabled = true;
+            return;
+        }
+        
+        // Get earliest and latest test dates
+        const earliestTest = allData[allData.length - 1];
+        const earliestDate = new Date(earliestTest.created_at || earliestTest.timestamp);
+        const latestTest = allData[0];
+        const latestDate = new Date(latestTest.created_at || latestTest.timestamp);
+        
+        // Check if cutoff is outside the valid range
+        if (cutoff < earliestDate) {
+            clearPreview.innerHTML = `
+                <strong style="color: #dc3545;">Invalid Date Range</strong><br>
+                Selected date is before your earliest test.<br>
+                <strong>Earliest test:</strong> ${earliestDate.toLocaleString()}<br>
+                <strong>Selected cutoff:</strong> ${cutoff.toLocaleString()}
+            `;
+            clearPreview.style.display = 'block';
+            confirmClearBtn.disabled = true;
+            return;
+        }
+        
+        if (cutoff > latestDate) {
+            clearPreview.innerHTML = `
+                <strong style="color: #dc3545;">Invalid Date Range</strong><br>
+                Selected date is after your latest test.<br>
+                <strong>Latest test:</strong> ${latestDate.toLocaleString()}<br>
+                <strong>Selected cutoff:</strong> ${cutoff.toLocaleString()}<br>
+                <br>
+                <em>Note: This would clear ALL your data.</em>
+            `;
+            clearPreview.style.display = 'block';
+            confirmClearBtn.disabled = true;
+            return;
+        }
+        
+        const toRemove = allData.filter(test => {
+            const testDate = new Date(test.created_at || test.timestamp);
+            return testDate <= cutoff;
+        });
+        
+        const toKeep = allData.length - toRemove.length;
+        
+        // Show preview
+        clearPreview.innerHTML = `
+            <strong>Preview:</strong><br>
+            • Tests to be removed: <strong>${toRemove.length}</strong><br>
+            • Tests to be kept: <strong>${toKeep}</strong><br>
+            • Cutoff date: <strong>${cutoff.toLocaleString()}</strong><br>
+            <br>
+            <em>This action cannot be undone.</em>
+        `;
+        
+        clearPreview.style.display = 'block';
+        confirmClearBtn.disabled = toRemove.length === 0;
+        
+        if (toRemove.length === 0) {
+            clearPreview.innerHTML += '<br><strong style="color: #666;">No data to remove before this date.</strong>';
+        } else if (toRemove.length === allData.length) {
+            clearPreview.innerHTML += '<br><strong style="color: #dc3545;">⚠️ This will remove ALL your data!</strong>';
+        }
+        
+    } catch (error) {
+        console.error('Error previewing clear data:', error);
+        alert('Error calculating preview: ' + error.message);
+    } finally {
+        previewClearBtn.disabled = false;
+        previewClearBtn.textContent = 'Preview';
+    }
+}
+
+async function confirmClearData() {
+    const cutoffDate = cutoffDateInput.value;
+    
+    if (!cutoffDate) {
+        alert('Please select a date and time.');
+        return;
+    }
+    
+    try {
+        confirmClearBtn.disabled = true;
+        confirmClearBtn.textContent = 'Clearing...';
+        
+        const response = await window.electronAPI.clearDataUntilDate(cutoffDate);
+        
+        if (response.success) {
+            alert(`Successfully cleared ${response.removed} speed tests before ${new Date(cutoffDate).toLocaleString()}.\n\nRemaining tests: ${response.remaining}`);
+            
+            // Refresh the display
+            await loadHistoricalData();
+            
+            hideClearDataModal();
+        } else {
+            alert('Failed to clear data: ' + (response.error || 'Unknown error'));
+        }
+        
+    } catch (error) {
+        console.error('Error clearing data until date:', error);
+        alert('Failed to clear data: ' + error.message);
+    } finally {
+        confirmClearBtn.disabled = false;
+        confirmClearBtn.textContent = 'Clear Data';
+    }
+}
+
+// Hamburger menu toggle function
+function toggleHamburgerMenu() {
+    const isVisible = hamburgerDropdown.style.display === 'block';
+    hamburgerDropdown.style.display = isVisible ? 'none' : 'block';
 }

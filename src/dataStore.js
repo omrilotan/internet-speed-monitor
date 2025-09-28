@@ -46,6 +46,9 @@ class DataStore {
                 this.data.speedTests = [];
             }
             
+            // Sort existing data by created_at descending to fix any ordering issues
+            this.data.speedTests.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            
             console.log('Data store initialized with', this.data.speedTests.length, 'speed tests');
             return Promise.resolve();
         } catch (error) {
@@ -79,6 +82,10 @@ class DataStore {
             };
 
             this.data.speedTests.push(speedTest);
+            
+            // Sort the array by created_at descending (newest first) to maintain order
+            this.data.speedTests.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            
             this.saveData();
             
             console.log('Speed test saved with ID:', speedTest.id);
@@ -277,6 +284,52 @@ class DataStore {
         } catch (error) {
             console.error('Error exporting CSV:', error);
             return '';
+        }
+    }
+
+    async clearDataUntilDate(cutoffDate) {
+        try {
+            const cutoff = new Date(cutoffDate);
+            const initialCount = this.data.speedTests.length;
+            
+            // Keep only tests created after the cutoff date
+            this.data.speedTests = this.data.speedTests.filter(test => {
+                const testDate = new Date(test.created_at || test.timestamp);
+                return testDate > cutoff;
+            });
+            
+            this.saveData();
+            
+            const removedCount = initialCount - this.data.speedTests.length;
+            console.log(`Cleared ${removedCount} speed tests before ${cutoff.toISOString()}`);
+            console.log(`Remaining tests: ${this.data.speedTests.length}`);
+            
+            return {
+                removed: removedCount,
+                remaining: this.data.speedTests.length,
+                cutoffDate: cutoff.toISOString()
+            };
+        } catch (error) {
+            console.error('Error clearing data until date:', error);
+            throw error;
+        }
+    }
+
+    async clearAllData() {
+        try {
+            const initialCount = this.data.speedTests.length;
+            this.data.speedTests = [];
+            this.saveData();
+            
+            console.log(`Cleared all ${initialCount} speed tests`);
+            
+            return {
+                removed: initialCount,
+                remaining: 0
+            };
+        } catch (error) {
+            console.error('Error clearing all data:', error);
+            throw error;
         }
     }
 

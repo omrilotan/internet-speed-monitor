@@ -12,7 +12,7 @@
         <header>
             <div class="header-left">
                 <h1>Internet Speed Monitor</h1>
-                <small id="app-version">Version 1.1.5</small>
+                <small id="app-version">Version 1.1.7</small>
             </div>
             <div class="status-indicator">
                 <span id="status-text">Stopped</span>
@@ -34,10 +34,9 @@
                         <input type="number" id="interval" min="1" max="60" value="5" step="1" title="Use arrow keys or mouse wheel for smart stepping: 1, 5, 10, 15, 30, 60">
                         <small class="input-hint">↑↓ for smart steps</small>
                     </div>
-                    <div class="control-buttons">
-                        <button id="start-btn" class="btn btn-primary">Start Monitoring</button>
-                        <button id="stop-btn" class="btn btn-secondary" disabled>Stop Monitoring</button>
-                        <button id="test-now-btn" class="btn btn-accent">Test Once Now</button>
+                    <div class="control-group">
+                        <button id="start-stop-btn" class="control-icon-btn" title="Start automatic speed testing">▶️</button>
+                        <button id="test-now-btn" class="control-icon-btn" title="Run a single speed test now">⏺️</button>
                     </div>
                 </div>
                 <div class="controls-row">
@@ -48,12 +47,38 @@
                             Round to nearest
                         </label>
                     </div>
+                    <div class="hamburger-menu">
+                        <button id="hamburger-btn" class="btn btn-secondary btn-small hamburger-toggle" title="More options">☰</button>
+                        <div id="hamburger-dropdown" class="hamburger-dropdown" style="display: none;">
+                            <button id="export-csv-btn" class="dropdown-item" title="Download speed test data as CSV file">💾 Export as CSV</button>
+                            <div class="dropdown-separator"></div>
+                            <button id="clear-history-btn" class="dropdown-item" title="Delete all speed test history permanently">⚠️ Clear All History</button>
+                            <button id="clear-selective-btn" class="dropdown-item" title="Remove data older than a specific date">� Clear Data Until...</button>
+                        </div>
+                    </div>
                 </div>
-                <div class="control-buttons secondary-buttons">
-                    <button id="debug-btn" class="btn btn-secondary btn-small">Show Debug Log</button>
-                    <button id="clear-debug-btn" class="btn btn-secondary btn-small">Clear Debug Log</button>
-                    <button id="clear-history-btn" class="btn btn-warning btn-small">Clear History</button>
-                    <button id="export-csv-btn" class="btn btn-success btn-small">Export as CSV</button>
+                
+                <!-- Clear Data Until Date Modal -->
+                <div id="clear-data-modal" class="modal" style="display: none;">
+                    <div class="modal-content">
+                        <span class="modal-close">&times;</span>
+                        <h3>Clear Data Until Date</h3>
+                        <p>Remove all speed test data recorded before the selected date and time.</p>
+                        
+                        <div class="input-group">
+                            <label for="cutoff-date">Clear data before:</label>
+                            <input type="datetime-local" id="cutoff-date" required>
+                            <small class="input-hint">All tests before this date will be permanently deleted</small>
+                        </div>
+                        
+                        <div class="modal-info" id="clear-preview" style="display: none;"></div>
+                        
+                        <div class="modal-buttons">
+                            <button id="preview-clear-btn" class="btn btn-secondary">Preview</button>
+                            <button id="confirm-clear-btn" class="btn btn-danger" disabled>Clear Data</button>
+                            <button id="cancel-clear-btn" class="btn btn-primary">Cancel</button>
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -123,14 +148,6 @@
                 </div>
             </section>
         </main>
-
-        <footer class="app-footer">
-            <div class="footer-links">
-                <a href="#" id="github-link" class="footer-link">📂 GitHub Repository</a>
-                <span class="footer-separator">•</span>
-                <a href="#" id="website-link" class="footer-link">🌐 Project Website</a>
-            </div>
-        </footer>
     </div>
 
     <script src="renderer.js"></script>
