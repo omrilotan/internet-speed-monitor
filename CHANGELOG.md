@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.5] - 2025-09-28
+
+### ✨ User Experience Enhancements
+- **Smart Interval Stepping** - Added intelligent increment/decrement for interval input using arrow keys or mouse wheel (1, 5, 10, 15, 30, 60 minutes)
+- **Round to Nearest Feature** - New checkbox to automatically round test times to clean intervals (e.g., top of hour, half hour, quarter hour)
+- **Automatic Value Adjustment** - Input values automatically adjust to optimal intervals when rounding is enabled
+- **Improved Layout** - Moved rounding checkbox to separate row for cleaner interface organization
+
+### 🎯 Smart Scheduling
+- **Intelligent Rounding Logic** - Different rounding rules based on interval: 60min→hour, 30min→half hour, 15min→quarter hour, etc.
+- **Input Value Synchronization** - The interval input automatically updates to the nearest optimal value when rounding is toggled
+- **Enhanced User Feedback** - Added tooltips and visual hints for smart stepping and rounding features
+
+### 🔧 Technical Improvements
+- **Enhanced Input Handling** - Custom event handlers for sophisticated stepping behavior
+- **Smart Time Calculations** - Advanced logic for calculating rounded next test times based on current time and interval
+- **Improved User Interface** - Better visual hierarchy and spacing in control sections
+
 ## [1.1.4] - 2025-09-25
 
 ### 🎨 UI/UX Improvements

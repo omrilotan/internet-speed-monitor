@@ -285,7 +285,7 @@ function createMenu() {
             dialog.showMessageBox(mainWindow, {
               type: 'info',
               title: 'About Internet Speed Monitor',
-              message: 'Internet Speed Monitor v1.1.4',
+              message: 'Internet Speed Monitor v1.1.5',
               detail: `A simple tool to monitor your internet connection speed at regular intervals.
 
 Features:

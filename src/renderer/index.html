@@ -12,7 +12,7 @@
         <header>
             <div class="header-left">
                 <h1>Internet Speed Monitor</h1>
-                <small id="app-version">Version 1.1.4</small>
+                <small id="app-version">Version 1.1.5</small>
             </div>
             <div class="status-indicator">
                 <span id="status-text">Stopped</span>
@@ -31,12 +31,22 @@
                 <div class="controls-row">
                     <div class="control-group">
                         <label for="interval">Test Interval (minutes):</label>
-                        <input type="number" id="interval" min="1" max="60" value="5">
+                        <input type="number" id="interval" min="1" max="60" value="5" step="1" title="Use arrow keys or mouse wheel for smart stepping: 1, 5, 10, 15, 30, 60">
+                        <small class="input-hint">↑↓ for smart steps</small>
                     </div>
                     <div class="control-buttons">
                         <button id="start-btn" class="btn btn-primary">Start Monitoring</button>
                         <button id="stop-btn" class="btn btn-secondary" disabled>Stop Monitoring</button>
                         <button id="test-now-btn" class="btn btn-accent">Test Once Now</button>
+                    </div>
+                </div>
+                <div class="controls-row">
+                    <div class="checkbox-group">
+                        <label class="checkbox-label" title="Round the next test time to nice intervals (e.g., 60min→top of hour, 30min→half hour, 15min→quarter hour, 10/5min→round intervals, otherwise→nearest minute)">
+                            <input type="checkbox" id="round-to-nearest">
+                            <span class="checkmark"></span>
+                            Round to nearest
+                        </label>
                     </div>
                 </div>
                 <div class="control-buttons secondary-buttons">

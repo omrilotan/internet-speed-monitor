@@ -43,6 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadHistoricalData();
     updateMonitoringStatus();
     loadAppVersion();
+    setupIntervalStepping(); // Setup smart stepping for interval input
 });
 
 // Event listeners
@@ -576,12 +577,213 @@ async function loadHistoricalData() {
     }
 }
 
+// Smart stepping for interval input
+function setupIntervalStepping() {
+    const intervalInput = document.getElementById('interval');
+    const roundToNearest = document.getElementById('round-to-nearest');
+    
+    // Define the step sequence
+    const stepSequence = [1, 5, 10, 15, 30, 60];
+    
+    // Function to suggest appropriate interval for rounding
+    function suggestRoundingInterval(currentValue) {
+        if (!roundToNearest.checked) return currentValue;
+        
+        // Find the closest value in step sequence for better rounding behavior
+        let closest = stepSequence[0];
+        let minDiff = Math.abs(currentValue - closest);
+        
+        for (let i = 1; i < stepSequence.length; i++) {
+            const diff = Math.abs(currentValue - stepSequence[i]);
+            if (diff < minDiff) {
+                minDiff = diff;
+                closest = stepSequence[i];
+            }
+        }
+        
+        return closest;
+    }
+    
+    // Update input value when rounding checkbox changes
+    roundToNearest.addEventListener('change', () => {
+        if (roundToNearest.checked) {
+            const currentValue = parseInt(intervalInput.value) || 5;
+            const suggestedValue = suggestRoundingInterval(currentValue);
+            if (suggestedValue !== currentValue) {
+                intervalInput.value = suggestedValue;
+                intervalInput.dispatchEvent(new Event('input'));
+            }
+        }
+    });
+    
+    // Handle arrow key presses and wheel events
+    intervalInput.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+            e.preventDefault();
+            const currentValue = parseInt(intervalInput.value) || 1;
+            const isIncrement = e.key === 'ArrowUp';
+            const newValue = getNextStepValue(currentValue, isIncrement, stepSequence);
+            intervalInput.value = newValue;
+            intervalInput.dispatchEvent(new Event('input'));
+        }
+    });
+    
+    // Handle mouse wheel
+    intervalInput.addEventListener('wheel', (e) => {
+        if (intervalInput === document.activeElement) {
+            e.preventDefault();
+            const currentValue = parseInt(intervalInput.value) || 1;
+            const isIncrement = e.deltaY < 0; // Scroll up = increment
+            const newValue = getNextStepValue(currentValue, isIncrement, stepSequence);
+            intervalInput.value = newValue;
+            intervalInput.dispatchEvent(new Event('input'));
+        }
+    });
+}
+
+// Get the next value in the step sequence
+function getNextStepValue(currentValue, isIncrement, stepSequence) {
+    // Find current position in sequence
+    let currentIndex = -1;
+    for (let i = 0; i < stepSequence.length; i++) {
+        if (stepSequence[i] === currentValue) {
+            currentIndex = i;
+            break;
+        }
+    }
+    
+    if (currentIndex !== -1) {
+        // Current value is in sequence, move to next/previous
+        if (isIncrement) {
+            return currentIndex < stepSequence.length - 1 ? stepSequence[currentIndex + 1] : stepSequence[currentIndex];
+        } else {
+            return currentIndex > 0 ? stepSequence[currentIndex - 1] : stepSequence[currentIndex];
+        }
+    } else {
+        // Current value not in sequence, find closest
+        if (isIncrement) {
+            // Find next higher value in sequence
+            for (let i = 0; i < stepSequence.length; i++) {
+                if (stepSequence[i] > currentValue) {
+                    return stepSequence[i];
+                }
+            }
+            return stepSequence[stepSequence.length - 1]; // Return max if no higher value
+        } else {
+            // Find next lower value in sequence
+            for (let i = stepSequence.length - 1; i >= 0; i--) {
+                if (stepSequence[i] < currentValue) {
+                    return stepSequence[i];
+                }
+            }
+            return stepSequence[0]; // Return min if no lower value
+        }
+    }
+}
+
+// Rounding helper function
+function getRoundedNextTestTime(intervalMinutes) {
+    const roundToNearest = document.getElementById('round-to-nearest').checked;
+    const intervalInput = document.getElementById('interval');
+    
+    if (!roundToNearest) {
+        return new Date(Date.now() + intervalMinutes * 60 * 1000);
+    }
+    
+    // Suggest better interval values for rounding if current value isn't optimal
+    const stepSequence = [1, 5, 10, 15, 30, 60];
+    const currentInputValue = parseInt(intervalInput.value) || intervalMinutes;
+    
+    // If the current interval isn't in our step sequence, suggest the closest one
+    if (!stepSequence.includes(currentInputValue) && currentInputValue === intervalMinutes) {
+        let closest = stepSequence[0];
+        let minDiff = Math.abs(currentInputValue - closest);
+        
+        for (let i = 1; i < stepSequence.length; i++) {
+            const diff = Math.abs(currentInputValue - stepSequence[i]);
+            if (diff < minDiff) {
+                minDiff = diff;
+                closest = stepSequence[i];
+            }
+        }
+        
+        // Update the input value to the suggested one
+        if (closest !== currentInputValue) {
+            intervalInput.value = closest;
+            intervalMinutes = closest; // Use the new value for calculation
+        }
+    }
+    
+    const now = new Date();
+    const nextTest = new Date(now.getTime() + intervalMinutes * 60 * 1000);
+    
+    // Define rounding rules based on interval
+    if (intervalMinutes >= 60) {
+        // Round to nearest hour
+        nextTest.setMinutes(0, 0, 0);
+        if (now.getMinutes() >= 30) {
+            nextTest.setHours(nextTest.getHours() + 1);
+        }
+    } else if (intervalMinutes >= 30) {
+        // Round to nearest half hour (00 or 30 minutes)
+        const minutes = nextTest.getMinutes();
+        if (minutes < 15) {
+            nextTest.setMinutes(0, 0, 0);
+        } else if (minutes < 45) {
+            nextTest.setMinutes(30, 0, 0);
+        } else {
+            nextTest.setMinutes(0, 0, 0);
+            nextTest.setHours(nextTest.getHours() + 1);
+        }
+    } else if (intervalMinutes >= 15) {
+        // Round to nearest quarter hour (00, 15, 30, 45)
+        const minutes = nextTest.getMinutes();
+        if (minutes < 7.5) {
+            nextTest.setMinutes(0, 0, 0);
+        } else if (minutes < 22.5) {
+            nextTest.setMinutes(15, 0, 0);
+        } else if (minutes < 37.5) {
+            nextTest.setMinutes(30, 0, 0);
+        } else if (minutes < 52.5) {
+            nextTest.setMinutes(45, 0, 0);
+        } else {
+            nextTest.setMinutes(0, 0, 0);
+            nextTest.setHours(nextTest.getHours() + 1);
+        }
+    } else if (intervalMinutes >= 10) {
+        // Round to nearest 10 minutes (00, 10, 20, 30, 40, 50)
+        const minutes = nextTest.getMinutes();
+        const rounded = Math.round(minutes / 10) * 10;
+        if (rounded >= 60) {
+            nextTest.setMinutes(0, 0, 0);
+            nextTest.setHours(nextTest.getHours() + 1);
+        } else {
+            nextTest.setMinutes(rounded, 0, 0);
+        }
+    } else if (intervalMinutes >= 5) {
+        // Round to nearest 5 minutes (00, 05, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55)
+        const minutes = nextTest.getMinutes();
+        const rounded = Math.round(minutes / 5) * 5;
+        if (rounded >= 60) {
+            nextTest.setMinutes(0, 0, 0);
+            nextTest.setHours(nextTest.getHours() + 1);
+        } else {
+            nextTest.setMinutes(rounded, 0, 0);
+        }
+    } else {
+        // Round to nearest whole minute
+        nextTest.setSeconds(0, 0);
+    }
+    
+    return nextTest;
+}
+
 // Next test timer functions
 function startNextTestTimer(intervalMinutes) {
     stopNextTestTimer(); // Clear any existing timer
     
-    // Calculate next test time
-    nextTestTimestamp = new Date(Date.now() + intervalMinutes * 60 * 1000);
+    // Calculate next test time with optional rounding
+    nextTestTimestamp = getRoundedNextTestTime(intervalMinutes);
     
     // Show next test info
     nextTest.style.display = 'block';
