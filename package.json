@@ -1,6 +1,6 @@
 {
   "name": "internet-speed-monitor",
-  "version": "1.1.7",
+  "version": "1.2.0",
   "description": "Electron app for monitoring internet connectivity speed at set intervals",
   "main": "main.js",
   "scripts": {
@@ -42,8 +42,10 @@
     "electron-builder": "^26.0.12"
   },
   "dependencies": {
+    "chart.js": "^4.4.0",
+    "cron-parser": "^5.4.0",
     "fast-speedtest-api": "^0.3.2",
-    "chart.js": "^4.4.0"
+    "node-cron": "^4.2.1"
   },
   "build": {
     "appId": "com.omrilotan.internet-speed-monitor",
@@ -80,18 +82,26 @@
         "CFBundleURLTypes": [
           {
             "CFBundleURLName": "Internet Speed Monitor",
-            "CFBundleURLSchemes": ["internet-speed-monitor"]
+            "CFBundleURLSchemes": [
+              "internet-speed-monitor"
+            ]
           }
         ]
       },
       "target": [
         {
           "target": "dmg",
-          "arch": ["x64", "arm64"]
+          "arch": [
+            "x64",
+            "arm64"
+          ]
         },
         {
           "target": "zip",
-          "arch": ["x64", "arm64"]
+          "arch": [
+            "x64",
+            "arm64"
+          ]
         }
       ]
     },
@@ -100,11 +110,17 @@
       "target": [
         {
           "target": "nsis",
-          "arch": ["x64", "ia32"]
+          "arch": [
+            "x64",
+            "ia32"
+          ]
         },
         {
           "target": "portable",
-          "arch": ["x64", "ia32"]
+          "arch": [
+            "x64",
+            "ia32"
+          ]
         }
       ]
     },
@@ -114,11 +130,15 @@
       "target": [
         {
           "target": "AppImage",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         },
         {
           "target": "deb",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         }
       ]
     },

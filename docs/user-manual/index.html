@@ -48,7 +48,7 @@
     }
     </script>
     
-    <link rel="stylesheet" href="../styles.css?v=1.1.4-20250925">
+    <link rel="stylesheet" href="../styles.css?v=1.2.0-20250928">
     <style>
         .manual-content {
             max-width: 900px;
@@ -166,8 +166,8 @@
                     <p>Instant speed testing button for immediate results without starting monitoring.</p>
                 </div>
                 <div class="feature-item">
-                    <h4>⚙️ Monitoring Controls</h4>
-                    <p>Easy-to-use controls for starting/stopping monitoring and configuring test intervals.</p>
+                    <h4>⚙️ Dual Scheduling Modes</h4>
+                    <p>Choose between Simple Interval mode for regular testing or advanced Cron Expression mode for precise timing control with work hours, daily, and custom schedules.</p>
                 </div>
                 <div class="feature-item">
                     <h4>⏱️ Status Indicators</h4>
@@ -192,7 +192,7 @@
                 <li><strong>Launch the Application:</strong> Open Internet Speed Monitor from your Applications folder, Start Menu, or desktop shortcut.</li>
                 <li><strong>Grant Permissions:</strong> If prompted, allow the application to access the internet for speed testing.</li>
                 <li><strong>Try a Quick Test:</strong> Click "Test Once Now" to run an immediate speed test and verify everything is working.</li>
-                <li><strong>Choose Settings:</strong> Configure your preferred test interval and monitoring preferences.</li>
+                <li><strong>Choose Schedule:</strong> Select your preferred scheduling mode (Simple Interval or Cron Expression) and choose from preset options or create custom schedules.</li>
                 <li><strong>Start Monitoring:</strong> Click "Start Monitoring" to begin automatic speed testing with status indicators and countdown timers.</li>
             </ol>
 
@@ -202,52 +202,141 @@
                 <li>Run an initial speed test to establish baseline performance</li>
                 <li>Display results in the Current Speed section</li>
                 <li>Begin plotting data on the Speed History chart</li>
-                <li>Continue testing at your specified interval</li>
+                <li>Continue testing according to your scheduled pattern</li>
             </ul>
         </div>
 
         <div class="manual-section">
             <h2>⚙️ Configuration Options</h2>
             
-            <h3>Test Interval Settings</h3>
+            <h3>Bandwidth Usage Guidelines</h3>
             <div class="table-responsive">
                 <table class="settings-table">
                     <thead>
                         <tr>
+                            <th>Test Frequency</th>
+                            <th>Daily Bandwidth Usage</th>
+                            <th>Monthly Usage (Estimate)</th>
+                            <th>Recommended For</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Every 5-10 minutes</td>
+                            <td>200-400 MB</td>
+                            <td>6-12 GB</td>
+                            <td>Troubleshooting active issues</td>
+                        </tr>
+                        <tr>
+                            <td>Every 15-30 minutes</td>
+                            <td>50-100 MB</td>
+                            <td>1.5-3 GB</td>
+                            <td>Regular monitoring</td>
+                        </tr>
+                        <tr>
+                            <td>Every hour</td>
+                            <td>25-50 MB</td>
+                            <td>0.75-1.5 GB</td>
+                            <td>Long-term trend analysis</td>
+                        </tr>
+                        <tr>
+                            <td>Work hours only</td>
+                            <td>15-30 MB</td>
+                            <td>0.3-0.6 GB</td>
+                            <td>Business hour monitoring</td>
+                        </tr>
+                        <tr>
+                            <td>Daily tests</td>
+                            <td>2-5 MB</td>
+                            <td>60-150 MB</td>
+                            <td>Minimal usage monitoring</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Scheduling Options</h3>
+            <p>The application offers two powerful scheduling modes to fit your monitoring needs:</p>
+            
+            <h4>Simple Interval Mode</h4>
+            <p>Perfect for consistent, regular monitoring at fixed intervals:</p>
+            <div class="table-responsive">
+                <table class="settings-table">
+                    <thead>
+                        <tr>
+                            <th>Preset</th>
                             <th>Interval</th>
                             <th>Best For</th>
-                            <th>Bandwidth Usage</th>
                             <th>Data Points/Day</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>1-5 minutes</td>
-                            <td>Troubleshooting connectivity issues</td>
-                            <td>High (200-500 MB/day)</td>
-                            <td>288-1440</td>
+                            <td>5m</td>
+                            <td>Every 5 minutes</td>
+                            <td>Troubleshooting, real-time monitoring</td>
+                            <td>288</td>
                         </tr>
                         <tr>
-                            <td>15-30 minutes</td>
-                            <td>Regular monitoring</td>
-                            <td>Medium (50-100 MB/day)</td>
-                            <td>48-96</td>
+                            <td>15m</td>
+                            <td>Every 15 minutes</td>
+                            <td>Active monitoring, work hours</td>
+                            <td>96</td>
                         </tr>
                         <tr>
-                            <td>60 minutes</td>
-                            <td>Long-term trend analysis</td>
-                            <td>Low (25-50 MB/day)</td>
+                            <td>30m</td>
+                            <td>Every 30 minutes</td>
+                            <td>Regular monitoring, balanced data</td>
+                            <td>48</td>
+                        </tr>
+                        <tr>
+                            <td>1h</td>
+                            <td>Every hour</td>
+                            <td>Long-term trends, minimal bandwidth</td>
                             <td>24</td>
+                        </tr>
+                        <tr>
+                            <td>1d</td>
+                            <td>Daily at midnight</td>
+                            <td>Daily summaries, minimal usage</td>
+                            <td>1</td>
                         </tr>
                     </tbody>
                 </table>
+            </div>
+
+            <h4>Cron Expression Mode</h4>
+            <p>Advanced scheduling using UNIX cron expressions for precise timing control:</p>
+            <ul>
+                <li><strong>Work Hours Preset:</strong> Monitors Monday-Friday, 9 AM to 5 PM, hourly</li>
+                <li><strong>Custom Expressions:</strong> Create complex schedules using standard cron syntax</li>
+                <li><strong>Real-time Validation:</strong> Instant feedback on expression validity</li>
+                <li><strong>Next Run Preview:</strong> See when your next test will execute</li>
+            </ul>
+
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <h5>Common Cron Patterns</h5>
+                    <ul>
+                        <li><code>0 */4 * * *</code> - Every 4 hours</li>
+                        <li><code>0 9,17 * * 1-5</code> - 9 AM & 5 PM, weekdays</li>
+                        <li><code>*/30 9-17 * * 1-5</code> - Every 30 min, work hours</li>
+                        <li><code>0 0 * * 0</code> - Every Sunday at midnight</li>
+                    </ul>
+                </div>
+                <div class="feature-item">
+                    <h5>Cron Expression Help</h5>
+                    <p>Click the "Help with cron expressions" link to access crontab.guru, an interactive tool for building and understanding cron expressions.</p>
+                    <p>Format: <code>minute hour day month weekday</code></p>
+                </div>
             </div>
 
             <h3>Monitoring Controls</h3>
             <ul>
                 <li><strong>Start/Stop Monitoring:</strong> Toggle automatic speed testing on or off</li>
                 <li><strong>Manual Test:</strong> Run a single speed test immediately</li>
-                <li><strong>Interval Selection:</strong> Choose how frequently to run automatic tests</li>
+                <li><strong>Schedule Type:</strong> Switch between Simple Interval and Cron Expression modes</li>
+                <li><strong>Preset Buttons:</strong> Quick-select common scheduling patterns</li>
                 <li><strong>Clear Data:</strong> Remove all stored speed test history</li>
             </ul>
         </div>
@@ -441,6 +530,6 @@
         </div>
     </footer>
 
-    <script src="../script.js?v=1.0.2-20250923"></script>
+    <script src="../script.js?v=1.2.0-20250928"></script>
 </body>
 </html>

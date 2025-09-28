@@ -285,7 +285,7 @@ function createMenu() {
             dialog.showMessageBox(mainWindow, {
               type: 'info',
               title: 'About Internet Speed Monitor',
-              message: 'Internet Speed Monitor v1.1.7',
+              message: 'Internet Speed Monitor v1.2.0',
               detail: `A simple tool to monitor your internet connection speed at regular intervals.
 
 Features:
@@ -461,11 +461,12 @@ app.on('window-all-closed', () => {
 });
 
 // IPC handlers - now with proper initialization checks
-ipcMain.handle('start-monitoring', async (event, interval) => {
+ipcMain.handle('start-monitoring', async (event, schedule) => {
   log('=== START MONITORING REQUESTED ===');
   log('start-monitoring called, isInitialized: ' + isInitialized);
   log('speedMonitor exists: ' + !!speedMonitor);
   log('dataStore exists: ' + !!dataStore);
+  log('schedule:', schedule);
   
   if (!isInitialized) {
     log('Modules not initialized, attempting to initialize...');
@@ -488,8 +489,8 @@ ipcMain.handle('start-monitoring', async (event, interval) => {
   }
   
   try {
-    console.log('Starting speed monitor with interval:', interval);
-    speedMonitor.start(interval);
+    console.log('Starting speed monitor with schedule:', schedule);
+    speedMonitor.start(schedule);
     return { success: true };
   } catch (error) {
     console.error('Error starting speed monitor:', error);

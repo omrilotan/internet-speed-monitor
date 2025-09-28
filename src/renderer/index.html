@@ -12,7 +12,7 @@
         <header>
             <div class="header-left">
                 <h1>Internet Speed Monitor</h1>
-                <small id="app-version">Version 1.1.7</small>
+                <small id="app-version">Version 1.2.0</small>
             </div>
             <div class="status-indicator">
                 <span id="status-text">Stopped</span>
@@ -29,10 +29,29 @@
         <main>
             <section class="controls">
                 <div class="controls-row">
-                    <div class="control-group">
-                        <label for="interval">Test Interval (minutes):</label>
-                        <input type="number" id="interval" min="1" max="60" value="5" step="1" title="Use arrow keys or mouse wheel for smart stepping: 1, 5, 10, 15, 30, 60">
-                        <small class="input-hint">↑↓ for smart steps</small>
+                    <div class="control-group cron-group">
+                        <select id="schedule-type">
+                            <option value="interval">Interval</option>
+                            <option value="cron">Cron</option>
+                        </select>
+                        
+                        <div id="interval-controls" class="schedule-controls">
+                            <input type="number" id="interval" min="1" max="60" value="5" step="1" title="Minutes between tests">
+                            <small class="input-hint">Every <span id="interval-display">5</span> minutes</small>
+                        </div>
+                        
+                        <div id="cron-controls" class="schedule-controls" style="display: none;">
+                            <input type="text" id="cron-expression" placeholder="*/5 * * * *" title="Enter cron expression">
+                            <small class="input-hint" id="cron-description">Every 5 minutes</small>
+                            <div class="cron-presets">
+                                <button type="button" class="preset-btn" data-cron="*/5 * * * *" title="Every 5 minutes">5m</button>
+                                <button type="button" class="preset-btn" data-cron="*/15 * * * *" title="Every 15 minutes">15m</button>
+                                <button type="button" class="preset-btn" data-cron="*/30 * * * *" title="Every 30 minutes">30m</button>
+                                <button type="button" class="preset-btn" data-cron="0 * * * *" title="Every hour">1h</button>
+                                <button type="button" class="preset-btn" data-cron="0 9-17 * * 1-5" title="Every hour, 9am-5pm, Mon-Fri">Work</button>
+                                <button type="button" class="preset-btn custom-btn" data-cron="" title="Enter custom cron expression">Custom</button>
+                            </div>
+                        </div>
                     </div>
                     <div class="control-group">
                         <button id="start-stop-btn" class="control-icon-btn" title="Start automatic speed testing">▶️</button>
@@ -40,12 +59,8 @@
                     </div>
                 </div>
                 <div class="controls-row">
-                    <div class="checkbox-group">
-                        <label class="checkbox-label" title="Round the next test time to nice intervals (e.g., 60min→top of hour, 30min→half hour, 15min→quarter hour, 10/5min→round intervals, otherwise→nearest minute)">
-                            <input type="checkbox" id="round-to-nearest">
-                            <span class="checkmark"></span>
-                            Round to nearest
-                        </label>
+                    <div class="schedule-info">
+                        <span id="next-test-info">Next test: <span id="next-test-time">--:--</span></span>
                     </div>
                     <div class="hamburger-menu">
                         <button id="hamburger-btn" class="btn btn-secondary btn-small hamburger-toggle" title="More options">☰</button>
@@ -123,7 +138,7 @@
             </section>
 
             <section class="chart-section">
-                <h2>Speed History</h2>
+                <h2>Speed History <small style="font-weight: normal; color: #666; font-size: 0.7em;">(last 20 data points)</small></h2>
                 <div class="chart-container">
                     <canvas id="speedChart"></canvas>
                 </div>

@@ -5,6 +5,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2025-09-28
+
+### 🚀 Notable Features
+- **Advanced Cron Scheduling** - Complete cron-style scheduling system with UNIX cron expression support
+- **Dual Scheduling Modes** - Choose between Simple Interval (1-60 minutes) or flexible Cron Expression scheduling
+- **Smart Preset Buttons** - Quick-access buttons for common schedules: 5m, 15m, 30m, 1h, 1d, Work hours, and Custom
+- **Real-time Cron Validation** - Live validation and description of cron expressions with helpful error messages
+- **Enhanced Custom Scheduling** - Support for complex schedules like "Every 30 minutes during work hours" or "Daily at specific times"
+
+### ✨ User Experience Improvements
+- **Streamlined Interface** - Removed "Schedule:" label for cleaner, more compact design
+- **Responsive Cron Controls** - Optimized layout that adapts to different screen sizes without overflow
+- **Interactive Cron Help** - Built-in link to crontab.guru for creating custom schedules with helpful guidance
+- **Better Preset Organization** - Curated preset selection (removed 10m and 2h, added 1d) for optimal user workflow
+- **Chart Context Information** - Added "(last 20 data points)" subtitle to Speed History chart for clarity
+
+### 🎯 Enhanced Scheduling Capabilities
+- **Work Hours Preset** - "Every hour, 9am-5pm, Mon-Fri" for business environment monitoring
+- **Daily Monitoring** - "1d" preset for once-daily speed checks at midnight
+- **Flexible Intervals** - Support for any cron-compatible schedule including minutes, hours, days, weeks, months
+- **Custom Expressions** - Full UNIX cron syntax support with real-time validation and descriptions
+
+### 🔧 Technical Improvements
+- **Cron Parser Integration** - Added cron-parser library for robust schedule parsing and validation
+- **Node-cron Implementation** - Integrated node-cron for reliable cron-based task scheduling
+- **Improved Space Utilization** - CSS optimizations for better use of horizontal space in cron controls
+- **Enhanced Error Handling** - Better error messages and fallback handling for invalid cron expressions
+- **Code Cleanup** - Removed legacy round-to-nearest logic and unused scheduling code
+
+### 📚 Documentation Updates
+- **Feature Documentation** - Updated README and docs to reflect new cron scheduling capabilities
+- **User Guide Enhancement** - Added explanation of both scheduling modes and preset options
+- **Technical Reference** - Documented cron expression support and validation features
+
 ## [1.1.7] - 2025-09-28
 
 ### 🐛 Critical Bug Fix

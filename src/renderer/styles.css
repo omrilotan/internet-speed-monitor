@@ -210,19 +210,23 @@ h1 {
     display: flex;
     flex-direction: column;
     gap: 15px;
+    overflow-x: auto; /* Handle horizontal overflow */
+    min-width: 0; /* Allow shrinking */
 }
 
 .controls-row {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     flex-wrap: wrap;
     gap: 15px;
+    min-width: 0; /* Allow shrinking */
+    overflow: visible; /* Ensure content is visible */
 }
 
 .control-group {
     display: flex;
-    align-items: center;
+    align-items: start;
     gap: 10px;
 }
 
@@ -307,6 +311,122 @@ h1 {
 
 .checkbox-label:hover .checkmark {
     border-color: #007bff;
+}
+
+/* Cron interface styles */
+.cron-group {
+    max-width: 100%; /* Use all available space */
+    min-width: 300px; /* Minimum width for usability */
+    overflow: hidden; /* Prevent content overflow */
+}
+
+.cron-group label {
+    min-width: 100px;
+}
+
+.cron-group select {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: white;
+    margin-right: 10px;
+    min-width: 120px;
+}
+
+.schedule-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 0 1 400px; /* Don't grow, but can shrink, with preferred width of 400px */
+    margin-left: 10px;
+    min-width: 200px; /* Minimum width for usability */
+    max-width: 100%; /* Don't exceed container width */
+    overflow: hidden; /* Prevent overflow */
+}
+
+.schedule-controls > * {
+    width: 100%; /* Make all direct children fill width */
+}
+
+.schedule-controls input[type="number"] {
+    width: 60px;
+}
+
+.schedule-controls input[type="text"] {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 100%; /* Fill all available space */
+    max-width: none; /* Remove max-width constraint */
+    font-size: 13px;
+    box-sizing: border-box;
+}
+
+.cron-presets {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    margin-top: 5px;
+}
+
+.preset-btn {
+    padding: 6px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    cursor: pointer;
+    font-size: 0.85em;
+    transition: all 0.2s ease;
+    color: #495057;
+}
+
+.preset-btn:hover {
+    background: linear-gradient(135deg, #e9ecef, #dee2e6);
+    border-color: #adb5bd;
+    transform: translateY(-1px);
+}
+
+.preset-btn:active {
+    transform: translateY(0);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.custom-btn {
+    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+    border-color: #ffc107;
+    color: #856404;
+}
+
+.custom-btn:hover {
+    background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+    border-color: #e0a800;
+}
+
+.schedule-info {
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    color: #666;
+    background-color: #f8f9fa;
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #e9ecef;
+}
+
+#next-test-time {
+    font-weight: 600;
+    color: #007bff;
+}
+
+#interval-display {
+    font-weight: 600;
+    color: #007bff;
+}
+
+#cron-description {
+    font-weight: 500;
+    color: #28a745;
 }
 
 .control-buttons {
@@ -654,6 +774,26 @@ tbody tr:hover {
     
     .current-stats {
         grid-template-columns: repeat(2, 1fr);
+    }
+    
+    /* Cron controls responsive adjustments */
+    .cron-group {
+        min-width: 0; /* Allow full shrinking on mobile */
+    }
+    
+    .schedule-controls {
+        margin-left: 0; /* Remove left margin on mobile */
+        min-width: 0; /* Allow full shrinking */
+        flex: 1; /* Take available space */
+    }
+    
+    .cron-presets {
+        gap: 3px; /* Tighter gap on mobile */
+    }
+    
+    .preset-btn {
+        font-size: 0.8em; /* Smaller font on mobile */
+        padding: 4px 8px; /* Tighter padding */
     }
 }
 

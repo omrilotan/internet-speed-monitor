@@ -4,7 +4,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 // the ipcRenderer without exposing the entire object
 contextBridge.exposeInMainWorld('electronAPI', {
   // Speed monitoring
-  startMonitoring: (interval) => ipcRenderer.invoke('start-monitoring', interval),
+  startMonitoring: (schedule) => ipcRenderer.invoke('start-monitoring', schedule),
   stopMonitoring: () => ipcRenderer.invoke('stop-monitoring'),
   getMonitoringStatus: () => ipcRenderer.invoke('get-monitoring-status'),
   testOnceNow: () => ipcRenderer.invoke('test-once-now'),

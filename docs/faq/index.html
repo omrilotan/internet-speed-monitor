@@ -85,7 +85,7 @@
     }
     </script>
     
-    <link rel="stylesheet" href="../styles.css?v=1.1.4-20250925">
+    <link rel="stylesheet" href="../styles.css?v=1.2.0-20250928">
     <style>
         .faq-content {
             max-width: 800px;
@@ -212,10 +212,15 @@
 
         <div class="faq-item">
             <div class="faq-question">
-                What's the minimum and maximum test interval?
+                What scheduling options are available?
             </div>
             <div class="faq-answer">
-                <p>You can set test intervals from 1 minute to 60 minutes. For continuous monitoring, we recommend 15-30 minutes to balance data collection with bandwidth usage and system resources.</p>
+                <p>The app offers two scheduling modes:</p>
+                <ul>
+                    <li><strong>Simple Interval:</strong> Choose from preset buttons (5m, 15m, 30m, 1h, 1d) for regular testing</li>
+                    <li><strong>Cron Expression:</strong> Advanced scheduling using UNIX cron syntax for precise timing, including work hours presets and custom patterns</li>
+                </ul>
+                <p>For most users, the Simple Interval presets are sufficient. Use Cron Expressions for complex schedules like "every weekday at 9 AM and 5 PM".</p>
             </div>
         </div>
 
@@ -231,6 +236,22 @@
                     <li><strong>Linux:</strong> <span class="code">~/.config/Internet Speed Monitor/</span></li>
                 </ul>
                 </p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                How do I create custom cron expressions?
+            </div>
+            <div class="faq-answer">
+                <p>Cron expressions use five fields: <span class="code">minute hour day month weekday</span>. Common examples:</p>
+                <ul>
+                    <li><span class="code">0 9 * * 1-5</span> - Every weekday at 9 AM</li>
+                    <li><span class="code">*/30 9-17 * * 1-5</span> - Every 30 minutes during work hours</li>
+                    <li><span class="code">0 */4 * * *</span> - Every 4 hours</li>
+                    <li><span class="code">0 0 * * 0</span> - Every Sunday at midnight</li>
+                </ul>
+                <p>Use the "Help with cron expressions" link in the app to access crontab.guru for interactive help building expressions.</p>
             </div>
         </div>
 
@@ -415,6 +436,6 @@
         });
     </script>
 
-    <script src="../script.js?v=1.0.2-20250923"></script>
+    <script src="../script.js?v=1.2.0-20250928"></script>
 </body>
 </html>

@@ -48,7 +48,7 @@
     }
     </script>
     
-    <link rel="stylesheet" href="../styles.css?v=1.1.4-20250925">
+    <link rel="stylesheet" href="../styles.css?v=1.2.0-20250928">
     <style>
         .guide-content {
             max-width: 800px;
@@ -181,24 +181,25 @@
                 <li>Perfect for quick checks or troubleshooting</li>
             </ul>
             
-            <h4>Choose Test Interval:</h4>
+            <h4>Configure Your Schedule:</h4>
             <ul>
-                <li>Click the interval dropdown (default: 5 minutes)</li>
-                <li>Select from 1-60 minutes based on your needs</li>
-                <li>Shorter intervals = more data points, but more bandwidth usage</li>
+                <li><strong>Simple Interval:</strong> Choose preset buttons (5m, 15m, 30m, 1h, 1d) for regular testing</li>
+                <li><strong>Cron Expression:</strong> Use advanced scheduling with Work hours preset or custom patterns</li>
+                <li><strong>Custom Schedules:</strong> Create precise timing with expressions like "every weekday at 9 AM"</li>
+                <li>Get real-time validation and next execution preview</li>
             </ul>
             
             <h4>Start Monitoring:</h4>
             <ol>
                 <li>Click the "Start Monitoring" button</li>
                 <li>The app will begin running speed tests automatically</li>
-                <li>Watch the status indicator change to "Running" during tests and "Sleeping" between tests</li>
-                <li>See countdown timer showing when your next test will run</li>
+                <li>Watch the status indicator change to "Running" during tests and show countdown or next scheduled time</li>
+                <li>See next execution time for your scheduled pattern</li>
                 <li>Speed data will appear in real-time on the dashboard</li>
             </ol>
             
             <div class="note">
-                <strong>🔋 Performance Tip:</strong> For continuous monitoring, consider starting with 15-30 minute intervals to balance data collection with system resources.
+                <strong>⏰ Scheduling Tip:</strong> Start with preset intervals like 15m or 30m for regular monitoring, or use Work hours preset for business-focused monitoring that only tests during weekdays 9 AM-5 PM.
             </div>
         </div>
 
@@ -273,6 +274,6 @@
         </div>
     </footer>
 
-    <script src="../script.js?v=1.0.2-20250923"></script>
+    <script src="../script.js?v=1.2.0-20250928"></script>
 </body>
 </html>

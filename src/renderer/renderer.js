@@ -16,7 +16,19 @@ const clearSelectiveBtn = document.getElementById('clear-selective-btn');
 const exportCsvBtn = document.getElementById('export-csv-btn');
 const hamburgerBtn = document.getElementById('hamburger-btn');
 const hamburgerDropdown = document.getElementById('hamburger-dropdown');
+
+// Schedule controls
+const scheduleTypeSelect = document.getElementById('schedule-type');
+const intervalControls = document.getElementById('interval-controls');
+const cronControls = document.getElementById('cron-controls');
 const intervalInput = document.getElementById('interval');
+const intervalDisplay = document.getElementById('interval-display');
+const cronExpressionInput = document.getElementById('cron-expression');
+const cronDescription = document.getElementById('cron-description');
+const nextTestInfo = document.getElementById('next-test-info');
+const nextTestTimeDisplay = document.getElementById('next-test-time');
+
+// Status elements
 const statusText = document.getElementById('status-text');
 const statusDot = document.getElementById('status-dot');
 const downloadSpeed = document.getElementById('download-speed');
@@ -62,6 +74,27 @@ hamburgerBtn.addEventListener('click', toggleHamburgerMenu);
 clearHistoryBtn.addEventListener('click', clearHistory);
 clearSelectiveBtn.addEventListener('click', showClearDataModal);
 exportCsvBtn.addEventListener('click', exportCSV);
+
+// Schedule control event listeners
+scheduleTypeSelect.addEventListener('change', handleScheduleTypeChange);
+intervalInput.addEventListener('input', updateIntervalDisplay);
+cronExpressionInput.addEventListener('input', updateCronDescription);
+
+// Cron preset button listeners
+document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('preset-btn')) {
+        const cronExpression = e.target.dataset.cron;
+        if (e.target.classList.contains('custom-btn')) {
+            // For custom button, clear the input and focus it
+            cronExpressionInput.value = '';
+            cronExpressionInput.focus();
+            updateCronDescription();
+        } else {
+            cronExpressionInput.value = cronExpression;
+            updateCronDescription();
+        }
+    }
+});
 
 // Close hamburger menu when clicking outside
 document.addEventListener('click', (e) => {
@@ -162,16 +195,11 @@ function hideTestRunningIndicator() {
 
 async function startMonitoring() {
     console.log('=== START MONITORING CLICKED ===');
-    const interval = parseInt(intervalInput.value);
-    console.log('Requested interval:', interval);
     
-    if (interval < 1 || interval > 60) {
-        console.error('Invalid interval:', interval);
-        alert('Please enter a valid interval between 1 and 60 minutes.');
-        return;
-    }
-
     try {
+        const schedule = getCurrentSchedule();
+        console.log('Schedule configuration:', schedule);
+        
         console.log('Setting status to initializing...');
         showStatus('Initializing...', 'running');
         
@@ -180,7 +208,7 @@ async function startMonitoring() {
         await new Promise(resolve => setTimeout(resolve, 1000));
         
         console.log('Invoking start-monitoring via electronAPI...');
-        const response = await window.electronAPI.startMonitoring(interval);
+        const response = await window.electronAPI.startMonitoring(schedule);
         console.log('API response received:', response);
         
         if (response.success) {
@@ -188,17 +216,17 @@ async function startMonitoring() {
             isMonitoring = true;
             updateUI();
             showStatus('Starting monitoring...', 'running');
-            startNextTestTimer(interval);
+            startNextTestTimer(schedule);
         } else {
             console.error('Monitoring failed to start:', response.error);
             showStatus('Stopped', 'stopped');
             alert('Failed to start monitoring: ' + response.error);
         }
+        
     } catch (error) {
         console.error('Error starting monitoring:', error);
-        console.error('Error stack:', error.stack);
-        showStatus('Error', 'stopped');
-        alert('Failed to start monitoring: ' + error.message);
+        showStatus('Stopped', 'stopped');
+        alert('Error: ' + error.message);
     }
 }
 
@@ -412,8 +440,8 @@ async function updateMonitoringStatus() {
         
         // If monitoring is active, start the next test timer
         if (isMonitoring) {
-            const interval = parseInt(intervalInput.value) || 5;
-            startNextTestTimer(interval);
+            const schedule = getCurrentSchedule();
+            startNextTestTimer(schedule);
         }
     } catch (error) {
         console.error('Error getting monitoring status:', error);
@@ -640,41 +668,9 @@ async function loadHistoricalData() {
 // Smart stepping for interval input
 function setupIntervalStepping() {
     const intervalInput = document.getElementById('interval');
-    const roundToNearest = document.getElementById('round-to-nearest');
     
     // Define the step sequence
     const stepSequence = [1, 5, 10, 15, 30, 60];
-    
-    // Function to suggest appropriate interval for rounding
-    function suggestRoundingInterval(currentValue) {
-        if (!roundToNearest.checked) return currentValue;
-        
-        // Find the closest value in step sequence for better rounding behavior
-        let closest = stepSequence[0];
-        let minDiff = Math.abs(currentValue - closest);
-        
-        for (let i = 1; i < stepSequence.length; i++) {
-            const diff = Math.abs(currentValue - stepSequence[i]);
-            if (diff < minDiff) {
-                minDiff = diff;
-                closest = stepSequence[i];
-            }
-        }
-        
-        return closest;
-    }
-    
-    // Update input value when rounding checkbox changes
-    roundToNearest.addEventListener('change', () => {
-        if (roundToNearest.checked) {
-            const currentValue = parseInt(intervalInput.value) || 5;
-            const suggestedValue = suggestRoundingInterval(currentValue);
-            if (suggestedValue !== currentValue) {
-                intervalInput.value = suggestedValue;
-                intervalInput.dispatchEvent(new Event('input'));
-            }
-        }
-    });
     
     // Handle arrow key presses and wheel events
     intervalInput.addEventListener('keydown', (e) => {
@@ -741,118 +737,46 @@ function getNextStepValue(currentValue, isIncrement, stepSequence) {
     }
 }
 
-// Rounding helper function
-function getRoundedNextTestTime(intervalMinutes) {
-    const roundToNearest = document.getElementById('round-to-nearest').checked;
-    const intervalInput = document.getElementById('interval');
-    
-    if (!roundToNearest) {
-        return new Date(Date.now() + intervalMinutes * 60 * 1000);
-    }
-    
-    // Suggest better interval values for rounding if current value isn't optimal
-    const stepSequence = [1, 5, 10, 15, 30, 60];
-    const currentInputValue = parseInt(intervalInput.value) || intervalMinutes;
-    
-    // If the current interval isn't in our step sequence, suggest the closest one
-    if (!stepSequence.includes(currentInputValue) && currentInputValue === intervalMinutes) {
-        let closest = stepSequence[0];
-        let minDiff = Math.abs(currentInputValue - closest);
-        
-        for (let i = 1; i < stepSequence.length; i++) {
-            const diff = Math.abs(currentInputValue - stepSequence[i]);
-            if (diff < minDiff) {
-                minDiff = diff;
-                closest = stepSequence[i];
-            }
-        }
-        
-        // Update the input value to the suggested one
-        if (closest !== currentInputValue) {
-            intervalInput.value = closest;
-            intervalMinutes = closest; // Use the new value for calculation
+// Next test time calculation function
+function getNextTestTime(schedule) {
+    if (schedule.type === 'interval') {
+        // For simple intervals, calculate next test time
+        const now = new Date();
+        return new Date(now.getTime() + schedule.minutes * 60 * 1000);
+    } else if (schedule.type === 'cron') {
+        // For cron expressions, use the cron-parser library
+        try {
+            const parser = window.require('cron-parser');
+            const interval = parser.parseExpression(schedule.expression);
+            return interval.next().toDate();
+        } catch (error) {
+            console.error('Error parsing cron expression:', error);
+            // Fallback to 5-minute interval
+            const now = new Date();
+            return new Date(now.getTime() + 5 * 60 * 1000);
         }
     }
     
+    // Fallback
     const now = new Date();
-    const nextTest = new Date(now.getTime() + intervalMinutes * 60 * 1000);
-    
-    // Define rounding rules based on interval
-    if (intervalMinutes >= 60) {
-        // Round to nearest hour
-        nextTest.setMinutes(0, 0, 0);
-        if (now.getMinutes() >= 30) {
-            nextTest.setHours(nextTest.getHours() + 1);
-        }
-    } else if (intervalMinutes >= 30) {
-        // Round to nearest half hour (00 or 30 minutes)
-        const minutes = nextTest.getMinutes();
-        if (minutes < 15) {
-            nextTest.setMinutes(0, 0, 0);
-        } else if (minutes < 45) {
-            nextTest.setMinutes(30, 0, 0);
-        } else {
-            nextTest.setMinutes(0, 0, 0);
-            nextTest.setHours(nextTest.getHours() + 1);
-        }
-    } else if (intervalMinutes >= 15) {
-        // Round to nearest quarter hour (00, 15, 30, 45)
-        const minutes = nextTest.getMinutes();
-        if (minutes < 7.5) {
-            nextTest.setMinutes(0, 0, 0);
-        } else if (minutes < 22.5) {
-            nextTest.setMinutes(15, 0, 0);
-        } else if (minutes < 37.5) {
-            nextTest.setMinutes(30, 0, 0);
-        } else if (minutes < 52.5) {
-            nextTest.setMinutes(45, 0, 0);
-        } else {
-            nextTest.setMinutes(0, 0, 0);
-            nextTest.setHours(nextTest.getHours() + 1);
-        }
-    } else if (intervalMinutes >= 10) {
-        // Round to nearest 10 minutes (00, 10, 20, 30, 40, 50)
-        const minutes = nextTest.getMinutes();
-        const rounded = Math.round(minutes / 10) * 10;
-        if (rounded >= 60) {
-            nextTest.setMinutes(0, 0, 0);
-            nextTest.setHours(nextTest.getHours() + 1);
-        } else {
-            nextTest.setMinutes(rounded, 0, 0);
-        }
-    } else if (intervalMinutes >= 5) {
-        // Round to nearest 5 minutes (00, 05, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55)
-        const minutes = nextTest.getMinutes();
-        const rounded = Math.round(minutes / 5) * 5;
-        if (rounded >= 60) {
-            nextTest.setMinutes(0, 0, 0);
-            nextTest.setHours(nextTest.getHours() + 1);
-        } else {
-            nextTest.setMinutes(rounded, 0, 0);
-        }
-    } else {
-        // Round to nearest whole minute
-        nextTest.setSeconds(0, 0);
-    }
-    
-    return nextTest;
+    return new Date(now.getTime() + 5 * 60 * 1000);
 }
 
 // Next test timer functions
-function startNextTestTimer(intervalMinutes) {
+function startNextTestTimer(schedule) {
     stopNextTestTimer(); // Clear any existing timer
     
-    // Calculate next test time with optional rounding
-    nextTestTimestamp = getRoundedNextTestTime(intervalMinutes);
+    // Calculate next test time based on schedule type
+    nextTestTimestamp = getNextTestTime(schedule);
     
     // Show next test info
     nextTest.style.display = 'block';
     updateNextTestDisplay();
     
-    // Update display every 30 seconds (less frequent since we show actual time, not countdown)
+    // Update display every 30 seconds
     nextTestTimer = setInterval(() => {
         updateNextTestDisplay();
-    }, 30000); // 30 seconds instead of 1 second
+    }, 30000);
 }
 
 function stopNextTestTimer() {
@@ -881,9 +805,8 @@ function updateNextTestDisplay() {
     
     if (timeLeft <= 0) {
         // Test should have run, update for next cycle
-        const intervalInput = document.getElementById('interval');
-        const interval = parseInt(intervalInput.value) || 5;
-        nextTestTimestamp = new Date(Date.now() + interval * 60 * 1000);
+        const schedule = getCurrentSchedule();
+        nextTestTimestamp = getNextTestTime(schedule);
     }
     
     // Display the actual time when the test will run (24-hour format)
@@ -951,9 +874,8 @@ function updateCurrentStatsEnhanced(result) {
     
     // Reset next test timer if monitoring is active
     if (isMonitoring) {
-        const intervalInput = document.getElementById('interval');
-        const interval = parseInt(intervalInput.value) || 5;
-        startNextTestTimer(interval);
+        const schedule = getCurrentSchedule();
+        startNextTestTimer(schedule);
     }
 }
 
@@ -1182,4 +1104,108 @@ async function confirmClearData() {
 function toggleHamburgerMenu() {
     const isVisible = hamburgerDropdown.style.display === 'block';
     hamburgerDropdown.style.display = isVisible ? 'none' : 'block';
+}
+
+// Cron interface functions
+function handleScheduleTypeChange() {
+    const scheduleType = scheduleTypeSelect.value;
+    
+    if (scheduleType === 'cron') {
+        intervalControls.style.display = 'none';
+        cronControls.style.display = 'flex';
+        cronExpressionInput.value = cronExpressionInput.value || '*/5 * * * *';
+        updateCronDescription();
+    } else {
+        intervalControls.style.display = 'flex';
+        cronControls.style.display = 'none';
+        updateIntervalDisplay();
+    }
+}
+
+function updateIntervalDisplay() {
+    const interval = parseInt(intervalInput.value) || 5;
+    intervalDisplay.textContent = interval;
+}
+
+function updateCronDescription() {
+    const cronExpression = cronExpressionInput.value.trim();
+    
+    if (!cronExpression) {
+        cronDescription.innerHTML = 'Enter a cron expression - <a href="https://crontab.guru/" target="_blank" style="color: #007bff;">Create a custom schedule</a>';
+        cronDescription.style.color = '#666'; // Gray for empty
+        return;
+    }
+    
+    try {
+        // Simple cron description logic
+        const description = describeCronExpression(cronExpression);
+        if (description === 'Custom schedule') {
+            cronDescription.innerHTML = 'Custom schedule - <a href="https://crontab.guru/" target="_blank" style="color: #007bff;">Create a custom schedule</a>';
+        } else {
+            cronDescription.textContent = description;
+        }
+        cronDescription.style.color = '#28a745'; // Green for valid
+    } catch (error) {
+        cronDescription.textContent = 'Invalid cron expression';
+        cronDescription.style.color = '#dc3545'; // Red for invalid
+    }
+}
+
+function describeCronExpression(cronExpr) {
+    // Simple descriptions for common patterns
+    const patterns = {
+        '* * * * *': 'Every minute',
+        '*/1 * * * *': 'Every minute',
+        '*/5 * * * *': 'Every 5 minutes',
+        '*/10 * * * *': 'Every 10 minutes', 
+        '*/15 * * * *': 'Every 15 minutes',
+        '*/30 * * * *': 'Every 30 minutes',
+        '0 * * * *': 'Every hour',
+        '0 */2 * * *': 'Every 2 hours',
+        '0 */4 * * *': 'Every 4 hours',
+        '0 */6 * * *': 'Every 6 hours',
+        '0 */12 * * *': 'Every 12 hours',
+        '0 0 * * *': 'Daily at midnight',
+        '0 9 * * *': 'Daily at 9 AM',
+        '0 17 * * *': 'Daily at 5 PM',
+        '0 9-17 * * 1-5': 'Every hour, 9am-5pm, Mon-Fri',
+        '*/30 9-17 * * 1-5': 'Every 30 minutes, 9am-5pm, Mon-Fri',
+        '0 9,12,15,17 * * 1-5': 'At 9am, 12pm, 3pm, 5pm, Mon-Fri'
+    };
+    
+    if (patterns[cronExpr]) {
+        return patterns[cronExpr];
+    }
+    
+    // Basic validation - should have 5 parts
+    const parts = cronExpr.split(' ');
+    if (parts.length !== 5) {
+        throw new Error('Invalid format');
+    }
+    
+    return 'Custom schedule';
+}
+
+function getCurrentSchedule() {
+    const scheduleType = scheduleTypeSelect.value;
+    
+    if (scheduleType === 'cron') {
+        const cronExpression = cronExpressionInput.value.trim();
+        if (!cronExpression) {
+            throw new Error('Please enter a cron expression');
+        }
+        return {
+            type: 'cron',
+            expression: cronExpression
+        };
+    } else {
+        const interval = parseInt(intervalInput.value);
+        if (!interval || interval < 1) {
+            throw new Error('Please enter a valid interval');
+        }
+        return {
+            type: 'interval',
+            minutes: interval
+        };
+    }
 }

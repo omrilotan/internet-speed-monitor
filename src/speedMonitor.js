@@ -1,4 +1,5 @@
 const FastSpeedtest = require('fast-speedtest-api');
+const parser = require('cron-parser');
 
 class SpeedMonitor {
     constructor(dataStore, sendResultCallback, sendStartedCallback = null) {
@@ -17,7 +18,7 @@ class SpeedMonitor {
         this.sendStartedCallback = sendStartedCallback;
         this.isRunning = false;
         this.interval = null;
-        this.testInterval = 5; // minutes
+        this.schedule = { type: 'interval', minutes: 5 }; // default schedule
         this.currentTest = null;
         
         try {
@@ -40,24 +41,83 @@ class SpeedMonitor {
         console.log('SpeedMonitor constructor completed');
     }
 
-    start(intervalMinutes = 5) {
+    start(schedule = { type: 'interval', minutes: 5 }) {
         if (this.isRunning) {
             console.log('Speed monitor is already running');
             return;
         }
 
-        this.testInterval = intervalMinutes;
+        this.schedule = schedule;
         this.isRunning = true;
+        this.lastTestTime = null;
         
-        console.log(`Starting speed monitor with ${intervalMinutes} minute intervals`);
+        console.log(`Starting speed monitor with schedule:`, schedule);
         
         // Run initial test immediately
         this.runSpeedTest();
+        this.lastTestTime = new Date();
         
-        // Set up interval for periodic tests
-        this.interval = setInterval(() => {
+        if (schedule.type === 'cron') {
+            // Cron-style scheduling: check every minute if it's time to run
+            this.interval = setInterval(() => {
+                this.checkAndRunScheduledTest();
+            }, 60000); // Check every minute
+        } else {
+            // Traditional fixed interval scheduling
+            this.interval = setInterval(() => {
+                this.runSpeedTest();
+            }, schedule.minutes * 60 * 1000);
+        }
+    }
+
+    checkAndRunScheduledTest() {
+        if (!this.isRunning) return;
+        
+        const now = new Date();
+        const shouldRun = this.shouldRunTestNow(now);
+        
+        if (shouldRun) {
+            console.log(`Running scheduled test at ${now.toLocaleTimeString()}`);
             this.runSpeedTest();
-        }, intervalMinutes * 60 * 1000);
+            this.lastTestTime = new Date(now);
+        }
+    }
+
+    shouldRunTestNow(currentTime) {
+        if (!this.lastTestTime) return false;
+        
+        // Check if we've passed a reasonable minimum interval since last test
+        const timeSinceLastTest = (currentTime - this.lastTestTime) / (1000 * 60);
+        if (timeSinceLastTest < 0.5) { // Allow 30 second tolerance
+            return false;
+        }
+        
+        if (this.schedule.type === 'cron') {
+            // Use cron expression for scheduling
+            try {
+                const interval = parser.parseExpression(this.schedule.expression, {
+                    currentDate: this.lastTestTime
+                });
+                const nextRun = interval.next().toDate();
+                
+                // Allow 30 second tolerance
+                const tolerance = 30 * 1000;
+                return Math.abs(currentTime.getTime() - nextRun.getTime()) < tolerance;
+            } catch (error) {
+                console.error('Error parsing cron expression:', error);
+                return false;
+            }
+        } else {
+            // Simple interval scheduling
+            const intervalMinutes = this.schedule.minutes;
+            
+            // Check if we've passed the minimum interval since last test
+            if (timeSinceLastTest < intervalMinutes - 0.5) { // Allow 30 second tolerance
+                return false;
+            }
+            
+            return timeSinceLastTest >= intervalMinutes;
+        }
     }
 
     stop() {
@@ -69,7 +129,7 @@ class SpeedMonitor {
         this.isRunning = false;
         
         if (this.interval) {
-            clearInterval(this.interval);
+            clearInterval(this.interval); // Always use clearInterval now
             this.interval = null;
         }
 
@@ -157,7 +217,7 @@ class SpeedMonitor {
     getStatus() {
         return {
             isRunning: this.isRunning,
-            testInterval: this.testInterval,
+            schedule: this.schedule,
             hasCurrentTest: this.currentTest !== null
         };
     }

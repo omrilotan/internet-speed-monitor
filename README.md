@@ -6,9 +6,11 @@ A beautiful, easy-to-use desktop application that monitors your internet connect
 
 ## ✨ Features
 
-- **🚀 Automatic Monitoring** - Set intervals from 1-60 minutes for hands-free speed testing
+- **🚀 Advanced Scheduling** - Choose between Simple Interval (1-60 minutes) or flexible Cron Expression scheduling
+- **⚡ Smart Presets** - Quick-access buttons for common schedules: 5m, 15m, 30m, 1h, 1d, Work hours, and Custom
+- **🕒 Cron Support** - Full UNIX cron expression support with real-time validation and helpful descriptions
 - **⚡ Instant Testing** - "Test Once Now" button for on-demand speed tests without starting monitoring
-- **📊 Real-time Charts** - Beautiful visualizations of your internet speed over time  
+- **📊 Real-time Charts** - Beautiful visualizations of your internet speed over time (last 20 data points)
 - **📈 Performance Tracking** - Keep detailed history of download speeds, upload speeds, and ping
 - **📐 Median Statistics** - Track median performance across all your historical data for better insights
 - **⏱️ Smart Status Indicators** - Real-time display of test status with countdown to next scheduled test
