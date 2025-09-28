@@ -135,6 +135,11 @@ window.electronAPI.onSpeedTestStarted((event) => {
 window.electronAPI.onSpeedTestResult((event, result) => {
     hideTestRunningIndicator(); // Hide the running indicator when test completes
     
+    // Return to sleeping status if monitoring is active
+    if (isMonitoring) {
+        showStatus('Sleeping', 'sleeping');
+    }
+    
     // Add the new result to the allSpeedTests array at the beginning (most recent first)
     allSpeedTests.unshift(result);
     
@@ -182,7 +187,10 @@ function hideTestRunningIndicator() {
         // Only show next test info if monitoring is active and there's a valid timestamp
         // Let updateNextTestDisplay handle the actual display logic
         if (isMonitoring && nextTestTimestamp) {
-            updateNextTestDisplay();
+            // Use async/await but don't block the function
+            updateNextTestDisplay().catch(error => {
+                console.error('Error updating next test display:', error);
+            });
         }
     }
 }
@@ -209,8 +217,8 @@ async function startMonitoring() {
             console.log('Monitoring started successfully');
             isMonitoring = true;
             updateUI();
-            showStatus('Running', 'running');
-            startNextTestTimer(schedule);
+            showStatus('Sleeping', 'sleeping');
+            await startNextTestTimer(schedule);
         } else {
             console.error('Monitoring failed to start:', response.error);
             showStatus('Stopped', 'stopped');
@@ -435,7 +443,7 @@ async function updateMonitoringStatus() {
         // If monitoring is active, start the next test timer
         if (isMonitoring) {
             const schedule = getCurrentSchedule();
-            startNextTestTimer(schedule);
+            await startNextTestTimer(schedule);
         }
     } catch (error) {
         console.error('Error getting monitoring status:', error);
@@ -732,45 +740,55 @@ function getNextStepValue(currentValue, isIncrement, stepSequence) {
 }
 
 // Next test time calculation function
-function getNextTestTime(schedule) {
-    if (schedule.type === 'interval') {
-        // For simple intervals, calculate next test time
-        const now = new Date();
-        return new Date(now.getTime() + schedule.minutes * 60 * 1000);
-    } else if (schedule.type === 'cron') {
-        // For cron expressions, use the cron-parser library
-        try {
-            const parser = window.require('cron-parser');
-            const interval = parser.parseExpression(schedule.expression);
-            return interval.next().toDate();
-        } catch (error) {
-            console.error('Error parsing cron expression:', error);
-            // Fallback to 5-minute interval
-            const now = new Date();
-            return new Date(now.getTime() + 5 * 60 * 1000);
+async function getNextTestTime(schedule) {
+    try {
+        // Use the main process to calculate next test time (returns ms since epoch)
+        const result = await window.electronAPI.getNextTestTime(schedule);
+        if (typeof result === 'number') {
+            return new Date(result);
         }
+        // If main returned a serialized Date string, try to parse it
+        if (typeof result === 'string') {
+            const parsed = new Date(result);
+            if (!isNaN(parsed.getTime())) return parsed;
+        }
+        console.warn('Unexpected getNextTestTime response, falling back:', result);
+        // Fall through to fallback logic below
+    } catch (error) {
+        console.error('Error getting next test time from main process:', error);
+        // Fallback calculation in renderer
+        if (schedule.type === 'interval') {
+            const now = new Date();
+            return new Date(now.getTime() + schedule.minutes * 60 * 1000);
+        }
+        
+        // Fallback to 5 minutes for cron expressions that fail
+        const now = new Date();
+        return new Date(now.getTime() + 5 * 60 * 1000);
     }
-    
-    // Fallback
-    const now = new Date();
-    return new Date(now.getTime() + 5 * 60 * 1000);
 }
 
 // Next test timer functions
-function startNextTestTimer(schedule) {
+async function startNextTestTimer(schedule) {
     stopNextTestTimer(); // Clear any existing timer
     
-    // Calculate next test time based on schedule type
-    nextTestTimestamp = getNextTestTime(schedule);
-    
-    // Show next test info
-    nextTest.style.display = 'block';
-    updateNextTestDisplay();
-    
-    // Update display every 30 seconds
-    nextTestTimer = setInterval(() => {
-        updateNextTestDisplay();
-    }, 30000);
+    try {
+        // Calculate next test time based on schedule type
+        nextTestTimestamp = await getNextTestTime(schedule);
+        
+        // Show next test info
+        nextTest.style.display = 'block';
+        await updateNextTestDisplay();
+        
+        // Update display every 30 seconds
+        nextTestTimer = setInterval(async () => {
+            await updateNextTestDisplay();
+        }, 30000);
+    } catch (error) {
+        console.error('Error starting next test timer:', error);
+        // Hide next test display on error
+        nextTest.style.display = 'none';
+    }
 }
 
 function stopNextTestTimer() {
@@ -782,7 +800,7 @@ function stopNextTestTimer() {
     nextTestTimestamp = null;
 }
 
-function updateNextTestDisplay() {
+async function updateNextTestDisplay() {
     if (!nextTestTimestamp || !isMonitoring) {
         nextTest.style.display = 'none';
         return;
@@ -799,8 +817,13 @@ function updateNextTestDisplay() {
     
     if (timeLeft <= 0) {
         // Test should have run, update for next cycle
-        const schedule = getCurrentSchedule();
-        nextTestTimestamp = getNextTestTime(schedule);
+        try {
+            const schedule = getCurrentSchedule();
+            nextTestTimestamp = await getNextTestTime(schedule);
+        } catch (error) {
+            console.error('Error updating next test time:', error);
+            // Keep current timestamp if update fails
+        }
     }
     
     // Display the actual time when the test will run (24-hour format)

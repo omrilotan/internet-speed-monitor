@@ -285,7 +285,7 @@ function createMenu() {
             dialog.showMessageBox(mainWindow, {
               type: 'info',
               title: 'About Internet Speed Monitor',
-              message: 'Internet Speed Monitor v1.2.2',
+              message: 'Internet Speed Monitor v1.2.3',
               detail: `A simple tool to monitor your internet connection speed at regular intervals.
 
 Features:
@@ -704,25 +704,49 @@ ipcMain.handle('check-for-updates', async () => {
 // Handle next test time calculation
 ipcMain.handle('get-next-test-time', async (event, schedule) => {
   try {
+    if (!schedule || !schedule.type) {
+      logError('get-next-test-time called with invalid schedule:', schedule);
+      const now = Date.now();
+      return now + 5 * 60 * 1000; // 5 minutes in ms
+    }
+
     if (schedule.type === 'interval') {
-      // For simple intervals, calculate next test time
-      const now = new Date();
-      return new Date(now.getTime() + schedule.minutes * 60 * 1000);
+      // For simple intervals, calculate next test time (return ms since epoch)
+      const now = Date.now();
+      const next = now + (schedule.minutes || 5) * 60 * 1000;
+      log('get-next-test-time (interval) ->', new Date(next).toISOString());
+      return next;
     } else if (schedule.type === 'cron') {
       // For cron expressions, use the cron-parser library
-      const { CronExpressionParser } = require('cron-parser');
-      const interval = CronExpressionParser.parse(schedule.expression);
-      return interval.next().toDate();
+      if (!schedule.expression) {
+        logError('Cron schedule missing expression:', schedule);
+        const now = Date.now();
+        return now + 5 * 60 * 1000;
+      }
+
+      try {
+        const { CronExpressionParser } = require('cron-parser');
+        const interval = CronExpressionParser.parse(schedule.expression);
+        const nextDate = interval.next().toDate();
+        log('get-next-test-time (cron) expression=', schedule.expression, 'next=', nextDate.toISOString());
+        console.log('[get-next-test-time] cron parsed OK, next=', nextDate.toISOString());
+        return nextDate.getTime();
+      } catch (innerErr) {
+        logError('Error parsing cron expression in get-next-test-time:', schedule.expression, innerErr);
+        console.error('[get-next-test-time] cron parse failed for expression=', schedule.expression, innerErr);
+        const now = Date.now();
+        console.log('[get-next-test-time] falling back to +5 minutes');
+        return now + 5 * 60 * 1000;
+      }
     }
-    
+
     // Fallback
-    const now = new Date();
-    return new Date(now.getTime() + 5 * 60 * 1000);
+    const now = Date.now();
+    return now + 5 * 60 * 1000;
   } catch (error) {
-    logError('Error calculating next test time:', error);
-    // Fallback to 5 minutes on error
-    const now = new Date();
-    return new Date(now.getTime() + 5 * 60 * 1000);
+    logError('Unexpected error calculating next test time:', error);
+    const now = Date.now();
+    return now + 5 * 60 * 1000;
   }
 });
 

@@ -26,6 +26,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Version checking
   checkForUpdates: () => ipcRenderer.invoke('check-for-updates'),
   getCurrentVersion: () => ipcRenderer.invoke('get-current-version'),
+  getNextTestTime: (schedule) => ipcRenderer.invoke('get-next-test-time', schedule),
   
   // Events
   onSpeedTestResult: (callback) => ipcRenderer.on('speed-test-result', callback),

@@ -1,5 +1,5 @@
 const FastSpeedtest = require('fast-speedtest-api');
-const parser = require('cron-parser');
+const { CronExpressionParser } = require('cron-parser');
 
 class SpeedMonitor {
     constructor(dataStore, sendResultCallback, sendStartedCallback = null) {
@@ -53,17 +53,19 @@ class SpeedMonitor {
         
         console.log(`Starting speed monitor with schedule:`, schedule);
         
-        // Run initial test immediately
-        this.runSpeedTest();
-        this.lastTestTime = new Date();
-        
         if (schedule.type === 'cron') {
-            // Cron-style scheduling: check every minute if it's time to run
+            // Cron-style scheduling: don't run initial test, wait for scheduled time
+            console.log('Cron scheduling mode: waiting for next scheduled time');
+            // Set lastTestTime to now to prevent immediate execution
+            this.lastTestTime = new Date();
+            // Check every minute if it's time to run
             this.interval = setInterval(() => {
                 this.checkAndRunScheduledTest();
             }, 60000); // Check every minute
         } else {
-            // Traditional fixed interval scheduling
+            // Traditional fixed interval scheduling: run initial test immediately
+            this.runSpeedTest();
+            this.lastTestTime = new Date();
             this.interval = setInterval(() => {
                 this.runSpeedTest();
             }, schedule.minutes * 60 * 1000);
@@ -95,7 +97,7 @@ class SpeedMonitor {
         if (this.schedule.type === 'cron') {
             // Use cron expression for scheduling
             try {
-                const interval = parser.parseExpression(this.schedule.expression, {
+                const interval = CronExpressionParser.parse(this.schedule.expression, {
                     currentDate: this.lastTestTime
                 });
                 const nextRun = interval.next().toDate();

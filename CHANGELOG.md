@@ -5,9 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.2.1] - 2025-09-28
+## [1.2.3] - 2025-09-28
 
-## [1.2.2] - 2025-09-28
+### 🚑 Patch Release
+- **Release** - Bumped package.json and docs to 1.2.3 and created annotated git tag `v1.2.3`.
+- **Docs** - Updated website links and cache-bust tokens to reference v1.2.3.
+
+### 🛠 Fixes & Stability
+- **Cron scheduling reliability** - Ensured cron next-run calculations are performed in the main process and exposed via a secure `getNextTestTime` IPC in `preload.js`.
+- **IPC contract** - `get-next-test-time` in `main.js` now returns a numeric timestamp (ms since epoch) and logs parsing success/failure; renderer converts the value to a Date.
+- **Renderer resilience** - Updated `src/renderer/renderer.js` to call the main IPC asynchronously, handle unexpected responses, and fall back safely when necessary.
+- **Cron parser compatibility** - Replaced incompatible `parser.parseExpression` usage with `CronExpressionParser.parse(...)` in `main.js` and `src/speedMonitor.js`.
+- **Cron behavior** - Cron mode no longer runs an immediate test on start; it waits for the first scheduled occurrence.
+- **Logging & diagnostics** - Added console logs to main to make cron parse failures visible at runtime; added a small node test during development to confirm the cron-parser API.
+
+### 📝 Notes
+- If you still see "next test in 5 minutes" after upgrading, fully restart the Electron app to ensure the updated main process is running (old main process instances will continue to return the fallback).
+
+## [1.2.2]
 
 ### 🐛 Bug Fixes
 - **Cron Scheduling** - Fixed cron next-run calculation by moving cron parsing to main process and using the correct cron-parser API
@@ -32,7 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Code Cleanup** - Removed unused nextTestInfo and nextTestTimeDisplay references
 - **CSS Optimization** - Updated CSS selectors to match new unique element IDs
 
-## [1.2.0] - 2025-09-28
+## [1.2.0]
 
 ### 🚀 Notable Features
 - **Advanced Cron Scheduling** - Complete cron-style scheduling system with UNIX cron expression support
@@ -66,7 +81,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **User Guide Enhancement** - Added explanation of both scheduling modes and preset options
 - **Technical Reference** - Documented cron expression support and validation features
 
-## [1.1.7] - 2025-09-28
+## [1.1.7]
 
 ### 🐛 Critical Bug Fix
 - **Data Loading Issue Fixed** - Resolved critical issue where app was displaying oldest data instead of most recent speed test results
@@ -79,7 +94,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Frontend Data Processing** - Corrected slice operations to display newest data first in both chart and table
 - **Data Persistence** - Enhanced data storage consistency to prevent ordering issues
 
-## [1.1.6] - 2025-09-28
+## [1.1.6]
 
 ### 🎨 UI Modernization
 - **Icon-Only Controls** - Modernized interface with clean icon-only buttons (▶️ Start/Stop, ⏺️ Test)
@@ -94,7 +109,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Enhanced Accessibility** - Better hover effects and visual feedback for interactive elements
 - **Data Management** - Confirmed robust data persistence and loading functionality
 
-## [1.1.5] - 2025-09-28
+## [1.1.5]
 
 ### ✨ User Experience Enhancements
 - **Smart Interval Stepping** - Added intelligent increment/decrement for interval input using arrow keys or mouse wheel (1, 5, 10, 15, 30, 60 minutes)
@@ -112,7 +127,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Smart Time Calculations** - Advanced logic for calculating rounded next test times based on current time and interval
 - **Improved User Interface** - Better visual hierarchy and spacing in control sections
 
-## [1.1.4] - 2025-09-25
+## [1.1.4]
 
 ### 🎨 UI/UX Improvements
 - **Update Notification Banner** - Redesigned update notifications to appear as a full-width banner below the header instead of inline
@@ -125,7 +140,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Layout System** - Improved flexbox implementation for more reliable cross-device compatibility
 - **Performance Optimization** - Streamlined CSS with cleaner responsive breakpoints
 
-## [1.1.3] - 2025-09-24
+## [1.1.3]
 
 ### ✨ User Experience Improvements
 - **24-Hour Time Format** - Updated "Next Test" and "Last Test" displays to use 24-hour format for consistency and clarity
@@ -143,7 +158,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Menu System** - Implemented native Electron menu system with proper macOS integration
 - **Navigation Enhancement** - Improved website navigation consistency across all documentation pages
 
-## [1.1.2] - 2025-09-24
+## [1.1.2]
 
 ### 📚 Documentation Updates
 - **User Experience** - Improved README with better organization and troubleshooting guidance
@@ -152,7 +167,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Debug Configuration** - Enhanced build pipeline with better debugging capabilities
 - **Asset Management** - Maintained unified icon asset structure
 
-## [1.1.1] - 2025-01-22
+## [1.1.1]
 
 ### 🔧 Bug Fixes
 - **macOS Security Fix** - Enhanced macOS security configuration with proper entitlements and code signing settings
@@ -168,7 +183,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Security Guide** - Detailed macOS security dialog workarounds including right-click method, System Preferences, and Terminal commands
 - **Installation** - Comprehensive installation instructions explaining why security warnings occur and how to resolve them
 
-## [1.1.0] - 2025-09-24
+## [1.1.0]
 
 ### ✨ New Features
 - **Test Once Now Button** - Added purple "Test Once Now" button for on-demand speed testing without starting monitoring, now prominently placed in the main control row
