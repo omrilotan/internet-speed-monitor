@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.1] - 2025-09-28
+
+### 🐛 Bug Fixes
+- **UI Improvements** - Fixed hamburger dropdown visibility issue in header by removing overflow hidden
+- **Status Text** - Changed "Starting monitoring..." to cleaner "Running" status for better UX
+- **Layout Fixes** - Added proper spacing between status indicator and hamburger menu (20px margin)
+- **Dropdown Positioning** - Increased z-index to 1000 for better dropdown visibility above other elements
+- **HTML Structure** - Removed duplicate "schedule-info" next test display, keeping only the stat-card version
+- **Element IDs** - Fixed duplicate next-test-time IDs by using unique next-test-time-display ID
+
+### 🎨 Interface Enhancements
+- **Header Layout** - Moved hamburger menu to end of header for better accessibility and standard UI conventions
+- **Code Cleanup** - Removed unused nextTestInfo and nextTestTimeDisplay references
+- **CSS Optimization** - Updated CSS selectors to match new unique element IDs
+
 ## [1.2.0] - 2025-09-28
 
 ### 🚀 Notable Features

@@ -12,11 +12,20 @@
         <header>
             <div class="header-left">
                 <h1>Internet Speed Monitor</h1>
-                <small id="app-version">Version 1.2.0</small>
+                <small id="app-version">Version 1.2.1</small>
             </div>
             <div class="status-indicator">
                 <span id="status-text">Stopped</span>
                 <div id="status-dot" class="status-dot stopped"></div>
+            </div>
+            <div class="hamburger-menu">
+                <button id="hamburger-btn" class="btn btn-secondary btn-small hamburger-toggle" title="More options">☰</button>
+                <div id="hamburger-dropdown" class="hamburger-dropdown" style="display: none;">
+                    <button id="export-csv-btn" class="dropdown-item" title="Download speed test data as CSV file">💾 Export as CSV</button>
+                    <div class="dropdown-separator"></div>
+                    <button id="clear-history-btn" class="dropdown-item" title="Delete all speed test history permanently">⚠️ Clear All History</button>
+                    <button id="clear-selective-btn" class="dropdown-item" title="Remove data older than a specific date">� Clear Data Until...</button>
+                </div>
             </div>
         </header>
         
@@ -58,20 +67,6 @@
                         <button id="test-now-btn" class="control-icon-btn" title="Run a single speed test now">⏺️</button>
                     </div>
                 </div>
-                <div class="controls-row">
-                    <div class="schedule-info">
-                        <span id="next-test-info">Next test: <span id="next-test-time">--:--</span></span>
-                    </div>
-                    <div class="hamburger-menu">
-                        <button id="hamburger-btn" class="btn btn-secondary btn-small hamburger-toggle" title="More options">☰</button>
-                        <div id="hamburger-dropdown" class="hamburger-dropdown" style="display: none;">
-                            <button id="export-csv-btn" class="dropdown-item" title="Download speed test data as CSV file">💾 Export as CSV</button>
-                            <div class="dropdown-separator"></div>
-                            <button id="clear-history-btn" class="dropdown-item" title="Delete all speed test history permanently">⚠️ Clear All History</button>
-                            <button id="clear-selective-btn" class="dropdown-item" title="Remove data older than a specific date">� Clear Data Until...</button>
-                        </div>
-                    </div>
-                </div>
                 
                 <!-- Clear Data Until Date Modal -->
                 <div id="clear-data-modal" class="modal" style="display: none;">
@@ -105,7 +100,7 @@
                         <small>🔄 Running speed test...</small>
                     </div>
                     <div id="next-test" class="next-test-info" style="display: none;">
-                        <small>Next test: <span id="next-test-time">--</span></small>
+                        <small>Next test: <span id="next-test-time-display">--</span></small>
                     </div>
                 </div>
                 <div class="stat-card">

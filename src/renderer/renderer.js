@@ -25,8 +25,6 @@ const intervalInput = document.getElementById('interval');
 const intervalDisplay = document.getElementById('interval-display');
 const cronExpressionInput = document.getElementById('cron-expression');
 const cronDescription = document.getElementById('cron-description');
-const nextTestInfo = document.getElementById('next-test-info');
-const nextTestTimeDisplay = document.getElementById('next-test-time');
 
 // Status elements
 const statusText = document.getElementById('status-text');
@@ -37,7 +35,7 @@ const ping = document.getElementById('ping');
 const lastTest = document.getElementById('last-test');
 const testRunning = document.getElementById('test-running');
 const nextTest = document.getElementById('next-test');
-const nextTestTime = document.getElementById('next-test-time');
+const nextTestTime = document.getElementById('next-test-time-display');
 const medianDownload = document.getElementById('median-download');
 const medianUpload = document.getElementById('median-upload');
 
@@ -131,11 +129,7 @@ downloadUpdateBtn.addEventListener('click', () => {
 window.electronAPI.onSpeedTestStarted((event) => {
     showTestRunningIndicator(); // Show the running indicator when any test starts
     // Show "Running" status when test starts
-    if (isMonitoring) {
-        showStatus('Running', 'running');
-    } else {
-        showStatus('Testing...', 'running');
-    }
+    showStatus('Running', 'running');
 });
 
 window.electronAPI.onSpeedTestResult((event, result) => {
@@ -215,7 +209,7 @@ async function startMonitoring() {
             console.log('Monitoring started successfully');
             isMonitoring = true;
             updateUI();
-            showStatus('Starting monitoring...', 'running');
+            showStatus('Running', 'running');
             startNextTestTimer(schedule);
         } else {
             console.error('Monitoring failed to start:', response.error);

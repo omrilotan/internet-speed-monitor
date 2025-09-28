@@ -22,7 +22,6 @@ header {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     margin-bottom: 20px;
     min-height: 60px;
-    overflow: hidden;
 }
 
 .header-left {
@@ -403,22 +402,6 @@ h1 {
     border-color: #e0a800;
 }
 
-.schedule-info {
-    display: flex;
-    align-items: center;
-    font-size: 13px;
-    color: #666;
-    background-color: #f8f9fa;
-    padding: 8px 12px;
-    border-radius: 4px;
-    border: 1px solid #e9ecef;
-}
-
-#next-test-time {
-    font-weight: 600;
-    color: #007bff;
-}
-
 #interval-display {
     font-weight: 600;
     color: #007bff;
@@ -544,6 +527,7 @@ h1 {
 .hamburger-menu {
     position: relative;
     display: inline-block;
+    margin-left: 20px;
 }
 
 .hamburger-toggle {
@@ -561,7 +545,7 @@ h1 {
     border-radius: 8px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
     min-width: 200px;
-    z-index: 100;
+    z-index: 1000;
     margin-top: 5px;
     animation: dropdownSlideIn 0.2s ease-out;
 }
@@ -728,7 +712,7 @@ tbody tr:hover {
     font-size: 12px;
 }
 
-#next-test-time {
+#next-test-time-display {
     font-weight: 500;
     color: #495057;
 }
