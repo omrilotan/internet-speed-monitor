@@ -497,6 +497,8 @@ function addToTable(result) {
         <td>${result.upload.toFixed(2)}</td>
         <td>${result.ping.toFixed(2)}</td>
         <td>${result.server || 'Unknown'}</td>
+        <td>${result.networkInterface || 'Unknown'}</td>
+        <td>${result.isp || 'Unknown'}</td>
     `;
     
     resultsTable.insertBefore(row, resultsTable.firstChild);
@@ -632,8 +634,9 @@ async function loadHistoricalData() {
         }
         
         // Add data to table (newest first, limit to 10)
+        // Reverse the order so oldest gets added first and newest ends up on top
         const recentData = data.slice(0, 10);
-        recentData.forEach(result => {
+        recentData.reverse().forEach(result => {
             addToTable(result);
         });
         

@@ -64,7 +64,7 @@
       "screenshot": "https://omrilotan.github.io/internet-speed-monitor/screenshot.png",
       "applicationCategory": "UtilitiesApplication",
       "operatingSystem": ["Windows", "macOS", "Linux"],
-    "softwareVersion": "1.2.3",
+    "softwareVersion": "1.3.0",
       "datePublished": "2024-01-01",
       "dateModified": "2025-09-28",
       "license": "https://unlicense.org/",
@@ -81,12 +81,15 @@
       },
       "featureList": [
         "Automatic speed monitoring",
-        "Manual speed testing with Test Once Now",
+        "Manual speed testing with Test Once Now", 
         "Real-time charts and visualizations",
         "Median statistics tracking",
         "Performance tracking with status indicators",
         "Smart status management (Running/Sleeping/Stopped)",
         "Next test countdown display",
+        "Network interface detection (WiFi/Ethernet/etc.)",
+        "ISP information lookup and display",
+        "Enhanced test results with network diagnostics",
         "Local data storage",
         "CSV export functionality",
         "Debug log management",
@@ -96,7 +99,7 @@
     }
     </script>
     
-    <link rel="stylesheet" href="styles.css?v=1.2.3-20250928">
+    <link rel="stylesheet" href="styles.css?v=1.3.0-20250930">
     </head>
 </head>
 <body>
@@ -192,6 +195,16 @@
                     <div class="feature-icon">🧹</div>
                     <h3>Data Management</h3>
                     <p>Clear history and debug logs with dedicated buttons. Full control over your app's data and logs.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌐</div>
+                    <h3>Network Detection</h3>
+                    <p>Automatically detects your network interface type (WiFi, Ethernet, etc.) for each speed test, providing better insights into connection performance.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🏢</div>
+                    <h3>ISP Information</h3>
+                    <p>Automatically identifies and displays your Internet Service Provider for each test, helping track ISP performance over time.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">🔄</div>
@@ -316,21 +329,21 @@
                 </div>
                 
                 <div class="download-buttons">
-                    <a href="https://github.com/omrilotan/internet-speed-monitor/releases/download/v1.2.3/Internet.Speed.Monitor-1.2.3.dmg" class="download-btn" target="_blank" rel="noopener">
+                    <a href="https://github.com/omrilotan/internet-speed-monitor/releases/download/v1.3.0/Internet.Speed.Monitor-1.3.0.dmg" class="download-btn" target="_blank" rel="noopener">
                         <div class="download-icon">🍎</div>
                         <div class="download-info">
                             <span class="download-platform">macOS</span>
                             <span class="download-format">.dmg file</span>
                         </div>
                     </a>
-                    <a href="https://github.com/omrilotan/internet-speed-monitor/releases/download/v1.2.3/Internet.Speed.Monitor.Setup.1.2.3.exe" class="download-btn" target="_blank" rel="noopener">
+                    <a href="https://github.com/omrilotan/internet-speed-monitor/releases/download/v1.3.0/Internet.Speed.Monitor.Setup.1.3.0.exe" class="download-btn" target="_blank" rel="noopener">
                         <div class="download-icon">🪟</div>
                         <div class="download-info">
                             <span class="download-platform">Windows</span>
                             <span class="download-format">.exe installer</span>
                         </div>
                     </a>
-                    <a href="https://github.com/omrilotan/internet-speed-monitor/releases/download/v1.2.3/Internet.Speed.Monitor-1.2.3.AppImage" class="download-btn" target="_blank" rel="noopener">
+                    <a href="https://github.com/omrilotan/internet-speed-monitor/releases/download/v1.3.0/Internet.Speed.Monitor-1.3.0.AppImage" class="download-btn" target="_blank" rel="noopener">
                         <div class="download-icon">🐧</div>
                         <div class="download-info">
                             <span class="download-platform">Linux</span>
@@ -340,7 +353,7 @@
                 </div>
                 
                 <div class="version-info">
-                    Current version: <strong>v1.2.3</strong> • 
+                    Current version: <strong>v1.3.0</strong> • 
                     <a href="https://github.com/omrilotan/internet-speed-monitor/releases" target="_blank" rel="noopener">Release Notes</a>
             </div>
         </div>
@@ -419,6 +432,6 @@
         </div>
     </footer>
 
-    <script src="script.js?v=1.2.3-20250928"></script>
+    <script src="script.js?v=1.3.0-20250930">
 </body>
 </html>

@@ -76,8 +76,8 @@ class DataStore {
                 upload: testResult.upload,
                 ping: testResult.ping,
                 server: testResult.server || null,
-                location: testResult.location || null,
                 isp: testResult.isp || null,
+                networkInterface: testResult.networkInterface || null,
                 created_at: new Date().toISOString()
             };
 
@@ -258,12 +258,12 @@ class DataStore {
         try {
             console.log('Exporting CSV, speedTests count:', this.data.speedTests.length);
             
-            const headers = ['Date', 'Time', 'Download Speed (Mbps)', 'Upload Speed (Mbps)', 'Ping (ms)'];
+            const headers = ['Date', 'Time', 'Download Speed (Mbps)', 'Upload Speed (Mbps)', 'Ping (ms)', 'Network Interface', 'ISP'];
             const csvRows = [headers.join(',')];
 
             if (this.data.speedTests.length === 0) {
                 // Add a row indicating no data
-                csvRows.push('"No data available","Please run some speed tests first","","",""');
+                csvRows.push('"No data available","Please run some speed tests first","","","","",""');
             } else {
                 this.data.speedTests.forEach(test => {
                     const date = new Date(test.timestamp);
@@ -274,7 +274,9 @@ class DataStore {
                         `"${timeStr}"`,
                         test.download.toFixed(2),
                         test.upload.toFixed(2),
-                        test.ping.toFixed(0)
+                        test.ping.toFixed(0),
+                        `"${test.networkInterface || 'Unknown'}"`,
+                        `"${test.isp || 'Unknown'}"`
                     ];
                     csvRows.push(row.join(','));
                 });
