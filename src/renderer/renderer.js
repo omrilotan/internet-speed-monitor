@@ -503,8 +503,8 @@ function addToTable(result) {
     
     resultsTable.insertBefore(row, resultsTable.firstChild);
     
-    // Keep only the last 50 rows
-    while (resultsTable.children.length > 50) {
+    // Keep only the last 20 rows
+    while (resultsTable.children.length > 20) {
         resultsTable.removeChild(resultsTable.lastChild);
     }
 }
@@ -633,9 +633,9 @@ async function loadHistoricalData() {
             return;
         }
         
-        // Add data to table (newest first, limit to 10)
+        // Add data to table (newest first, limit to 20)
         // Reverse the order so oldest gets added first and newest ends up on top
-        const recentData = data.slice(0, 10);
+        const recentData = data.slice(0, 20);
         recentData.reverse().forEach(result => {
             addToTable(result);
         });
@@ -858,10 +858,14 @@ function calculateMedian(values) {
 }
 
 function updateMedianStats() {
+    const medianInfoElements = document.querySelectorAll('.median-info');
+    
     if (allSpeedTests.length === 0) {
         medianDownload.textContent = '-- Mbps';
         medianUpload.textContent = '-- Mbps';
         medianPing.textContent = '-- ms';
+        // Hide median info when no data
+        medianInfoElements.forEach(el => el.style.display = 'none');
         return;
     }
     
@@ -876,6 +880,9 @@ function updateMedianStats() {
     medianDownload.textContent = `${medianDownloadSpeed.toFixed(2)} Mbps`;
     medianUpload.textContent = `${medianUploadSpeed.toFixed(2)} Mbps`;
     medianPing.textContent = `${medianPingValue.toFixed(2)} ms`;
+    
+    // Show median info when there's data
+    medianInfoElements.forEach(el => el.style.display = 'block');
 }
 
 // Update the existing updateCurrentStats function to also update medians

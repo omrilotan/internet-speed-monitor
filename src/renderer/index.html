@@ -106,41 +106,31 @@
                 <div class="stat-card">
                     <h3>Download Speed</h3>
                     <div id="download-speed" class="speed-value">-- Mbps</div>
+                    <div class="median-info" style="display: none;">
+                        <small>Median: <span id="median-download">-- Mbps</span></small>
+                    </div>
                 </div>
                 <div class="stat-card">
                     <h3>Upload Speed</h3>
                     <div id="upload-speed" class="speed-value">-- Mbps</div>
+                    <div class="median-info" style="display: none;">
+                        <small>Median: <span id="median-upload">-- Mbps</span></small>
+                    </div>
                 </div>
                 <div class="stat-card">
                     <h3>Ping</h3>
                     <div id="ping" class="speed-value">-- ms</div>
-                </div>
-            </section>
-
-            <section class="median-stats">
-                <div class="median-card">
-                    <h4>Median Download</h4>
-                    <div id="median-download" class="median-value">-- Mbps</div>
-                </div>
-                <div class="median-card">
-                    <h4>Median Upload</h4>
-                    <div id="median-upload" class="median-value">-- Mbps</div>
-                </div>
-                <div class="median-card">
-                    <h4>Median Ping</h4>
-                    <div id="median-ping" class="median-value">-- ms</div>
+                    <div class="median-info" style="display: none;">
+                        <small>Median: <span id="median-ping">-- ms</span></small>
+                    </div>
                 </div>
             </section>
 
             <section class="chart-section">
-                <h2>Speed History <small style="font-weight: normal; color: #666; font-size: 0.7em;">(last 20 data points)</small></h2>
+                <h2>Speed History & Recent Tests <small style="font-weight: normal; color: #666; font-size: 0.7em;">(last 20 data points)</small></h2>
                 <div class="chart-container">
                     <canvas id="speedChart"></canvas>
                 </div>
-            </section>
-
-            <section class="data-table">
-                <h2>Recent Tests</h2>
                 <div class="table-container">
                     <table id="results-table">
                         <thead>
