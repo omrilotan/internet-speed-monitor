@@ -1,5 +1,7 @@
 const FastSpeedtest = require('fast-speedtest-api');
 const { CronExpressionParser } = require('cron-parser');
+const { detectNetworkConnectionType } = require('./utils/detectNetworkConnectionType');
+const { lookupISP } = require('./utils/lookupISP');
 
 class SpeedMonitor {
     constructor(dataStore, sendResultCallback, sendStartedCallback = null) {
@@ -159,6 +161,10 @@ class SpeedMonitor {
         try {
             this.currentTest = true;
             
+            // Detect network connection type
+            const networkInterface = await detectNetworkConnectionType();
+            console.log('Detected network interface:', networkInterface);
+            
             // Run download speed test
             const downloadSpeed = await this.speedtest.getSpeed();
             
@@ -169,14 +175,17 @@ class SpeedMonitor {
             // Simulate ping test (would need separate implementation for real ping)
             const ping = Math.random() * 50 + 10; // Random ping between 10-60ms
             
+            // Try to lookup ISP information
+            const isp = await lookupISP();
+            
             const speedTestResult = {
                 timestamp: new Date().toISOString(),
                 download: downloadSpeed,
                 upload: uploadSpeed,
                 ping: ping,
                 server: 'Netflix Fast.com',
-                location: 'Unknown',
-                isp: 'Unknown'
+                isp: isp,
+                networkInterface: networkInterface
             };
 
             console.log('Speed test completed:', speedTestResult);

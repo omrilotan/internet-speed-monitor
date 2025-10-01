@@ -285,7 +285,7 @@ function createMenu() {
             dialog.showMessageBox(mainWindow, {
               type: 'info',
               title: 'About Internet Speed Monitor',
-              message: 'Internet Speed Monitor v1.2.3',
+              message: 'Internet Speed Monitor v1.3.0',
               detail: `A simple tool to monitor your internet connection speed at regular intervals.
 
 Features:
@@ -316,6 +316,16 @@ Licensed under Unlicense`,
           click: () => {
             if (mainWindow) {
               mainWindow.webContents.send('clear-debug-log');
+            }
+          }
+        },
+        {
+          label: 'Open App Storage Folder',
+          click: async () => {
+            try {
+              await shell.openPath(app.getPath('userData'));
+            } catch (error) {
+              log('Error opening app storage folder: ' + error.message);
             }
           }
         },

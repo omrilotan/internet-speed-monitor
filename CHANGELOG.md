@@ -5,7 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.2.3] - 2025-09-28
+## [1.3.0]
+
+### 🎉 New Features
+- **Network Interface Detection** - Speed tests now detect and display the network connection type (WiFi, Ethernet, etc.) for each test
+- **ISP Information** - Automatically lookup and display Internet Service Provider information for each speed test
+- **Enhanced Test Results Table** - Recent Tests table now includes Network Interface and ISP columns for better network diagnostics
+- **Improved Data Export** - CSV exports now include Network Interface and ISP data for comprehensive analysis
+
+### 🛠 Improvements
+- **Table Ordering** - Fixed historical data loading to correctly display newest tests at the top of the Recent Tests table
+- **Data Storage** - Enhanced speed test data structure to include network interface and ISP information
+- **Cross-platform Network Detection** - Added support for network interface detection on macOS, Windows, and Linux
+
+### 📊 Technical Details
+- Network interface detection uses OS-specific commands (route, networksetup, netsh, ip) for accurate results
+- ISP lookup utilizes public APIs (ipify.org, ip-api.com) with proper timeout handling
+- Maintains backward compatibility with existing speed test data
+
+## [1.2.3]
 
 ### 🚑 Patch Release
 - **Release** - Bumped package.json and docs to 1.2.3 and created annotated git tag `v1.2.3`.
