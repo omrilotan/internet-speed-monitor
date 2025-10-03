@@ -1,7 +1,6 @@
 const { app, BrowserWindow, ipcMain, shell, Menu } = require('electron');
 const path = require('path');
 const fs = require('fs');
-const https = require('https');
 
 // Get current version from package.json
 const packageJson = require('./package.json');
@@ -68,43 +67,25 @@ async function checkForUpdates() {
   }
 }
 
-function fetchLatestVersion() {
-  return new Promise((resolve, reject) => {
-    const options = {
-      hostname: 'api.github.com',
-      path: '/repos/omrilotan/internet-speed-monitor/releases/latest',
+async function fetchLatestVersion() {
+  try {
+    const response = await fetch('https://api.github.com/repos/omrilotan/internet-speed-monitor/releases/latest', {
       headers: {
         'User-Agent': 'Internet-Speed-Monitor-App'
-      }
-    };
-
-    const req = https.get(options, (res) => {
-      let data = '';
-      
-      res.on('data', (chunk) => {
-        data += chunk;
-      });
-      
-      res.on('end', () => {
-        try {
-          const release = JSON.parse(data);
-          const version = release.tag_name?.replace('v', ''); // Remove 'v' prefix if present
-          resolve(version);
-        } catch (error) {
-          reject(error);
-        }
-      });
+      },
+      signal: AbortSignal.timeout(10000) // 10 second timeout
     });
     
-    req.on('error', (error) => {
-      reject(error);
-    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
     
-    req.setTimeout(10000, () => {
-      req.destroy();
-      reject(new Error('Request timeout'));
-    });
-  });
+    const release = await response.json();
+    const version = release.tag_name?.replace('v', ''); // Remove 'v' prefix if present
+    return version;
+  } catch (error) {
+    throw error;
+  }
 }
 
 function isNewerVersion(latest, current) {
@@ -285,7 +266,7 @@ function createMenu() {
             dialog.showMessageBox(mainWindow, {
               type: 'info',
               title: 'About Internet Speed Monitor',
-              message: 'Internet Speed Monitor v1.3.0',
+              message: 'Internet Speed Monitor v1.3.1',
               detail: `A simple tool to monitor your internet connection speed at regular intervals.
 
 Features:
@@ -443,9 +424,17 @@ app.whenReady().then(async () => {
     const updateInfo = await checkForUpdates();
     if (updateInfo && updateInfo.latestVersion) {
       log(`Update available: v${updateInfo.latestVersion}`);
-      // Send update info to renderer if window is ready
+      // Wait for renderer to be ready, then send update info
       if (mainWindow) {
-        mainWindow.webContents.send('update-available', updateInfo);
+        mainWindow.webContents.once('did-finish-load', () => {
+          mainWindow.webContents.send('update-available', updateInfo);
+          log('Update notification sent to renderer');
+        });
+        // If already loaded, send immediately
+        if (mainWindow.webContents.isLoading() === false) {
+          mainWindow.webContents.send('update-available', updateInfo);
+          log('Update notification sent to renderer (already loaded)');
+        }
       }
     } else {
       log('No updates available');
