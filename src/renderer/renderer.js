@@ -7,6 +7,7 @@ let nextTestTimer = null;
 let nextTestTimestamp = null;
 let allSpeedTests = []; // Store all tests for median calculation
 let lastChartDate = null; // Track last date shown on chart for date labeling
+let currentRunningSchedule = null; // Store the actual schedule being used for monitoring
 
 // DOM elements
 const startStopBtn = document.getElementById('start-stop-btn');
@@ -196,26 +197,21 @@ function hideTestRunningIndicator() {
 }
 
 async function startMonitoring() {
-    console.log('=== START MONITORING CLICKED ===');
+    console.log('=== START MONITORING ===');
     
     try {
         const schedule = getCurrentSchedule();
-        console.log('Schedule configuration:', schedule);
-        
-        console.log('Setting status to initializing...');
         showStatus('Initializing...', 'running');
         
-        console.log('Adding delay before IPC call...');
         // Add a small delay to ensure main process is ready
         await new Promise(resolve => setTimeout(resolve, 1000));
         
-        console.log('Invoking start-monitoring via electronAPI...');
         const response = await window.electronAPI.startMonitoring(schedule);
-        console.log('API response received:', response);
         
         if (response.success) {
             console.log('Monitoring started successfully');
             isMonitoring = true;
+            currentRunningSchedule = schedule; // Store the running schedule
             updateUI();
             showStatus('Sleeping', 'sleeping');
             await startNextTestTimer(schedule);
@@ -237,6 +233,7 @@ async function stopMonitoring() {
         const response = await window.electronAPI.stopMonitoring();
         if (response.success) {
             isMonitoring = false;
+            currentRunningSchedule = null; // Clear the running schedule
             updateUI();
             showStatus('Stopped', 'stopped');
             stopNextTestTimer();
@@ -441,9 +438,21 @@ async function updateMonitoringStatus() {
         showStatus(isMonitoring ? 'Sleeping' : 'Stopped', isMonitoring ? 'sleeping' : 'stopped');
         
         // If monitoring is active, start the next test timer
-        if (isMonitoring) {
-            const schedule = getCurrentSchedule();
-            await startNextTestTimer(schedule);
+        if (isMonitoring && currentRunningSchedule) {
+            await startNextTestTimer(currentRunningSchedule);
+        } else if (isMonitoring && !currentRunningSchedule) {
+            // Fallback: try to get schedule from UI if we don't have stored schedule
+            try {
+                const schedule = getCurrentSchedule();
+                currentRunningSchedule = schedule;
+                await startNextTestTimer(schedule);
+            } catch (error) {
+                console.warn('Could not determine schedule:', error.message);
+                // Stop monitoring if we can't get a valid schedule
+                isMonitoring = false;
+                updateUI();
+                showStatus('Error - Invalid Schedule', 'stopped');
+            }
         }
     } catch (error) {
         console.error('Error getting monitoring status:', error);
@@ -745,6 +754,19 @@ function getNextStepValue(currentValue, isIncrement, stepSequence) {
 // Next test time calculation function
 async function getNextTestTime(schedule) {
     try {
+        console.log('=== getNextTestTime called with:', JSON.stringify(schedule));
+        
+        // Validate schedule before sending to main process
+        if (!schedule || !schedule.type) {
+            console.error('Invalid schedule:', schedule);
+            throw new Error('Invalid schedule object');
+        }
+        
+        if (schedule.type === 'cron' && (!schedule.expression || schedule.expression.trim() === '')) {
+            console.error('Cron schedule with empty expression:', schedule);
+            throw new Error('Cron schedule missing expression');
+        }
+        
         // Use the main process to calculate next test time (returns ms since epoch)
         const result = await window.electronAPI.getNextTestTime(schedule);
         if (typeof result === 'number') {
@@ -773,6 +795,8 @@ async function getNextTestTime(schedule) {
 
 // Next test timer functions
 async function startNextTestTimer(schedule) {
+    console.log('Starting timer for schedule:', JSON.stringify(schedule));
+    
     stopNextTestTimer(); // Clear any existing timer
     
     try {
@@ -821,8 +845,22 @@ async function updateNextTestDisplay() {
     if (timeLeft <= 0) {
         // Test should have run, update for next cycle
         try {
-            const schedule = getCurrentSchedule();
-            nextTestTimestamp = await getNextTestTime(schedule);
+            if (currentRunningSchedule) {
+                // Create a deep copy to prevent any reference issues
+                const scheduleCopy = JSON.parse(JSON.stringify(currentRunningSchedule));
+                nextTestTimestamp = await getNextTestTime(scheduleCopy);
+            } else {
+                // Fallback: try to get from UI but warn about potential issue
+                console.warn('No stored schedule, reading from UI');
+                try {
+                    const schedule = getCurrentSchedule();
+                    nextTestTimestamp = await getNextTestTime(schedule);
+                } catch (fallbackError) {
+                    console.error('Fallback failed, using 5-minute default:', fallbackError.message);
+                    // If UI schedule is also broken, just set next test to 5 minutes from now
+                    nextTestTimestamp = new Date(Date.now() + 5 * 60 * 1000);
+                }
+            }
         } catch (error) {
             console.error('Error updating next test time:', error);
             // Keep current timestamp if update fails
@@ -900,9 +938,8 @@ function updateCurrentStatsEnhanced(result) {
     updateMedianStats();
     
     // Reset next test timer if monitoring is active
-    if (isMonitoring) {
-        const schedule = getCurrentSchedule();
-        startNextTestTimer(schedule);
+    if (isMonitoring && currentRunningSchedule) {
+        startNextTestTimer(currentRunningSchedule);
     }
 }
 
@@ -1217,14 +1254,24 @@ function getCurrentSchedule() {
     const scheduleType = scheduleTypeSelect.value;
     
     if (scheduleType === 'cron') {
-        const cronExpression = cronExpressionInput.value.trim();
-        if (!cronExpression) {
+        if (!cronExpressionInput) {
+            console.error('CRITICAL: cronExpressionInput element is null/undefined!');
+            throw new Error('Cron input field not found');
+        }
+        
+        const rawValue = cronExpressionInput.value;
+        const cronExpression = rawValue ? rawValue.trim() : '';
+        
+        if (!cronExpression || cronExpression.length === 0) {
             throw new Error('Please enter a cron expression');
         }
-        return {
+        
+        const schedule = {
             type: 'cron',
             expression: cronExpression
         };
+        
+        return schedule;
     } else {
         const interval = parseInt(intervalInput.value);
         if (!interval || interval < 1) {

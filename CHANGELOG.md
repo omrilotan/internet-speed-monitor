@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.2]
+
+### 🐛 Bug Fixes
+- **Fixed Schedule Corruption Issues** - Resolved critical bug where cron scheduling could become corrupted over time, causing tests to stop running
+- **Improved Cron Expression Validation** - Added comprehensive validation for cron expressions with proper error handling and fallback mechanisms
+- **Enhanced Schedule Object Integrity** - Implemented defensive copying to prevent schedule object corruption during IPC communication
+- **Fixed Logging Parameter Issues** - Corrected logging function calls that were silently dropping important debugging information
+
+### 🛠 Improvements
+- **Strengthened Error Handling** - Replaced silent failures with clear error messages for invalid or corrupted schedules
+- **Enhanced Schedule Validation** - Added multi-layer validation in renderer, main process, and speed monitor to catch invalid schedules early
+- **Improved Debug Logging** - Consolidated and cleaned up debug logs for better readability while maintaining essential debugging information
+- **Better Reliability** - Prevents cron-parser from silently accepting empty expressions and defaulting to unexpected behavior
+
+### ✨ New Features
+- **Enhanced Update Check Interface** - Added "Check for Updates" button to the About dialog (Help → About Internet Speed Monitor) for easy manual update checking
+- **Manual Update Checking** - Users can now force update checks that bypass the 24-hour throttling with proper user feedback dialogs
+- **Improved Update User Experience** - Added confirmation dialogs and direct links to GitHub releases when updates are available
+
+### 📊 Technical Details
+- Fixed `log()` function parameter handling that was causing missing values in debug output
+- Added strict validation for cron expressions (must be strings with exactly 5 parts)
+- Implemented JSON deep copying to prevent object reference corruption
+- Enhanced error messages to provide actionable information for troubleshooting
+- Improved schedule state management to prevent corruption during page reloads or IPC calls
+- Enhanced About dialog with integrated update checking functionality and user-friendly error handling
+
 ## [1.3.1]
 
 ### 🛠 Improvements

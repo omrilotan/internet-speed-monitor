@@ -34,9 +34,9 @@ function logError(message, error) {
 }
 
 // Version checking functions
-async function checkForUpdates() {
+async function checkForUpdates(force = false) {
   try {
-    if (!shouldCheckForUpdates()) {
+    if (!force && !shouldCheckForUpdates()) {
       log('Skipping update check (checked within last 24 hours)');
       return null;
     }
@@ -121,6 +121,51 @@ function shouldCheckForUpdates() {
     return daysSinceLastCheck >= 1; // Check once per day
   } catch (error) {
     return true; // If error reading file, should check
+  }
+}
+
+async function manualUpdateCheck() {
+  const { dialog } = require('electron');
+  
+  try {
+    // Show checking dialog
+    const updateInfo = await checkForUpdates(true); // Force check
+    
+    if (updateInfo) {
+      // Update available
+      const result = await dialog.showMessageBox(mainWindow, {
+        type: 'info',
+        title: 'Update Available',
+        message: `A new version is available!`,
+        detail: `Current version: ${updateInfo.currentVersion}\nLatest version: ${updateInfo.latestVersion}\n\nWould you like to download the update?`,
+        buttons: ['Download Update', 'Later'],
+        defaultId: 0
+      });
+      
+      if (result.response === 0) {
+        // User clicked "Download Update"
+        const { shell } = require('electron');
+        shell.openExternal('https://github.com/omrilotan/internet-speed-monitor/releases/latest');
+      }
+    } else {
+      // No update available
+      dialog.showMessageBox(mainWindow, {
+        type: 'info',
+        title: 'No Updates Available',
+        message: 'You have the latest version!',
+        detail: `Current version: ${CURRENT_VERSION}`,
+        buttons: ['OK']
+      });
+    }
+  } catch (error) {
+    // Error checking for updates
+    dialog.showMessageBox(mainWindow, {
+      type: 'error',
+      title: 'Update Check Failed',
+      message: 'Unable to check for updates',
+      detail: `Error: ${error.message}`,
+      buttons: ['OK']
+    });
   }
 }
 
@@ -261,12 +306,12 @@ function createMenu() {
       submenu: [
         {
           label: 'About Internet Speed Monitor',
-          click: () => {
+          click: async () => {
             const { dialog } = require('electron');
-            dialog.showMessageBox(mainWindow, {
+            const result = await dialog.showMessageBox(mainWindow, {
               type: 'info',
               title: 'About Internet Speed Monitor',
-              message: 'Internet Speed Monitor v1.3.1',
+              message: 'Internet Speed Monitor v1.3.2',
               detail: `A simple tool to monitor your internet connection speed at regular intervals.
 
 Features:
@@ -277,8 +322,15 @@ Features:
 • Debug logging for troubleshooting
 
 Licensed under Unlicense`,
-              buttons: ['OK']
+              buttons: ['Check for Updates', 'OK'],
+              defaultId: 1,
+              cancelId: 1
             });
+            
+            if (result.response === 0) {
+              // User clicked "Check for Updates"
+              await manualUpdateCheck();
+            }
           }
         },
         {
@@ -461,11 +513,9 @@ app.on('window-all-closed', () => {
 
 // IPC handlers - now with proper initialization checks
 ipcMain.handle('start-monitoring', async (event, schedule) => {
-  log('=== START MONITORING REQUESTED ===');
-  log('start-monitoring called, isInitialized: ' + isInitialized);
-  log('speedMonitor exists: ' + !!speedMonitor);
-  log('dataStore exists: ' + !!dataStore);
-  log('schedule:', schedule);
+  const callId = Math.random().toString(36).substr(2, 9);
+  log('=== START MONITORING REQUESTED [' + callId + '] ===');
+  log('Schedule: ' + JSON.stringify(schedule));
   
   if (!isInitialized) {
     log('Modules not initialized, attempting to initialize...');
@@ -488,8 +538,9 @@ ipcMain.handle('start-monitoring', async (event, schedule) => {
   }
   
   try {
-    console.log('Starting speed monitor with schedule:', schedule);
+    log('Starting speed monitor with schedule [' + callId + ']: ' + JSON.stringify(schedule));
     speedMonitor.start(schedule);
+    log('Speed monitor started successfully [' + callId + ']');
     return { success: true };
   } catch (error) {
     console.error('Error starting speed monitor:', error);
@@ -700,11 +751,40 @@ ipcMain.handle('check-for-updates', async () => {
   }
 });
 
-// Handle next test time calculation
+// Handle next test time calculation  
 ipcMain.handle('get-next-test-time', async (event, schedule) => {
+  // IMMEDIATE validation before any other processing
+  if (!schedule) {
+    logError('CRITICAL: schedule is null/undefined');
+    return Date.now() + 5 * 60 * 1000;
+  }
+  
+  if (typeof schedule !== 'object') {
+    logError('CRITICAL: schedule is not an object:', typeof schedule);
+    return Date.now() + 5 * 60 * 1000;
+  }
+  
+  // Quick validation for empty cron expressions
+  if (schedule.type === 'cron' && (!schedule.expression || schedule.expression.trim() === '')) {
+    logError('DETECTED: Cron schedule with empty expression');
+    return Date.now() + 5 * 60 * 1000;
+  }
+
   try {
+    log('=== get-next-test-time CALLED ===');
+    log('Schedule: ' + JSON.stringify(schedule));
+    
     if (!schedule || !schedule.type) {
-      logError('get-next-test-time called with invalid schedule:', schedule);
+      logError('get-next-test-time called with invalid schedule:', JSON.stringify(schedule));
+      const now = Date.now();
+      return now + 5 * 60 * 1000; // 5 minutes in ms
+    }
+
+    // Early validation for cron schedules with empty expressions
+    if (schedule.type === 'cron' && (!schedule.expression || schedule.expression.trim() === '')) {
+      logError('EARLY CATCH: Empty cron expression detected:', JSON.stringify(schedule));
+      logError('Schedule keys:', Object.keys(schedule));
+      logError('Expression repr:', JSON.stringify(schedule.expression));
       const now = Date.now();
       return now + 5 * 60 * 1000; // 5 minutes in ms
     }
@@ -717,25 +797,38 @@ ipcMain.handle('get-next-test-time', async (event, schedule) => {
       return next;
     } else if (schedule.type === 'cron') {
       // For cron expressions, use the cron-parser library
-      if (!schedule.expression) {
-        logError('Cron schedule missing expression:', schedule);
+      log('Processing cron expression: ' + schedule.expression);
+      
+      if (!schedule.expression || schedule.expression.trim() === '') {
+        logError('Cron schedule missing or empty expression:', JSON.stringify(schedule));
+        logError('CRITICAL: Cron scheduling broken - missing/empty expression. This will prevent speed tests from running.');
+        logError('Schedule object keys:', Object.keys(schedule));
         const now = Date.now();
         return now + 5 * 60 * 1000;
       }
 
+      // Create a defensive copy of the schedule to prevent corruption
+      const scheduleCopy = JSON.parse(JSON.stringify(schedule));
+      
+      // Strict validation - reject empty or invalid expressions
+      if (!scheduleCopy.expression || typeof scheduleCopy.expression !== 'string' || scheduleCopy.expression.trim() === '') {
+        logError('CRITICAL: Cron schedule with empty/invalid expression detected');
+        logError('Original schedule: ' + JSON.stringify(schedule));
+        logError('Schedule copy: ' + JSON.stringify(scheduleCopy));
+        throw new Error('Invalid cron expression - empty or not a string');
+      }
+      
+      const expression = scheduleCopy.expression.trim();
+      
       try {
         const { CronExpressionParser } = require('cron-parser');
-        const interval = CronExpressionParser.parse(schedule.expression);
+        const interval = CronExpressionParser.parse(expression);
         const nextDate = interval.next().toDate();
-        log('get-next-test-time (cron) expression=', schedule.expression, 'next=', nextDate.toISOString());
-        console.log('[get-next-test-time] cron parsed OK, next=', nextDate.toISOString());
+        log('Next test scheduled: ' + nextDate.toISOString());
         return nextDate.getTime();
       } catch (innerErr) {
-        logError('Error parsing cron expression in get-next-test-time:', schedule.expression, innerErr);
-        console.error('[get-next-test-time] cron parse failed for expression=', schedule.expression, innerErr);
-        const now = Date.now();
-        console.log('[get-next-test-time] falling back to +5 minutes');
-        return now + 5 * 60 * 1000;
+        logError('Cron parsing failed: ' + expression + ' - ' + innerErr.message);
+        throw new Error('Failed to parse cron expression: ' + expression);
       }
     }
 

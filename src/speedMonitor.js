@@ -49,6 +49,27 @@ class SpeedMonitor {
             return;
         }
 
+        // Create defensive copy and validate schedule
+        schedule = JSON.parse(JSON.stringify(schedule));
+        
+        // Strict validation for cron schedules
+        if (schedule.type === 'cron') {
+            if (!schedule.expression || typeof schedule.expression !== 'string' || schedule.expression.trim() === '') {
+                console.error('CRITICAL: Invalid cron schedule detected');
+                console.error('Schedule object:', JSON.stringify(schedule));
+                throw new Error('Invalid cron schedule: expression is missing, not a string, or empty');
+            }
+            
+            // Validate cron expression has the right format (5 parts)
+            const parts = schedule.expression.trim().split(/\s+/);
+            if (parts.length !== 5) {
+                console.error('CRITICAL: Invalid cron expression format');
+                console.error('Expression:', schedule.expression);
+                console.error('Parts:', parts);
+                throw new Error('Invalid cron expression: must have exactly 5 parts (minute hour day month weekday)');
+            }
+        }
+
         this.schedule = schedule;
         this.isRunning = true;
         this.lastTestTime = null;
