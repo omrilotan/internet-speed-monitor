@@ -79,8 +79,8 @@ class SpeedMonitor {
         if (schedule.type === 'cron') {
             // Cron-style scheduling: don't run initial test, wait for scheduled time
             console.log('Cron scheduling mode: waiting for next scheduled time');
-            // Set lastTestTime to now to prevent immediate execution
-            this.lastTestTime = new Date();
+            // Don't set lastTestTime initially for cron schedules
+            this.lastTestTime = null;
             // Check every minute if it's time to run
             this.interval = setInterval(() => {
                 this.checkAndRunScheduledTest();
@@ -101,38 +101,64 @@ class SpeedMonitor {
         const now = new Date();
         const shouldRun = this.shouldRunTestNow(now);
         
+        console.log(`Checking scheduled test at ${now.toISOString()}: shouldRun=${shouldRun}`);
+        
         if (shouldRun) {
-            console.log(`Running scheduled test at ${now.toLocaleTimeString()}`);
+            console.log(`Running scheduled test at ${now.toISOString()}`);
             this.runSpeedTest();
             this.lastTestTime = new Date(now);
+        } else {
+            // Debug info for why test didn't run
+            if (this.schedule.type === 'cron') {
+                try {
+                    const interval = CronExpressionParser.parse(this.schedule.expression, {
+                        currentDate: new Date(now.getTime() - 60000)
+                    });
+                    const nextRun = interval.next().toDate();
+                    console.log(`Next scheduled test: ${nextRun.toISOString()}, Current: ${now.toISOString()}`);
+                } catch (error) {
+                    console.error('Error calculating next run time:', error);
+                }
+            }
         }
     }
 
     shouldRunTestNow(currentTime) {
-        if (!this.lastTestTime) return false;
-        
-        // Check if we've passed a reasonable minimum interval since last test
-        const timeSinceLastTest = (currentTime - this.lastTestTime) / (1000 * 60);
-        if (timeSinceLastTest < 0.5) { // Allow 30 second tolerance
-            return false;
-        }
-        
         if (this.schedule.type === 'cron') {
-            // Use cron expression for scheduling
+            // For cron scheduling, check if we're at a scheduled time
             try {
+                // Parse cron from current time to find next scheduled time
                 const interval = CronExpressionParser.parse(this.schedule.expression, {
-                    currentDate: this.lastTestTime
+                    currentDate: new Date(currentTime.getTime() - 60000) // Look from 1 minute ago
                 });
                 const nextRun = interval.next().toDate();
                 
-                // Allow 30 second tolerance
+                // Check if we're within 30 seconds of the scheduled time
                 const tolerance = 30 * 1000;
-                return Math.abs(currentTime.getTime() - nextRun.getTime()) < tolerance;
+                const isScheduledTime = Math.abs(currentTime.getTime() - nextRun.getTime()) < tolerance;
+                
+                // Prevent running the same test twice by checking last test time
+                if (isScheduledTime && this.lastTestTime) {
+                    const timeSinceLastTest = (currentTime - this.lastTestTime) / (1000 * 60);
+                    if (timeSinceLastTest < 0.5) { // Don't run if we just ran a test
+                        return false;
+                    }
+                }
+                
+                return isScheduledTime;
             } catch (error) {
                 console.error('Error parsing cron expression:', error);
                 return false;
             }
         } else {
+            // Simple interval scheduling
+            if (!this.lastTestTime) return false;
+            
+            // Check if we've passed a reasonable minimum interval since last test
+            const timeSinceLastTest = (currentTime - this.lastTestTime) / (1000 * 60);
+            if (timeSinceLastTest < 0.5) { // Allow 30 second tolerance
+                return false;
+            }
             // Simple interval scheduling
             const intervalMinutes = this.schedule.minutes;
             
