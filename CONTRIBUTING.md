@@ -49,17 +49,19 @@ The main process handles:
 - System integration
 
 Key IPC handlers:
-- `start-monitoring` - Begins periodic speed tests
+- `start-monitoring` - Begins periodic speed tests with interval or cron expression
 - `stop-monitoring` - Stops monitoring
 - `test-once-now` - Performs single speed test without starting monitoring
 - `speed-test-started` - Event sent when any test begins
-- `get-monitoring-status` - Retrieves current monitoring state
+- `get-monitoring-status` - Retrieves current monitoring state (includes next test time)
 - `get-speed-tests` - Retrieves stored speed data
 - `get-historical-data` - Gets historical data for charts
 - `clear-history` - Removes all stored data
 - `export-csv` - Exports data to CSV format
 - `get-debug-log` - Retrieves debug log contents
 - `clear-debug-log` - Clears the debug log file
+- `validate-cron` - Validates cron expression syntax
+- `get-next-cron-run` - Calculates next execution time for cron expression
 
 ### Preload Script (`preload.js`)
 
@@ -96,6 +98,15 @@ window.electronAPI = {
 - **Library**: `fast-speedtest-api` (v0.3.2)
 - **Service**: Netflix's Fast.com API
 - **Metrics**: Download speed (real), Upload speed (estimated), Ping (simulated)
+- **Scheduling**: Dual mode support with `cron-parser` (v5.4.0) and `node-cron` (v4.2.1)
+
+#### Scheduling Modes
+The app supports two scheduling approaches:
+
+1. **Simple Interval Mode**: Fixed time intervals (e.g., every 15 minutes, 1 hour, 1 day)
+2. **Cron Expression Mode**: Advanced scheduling using UNIX cron syntax (e.g., work hours, specific days/times)
+
+Cron expressions enable precise control like "every 30 minutes during work hours on weekdays" or "daily at 9 AM and 5 PM".
 
 #### Implementation Details
 ```javascript
@@ -123,27 +134,28 @@ class SpeedMonitor {
 ### Data Storage (`src/dataStore.js`)
 
 #### Storage Format
-Data is stored in JSON format in the user's application data directory:
+Data is stored in SQLite database format in the user's application data directory:
 
-```javascript
-{
-  "timestamp": "2025-09-23T10:30:00.000Z",
-  "downloadSpeed": 45.2,
-  "uploadSpeed": 4.5,
-  "ping": 23
-}
+```sql
+CREATE TABLE speed_tests (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  timestamp TEXT NOT NULL,
+  downloadSpeed REAL NOT NULL,
+  uploadSpeed REAL NOT NULL,
+  ping REAL NOT NULL
+);
 ```
 
 #### Storage Location
-- **Windows**: `%APPDATA%/internet-speed-monitor/`
-- **macOS**: `~/Library/Application Support/internet-speed-monitor/`
-- **Linux**: `~/.config/internet-speed-monitor/`
+- **Windows**: `%APPDATA%/Internet Speed Monitor/speed-data.db`
+- **macOS**: `~/Library/Application Support/Internet Speed Monitor/speed-data.db`
+- **Linux**: `~/.config/Internet Speed Monitor/speed-data.db`
 
 #### Data Management
-- Records are stored in `speed-data.json`
+- Records are stored in `speed-data.db` (SQLite database)
 - Automatic cleanup of records older than 30 days
 - Export functionality to CSV format
-- Thread-safe file operations
+- Thread-safe database operations with proper error handling
 
 ### Frontend (`src/renderer/`)
 
@@ -156,6 +168,10 @@ Data is stored in JSON format in the user's application data directory:
 
 #### Key UI Features
 - **Primary Controls**: Start/Stop monitoring and Test Once Now in main control row
+- **Dual Scheduling Modes**: 
+  - Simple Interval with preset buttons (5m, 15m, 30m, 1h, 1d)
+  - Cron Expression with validation, work hours preset, and custom patterns
+- **Schedule Validation**: Real-time validation with error messages and next run preview
 - **Utility Controls**: Debug, clear, and export functions in secondary row
 - **Status Management**: Real-time status indicators with color coding:
   - Green: Running test or active monitoring
@@ -306,11 +322,149 @@ The build process is configured in `package.json`:
 - **Purpose**: Create releases without version changes
 
 ### Release Process
-1. Update version in `package.json`
-2. Update `CHANGELOG.md`
-3. Commit and push to main
-4. Auto-tag workflow creates version tag
-5. Release workflow builds and publishes binaries
+
+This project uses automated GitHub releases for streamlined version management.
+
+#### Method 1: Automated Release (Recommended)
+1. Go to GitHub repository → **Actions** tab
+2. Select **"Auto Release"** workflow
+3. Click **"Run workflow"**
+4. Choose version type: `patch`, `minor`, or `major`
+5. Click **"Run workflow"**
+
+**This automatically:**
+- Bumps the version in `package.json`
+- Updates `CHANGELOG.md`
+- Creates a git tag
+- Builds for all platforms (macOS, Windows, Linux)
+- Creates a GitHub release with all installers
+
+#### Method 2: Tag-Based Release
+```bash
+# Create and push a version tag
+git tag v1.0.1
+git push origin v1.0.1
+```
+
+#### Method 3: Manual Release
+```bash
+# Update version manually
+npm version patch  # or minor, major
+git push
+git push --tags
+```
+
+#### What Gets Built
+- **macOS**: `.dmg` installers (Intel + Apple Silicon) + `.zip` files
+- **Windows**: `.exe` NSIS installer + portable `.exe`
+- **Linux**: `.AppImage` + `.deb` packages
+
+All builds include update metadata files (`latest-mac.yml`, `latest.yml`, `latest-linux.yml`) for electron-updater integration.
+
+## Publishing & Distribution
+
+### GitHub Releases (Current Method)
+
+The project uses GitHub Releases for distribution. Releases are fully automated via GitHub Actions workflows.
+
+**Release Checklist:**
+- [ ] Update version in `package.json`
+- [ ] Update `CHANGELOG.md` with changes
+- [ ] Test the application thoroughly
+- [ ] Commit and push changes to main
+- [ ] Trigger release workflow (manual or tag-based)
+- [ ] Verify builds complete successfully
+- [ ] Test downloaded installers
+- [ ] Announce the release
+
+### Alternative Distribution Methods
+
+#### Mac App Store
+**Requirements:**
+- Apple Developer Account ($99/year)
+- Code signing certificates
+- App Store guidelines compliance
+
+**Configuration:**
+```json
+"mas": {
+  "category": "public.app-category.utilities",
+  "hardenedRuntime": true,
+  "entitlements": "entitlements.mas.plist",
+  "entitlementsInherit": "entitlements.mas.inherit.plist"
+}
+```
+
+#### Microsoft Store
+**Requirements:**
+- Microsoft Developer Account
+- Windows Store certification
+
+**Configuration:**
+```json
+"appx": {
+  "applicationId": "InternetSpeedMonitor",
+  "backgroundColor": "transparent",
+  "showNameOnTiles": false
+}
+```
+
+#### Snap Store (Linux)
+**Configuration:**
+```json
+"snap": {
+  "summary": "Monitor your internet speed",
+  "description": "An Electron app that monitors internet connectivity speed at set intervals"
+}
+```
+
+### Code Signing
+
+#### macOS Code Signing
+1. Obtain Apple Developer certificates
+2. Add to `package.json`:
+```json
+"mac": {
+  "identity": "Developer ID Application: Your Name"
+}
+```
+
+#### Windows Code Signing
+1. Obtain code signing certificate (.p12 or .pfx)
+2. Add to `package.json`:
+```json
+"win": {
+  "certificateFile": "path/to/certificate.p12",
+  "certificatePassword": "password"
+}
+```
+
+**Note:** Store certificates and passwords securely. Use GitHub Secrets for CI/CD.
+
+### Auto-Update Support
+
+To enable auto-updates in the application:
+
+1. Install electron-updater:
+```bash
+npm install electron-updater
+```
+
+2. Add to `main.js`:
+```javascript
+const { autoUpdater } = require('electron-updater');
+
+app.whenReady().then(() => {
+  autoUpdater.checkForUpdatesAndNotify();
+});
+```
+
+The automated builds already include the necessary metadata files for auto-updates.
+
+### Build File Sizes (Approximate)
+- macOS DMG: ~150-200MB
+- Windows NSIS: ~120-150MB
+- Linux AppImage: ~130-170MB
 
 ## Adding Features
 
@@ -358,12 +512,18 @@ To add new export formats:
 - [ ] App starts without errors
 - [ ] Speed monitoring starts/stops correctly
 - [ ] "Test Once Now" button works without starting monitoring
+- [ ] Simple Interval mode with preset buttons (5m, 15m, 30m, 1h, 1d) works correctly
+- [ ] Cron Expression mode validates expressions in real-time
+- [ ] Invalid cron expressions show appropriate error messages
+- [ ] Valid cron expressions show next scheduled run time
+- [ ] Work hours preset loads correct cron expression
+- [ ] Schedule mode switching preserves user input where appropriate
 - [ ] Status indicators show correct states (Stopped/Running/Sleeping)
-- [ ] Next test countdown displays and updates correctly
+- [ ] Next test countdown displays and updates correctly for both scheduling modes
 - [ ] Test running indicator shows during active tests
 - [ ] Test running indicator and next test display are mutually exclusive
 - [ ] Median statistics calculate and display correctly
-- [ ] Data persists between sessions
+- [ ] Data persists between sessions in SQLite database
 - [ ] Charts update in real-time with new data
 - [ ] Export functionality works (CSV format)
 - [ ] Clear history functionality works and resets all UI elements
@@ -424,6 +584,8 @@ node --version  # Should be v22+
 - `electron`: ^38.1.2 (Latest stable)
 - `fast-speedtest-api`: ^0.3.2 (Speed testing)
 - `chart.js`: ^4.4.0 (Data visualization)
+- `cron-parser`: ^5.4.0 (Cron expression parsing and validation)
+- `node-cron`: ^4.2.1 (Cron job scheduling)
 
 ### Development Dependencies
 - `electron-builder`: ^26.0.12 (Building/packaging)

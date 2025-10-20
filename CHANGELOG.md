@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.4]
+
+### 📚 Documentation
+- **Consolidated Documentation** - Merged PUBLISHING.md and RELEASE_SETUP.md into CONTRIBUTING.md for single source of truth
+- **Enhanced Contributing Guide** - Added comprehensive "Publishing & Distribution" section with release workflows, code signing, and alternative distribution methods
+- **Updated README** - Improved feature descriptions and usage instructions for clarity
+- **Streamlined Documentation** - Removed redundant files to reduce maintenance burden
+
+### 🔧 Dependencies
+- **Updated Electron** - Upgraded from 38.1.2 to 38.3.0 (security and stability improvements)
+- **Updated Chart.js** - Upgraded from 4.4.0 to 4.5.1 (bug fixes and improvements)
+- **Updated @types/node** - Upgraded from 22.18.7 to 22.18.11 (type definitions)
+- **Security Audit** - All dependencies pass security audit with 0 vulnerabilities
+
+### 🛠 Improvements
+- **Better Documentation Organization** - All contributor information now in one consolidated location
+- **Improved Discoverability** - Contributors can find all necessary information in CONTRIBUTING.md
+
 ## [1.3.3]
 
 ### 🐛 Bug Fixes

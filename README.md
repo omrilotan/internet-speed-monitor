@@ -6,8 +6,8 @@ A beautiful, easy-to-use desktop application that monitors your internet connect
 
 ## ✨ Features
 
-- **🚀 Advanced Scheduling** - Choose between Simple Interval (1-60 minutes) or flexible Cron Expression scheduling
-- **⚡ Smart Presets** - Quick-access buttons for common schedules: 5m, 15m, 30m, 1h, 1d, Work hours, and Custom
+- **🚀 Advanced Scheduling** - Choose between Simple Interval or flexible Cron Expression scheduling
+- **⚡ Smart Presets** - Quick-access buttons for common schedules: 5m, 15m, 30m, 1h, 1d plus Work hours preset for cron mode
 - **🕒 Cron Support** - Full UNIX cron expression support with real-time validation and helpful descriptions
 - **⚡ Instant Testing** - "Test Once Now" button for on-demand speed tests without starting monitoring
 - **📊 Real-time Charts** - Beautiful visualizations of your internet speed over time (last 20 data points)
@@ -97,7 +97,7 @@ This is normal for apps not distributed through the Mac App Store. The app is sa
 
 ### Using the App
 
-1. **Set Your Interval** - Choose how often you want to test your speed (1-60 minutes)
+1. **Choose Schedule** - Select Simple Interval presets or create custom Cron expressions for precise timing
 2. **Start Monitoring** - Click the "Start Monitoring" button to begin automatic testing
 3. **Test Instantly** - Use "Test Once Now" for immediate speed testing without starting monitoring
 4. **Watch Status** - Monitor real-time status with countdown timers and running indicators

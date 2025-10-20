@@ -311,7 +311,7 @@ function createMenu() {
             const result = await dialog.showMessageBox(mainWindow, {
               type: 'info',
               title: 'About Internet Speed Monitor',
-              message: 'Internet Speed Monitor v1.3.3',
+              message: 'Internet Speed Monitor v1.3.4',
               detail: `A simple tool to monitor your internet connection speed at regular intervals.
 
 Features:
