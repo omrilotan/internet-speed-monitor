@@ -38,7 +38,7 @@
     "url": "https://github.com/omrilotan/internet-speed-monitor/issues"
   },
   "devDependencies": {
-    "electron": "^38.1.2",
+    "electron": "^39.1.1",
     "electron-builder": "^26.0.12"
   },
   "dependencies": {
