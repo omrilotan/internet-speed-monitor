@@ -12,7 +12,7 @@
         <header>
             <div class="header-left">
                 <h1>Internet Speed Monitor</h1>
-                <small id="app-version">Version 1.3.4</small>
+                <small id="app-version">Version 1.4.0</small>
             </div>
             <div class="status-indicator">
                 <span id="status-text">Stopped</span>
@@ -23,8 +23,17 @@
                 <div id="hamburger-dropdown" class="hamburger-dropdown" style="display: none;">
                     <button id="export-csv-btn" class="dropdown-item" title="Download speed test data as CSV file">💾 Export as CSV</button>
                     <div class="dropdown-separator"></div>
+                    <label class="dropdown-toggle-item" title="Automatically start monitoring when app opens">
+                        <span>🚀 Auto-start monitoring</span>
+                        <input type="checkbox" id="auto-start-toggle">
+                    </label>
+                    <label class="dropdown-toggle-item" title="Launch app when computer starts">
+                        <span>🔄 Start with computer</span>
+                        <input type="checkbox" id="launch-at-startup-toggle">
+                    </label>
+                    <div class="dropdown-separator"></div>
                     <button id="clear-history-btn" class="dropdown-item" title="Delete all speed test history permanently">⚠️ Clear All History</button>
-                    <button id="clear-selective-btn" class="dropdown-item" title="Remove data older than a specific date">� Clear Data Until...</button>
+                    <button id="clear-selective-btn" class="dropdown-item" title="Remove data older than a specific date">🗑 Clear Data Until...</button>
                 </div>
             </div>
         </header>

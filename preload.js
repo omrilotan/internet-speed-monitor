@@ -28,6 +28,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getCurrentVersion: () => ipcRenderer.invoke('get-current-version'),
   getNextTestTime: (schedule) => ipcRenderer.invoke('get-next-test-time', schedule),
   
+  // Settings management
+  loadSettings: () => ipcRenderer.invoke('load-settings'),
+  saveSettings: (settings) => ipcRenderer.invoke('save-settings', settings),
+  setLaunchAtStartup: (enable) => ipcRenderer.invoke('set-launch-at-startup', enable),
+  getLaunchAtStartup: () => ipcRenderer.invoke('get-launch-at-startup'),
+  
   // Events
   onSpeedTestResult: (callback) => ipcRenderer.on('speed-test-result', callback),
   onSpeedTestStarted: (callback) => ipcRenderer.on('speed-test-started', callback),

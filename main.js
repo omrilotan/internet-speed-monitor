@@ -8,7 +8,7 @@ const CURRENT_VERSION = packageJson.version;
 
 // Version check configuration
 const VERSION_CHECK_URL = 'https://api.github.com/repos/omrilotan/internet-speed-monitor/releases/latest';
-const VERSION_CHECK_FILE = path.join(app.getPath('userData'), 'last-version-check.json');
+const SETTINGS_FILE = path.join(app.getPath('userData'), 'settings.json');
 
 // Setup logging to file for debugging
 const logFile = path.join(app.getPath('userData'), 'debug.log');
@@ -69,7 +69,7 @@ async function checkForUpdates(force = false) {
 
 async function fetchLatestVersion() {
   try {
-    const response = await fetch('https://api.github.com/repos/omrilotan/internet-speed-monitor/releases/latest', {
+    const response = await fetch(VERSION_CHECK_URL, {
       headers: {
         'User-Agent': 'Internet-Speed-Monitor-App'
       },
@@ -109,12 +109,12 @@ function isNewerVersion(latest, current) {
 
 function shouldCheckForUpdates() {
   try {
-    if (!fs.existsSync(VERSION_CHECK_FILE)) {
+    const settings = loadSettings();
+    if (!settings.lastCheckDate) {
       return true; // First time, should check
     }
     
-    const data = JSON.parse(fs.readFileSync(VERSION_CHECK_FILE, 'utf8'));
-    const lastCheck = new Date(data.lastCheckDate);
+    const lastCheck = new Date(settings.lastCheckDate);
     const now = new Date();
     const daysSinceLastCheck = (now - lastCheck) / (1000 * 60 * 60 * 24);
     
@@ -171,13 +171,68 @@ async function manualUpdateCheck() {
 
 function saveLastCheckDate() {
   try {
-    const data = {
-      lastCheckDate: new Date().toISOString(),
-      currentVersion: CURRENT_VERSION
-    };
-    fs.writeFileSync(VERSION_CHECK_FILE, JSON.stringify(data, null, 2));
+    const settings = loadSettings();
+    settings.lastCheckDate = new Date().toISOString();
+    settings.lastCheckedVersion = CURRENT_VERSION;
+    saveSettings(settings);
   } catch (error) {
     logError('Error saving last check date:', error);
+  }
+}
+
+// Settings management functions
+function loadSettings() {
+  try {
+    if (fs.existsSync(SETTINGS_FILE)) {
+      const data = fs.readFileSync(SETTINGS_FILE, 'utf8');
+      return JSON.parse(data);
+    }
+  } catch (error) {
+    logError('Error loading settings:', error);
+  }
+  return {
+    scheduleType: 'interval',
+    interval: 5,
+    cronExpression: '*/5 * * * *',
+    autoStart: false,
+    launchAtStartup: false,
+    lastCheckDate: null,
+    lastCheckedVersion: null
+  };
+}
+
+function saveSettings(settings) {
+  try {
+    fs.writeFileSync(SETTINGS_FILE, JSON.stringify(settings, null, 2));
+    log('Settings saved successfully');
+    return true;
+  } catch (error) {
+    logError('Error saving settings:', error);
+    return false;
+  }
+}
+
+function setLaunchAtStartup(enable) {
+  try {
+    app.setLoginItemSettings({
+      openAtLogin: enable,
+      openAsHidden: false
+    });
+    log(`Launch at startup ${enable ? 'enabled' : 'disabled'}`);
+    return true;
+  } catch (error) {
+    logError('Error setting launch at startup:', error);
+    return false;
+  }
+}
+
+function getLaunchAtStartup() {
+  try {
+    const settings = app.getLoginItemSettings();
+    return settings.openAtLogin;
+  } catch (error) {
+    logError('Error getting launch at startup setting:', error);
+    return false;
   }
 }
 
@@ -311,7 +366,7 @@ function createMenu() {
             const result = await dialog.showMessageBox(mainWindow, {
               type: 'info',
               title: 'About Internet Speed Monitor',
-              message: 'Internet Speed Monitor v1.3.4',
+              message: 'Internet Speed Monitor v1.4.0',
               detail: `A simple tool to monitor your internet connection speed at regular intervals.
 
 Features:
@@ -844,4 +899,55 @@ ipcMain.handle('get-next-test-time', async (event, schedule) => {
 
 ipcMain.handle('get-current-version', async () => {
   return CURRENT_VERSION;
+});
+
+// Settings IPC handlers
+ipcMain.handle('load-settings', async () => {
+  try {
+    const settings = loadSettings();
+    // Also sync launch at startup setting from system
+    settings.launchAtStartup = getLaunchAtStartup();
+    return settings;
+  } catch (error) {
+    logError('Error in load-settings handler:', error);
+    return null;
+  }
+});
+
+ipcMain.handle('save-settings', async (event, settings) => {
+  try {
+    const success = saveSettings(settings);
+    if (success) {
+      log('Settings saved via IPC: ' + JSON.stringify(settings));
+    }
+    return { success };
+  } catch (error) {
+    logError('Error in save-settings handler:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('set-launch-at-startup', async (event, enable) => {
+  try {
+    const success = setLaunchAtStartup(enable);
+    if (success) {
+      // Also update settings file
+      const settings = loadSettings();
+      settings.launchAtStartup = enable;
+      saveSettings(settings);
+    }
+    return { success };
+  } catch (error) {
+    logError('Error in set-launch-at-startup handler:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('get-launch-at-startup', async () => {
+  try {
+    return getLaunchAtStartup();
+  } catch (error) {
+    logError('Error in get-launch-at-startup handler:', error);
+    return false;
+  }
 });

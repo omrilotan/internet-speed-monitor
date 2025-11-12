@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0]
+
+### ✨ New Features
+- Settings persistence: remembers schedule type (interval/cron), interval minutes, and cron expression between app launches
+- Auto-start monitoring toggle: when enabled, the app automatically starts monitoring after loading your saved schedule
+- Launch at computer startup toggle: start the app at OS login using Electron's login item settings
+
+### 🛠 Improvements
+- Unified settings storage: consolidated last-version-check.json into settings.json for a single source of truth
+- Modern toggle UI: replaced checkboxes with iOS/Android-style switches and fixed knob animation direction
+- Update check reliability: daily throttling stored in settings; manual checks available from About dialog
+
+### 🔧 Technical
+- Added IPC handlers: load-settings, save-settings, set-launch-at-startup, get-launch-at-startup
+- Extended preload bridge to expose settings and startup controls securely
+- Refactored version check to use VERSION_CHECK_URL constant and settings-backed lastCheckDate/lastCheckedVersion
+
 ## [1.3.4]
 
 ### 📚 Documentation

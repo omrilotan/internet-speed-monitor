@@ -1,6 +1,6 @@
 {
   "name": "internet-speed-monitor",
-  "version": "1.3.4",
+  "version": "1.4.0",
   "description": "Electron app for monitoring internet connectivity speed at set intervals",
   "main": "main.js",
   "scripts": {
@@ -38,7 +38,7 @@
     "url": "https://github.com/omrilotan/internet-speed-monitor/issues"
   },
   "devDependencies": {
-    "electron": "^38.1.2",
+    "electron": "^39.1.2",
     "electron-builder": "^26.0.12"
   },
   "dependencies": {

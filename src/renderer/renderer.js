@@ -17,6 +17,8 @@ const clearSelectiveBtn = document.getElementById('clear-selective-btn');
 const exportCsvBtn = document.getElementById('export-csv-btn');
 const hamburgerBtn = document.getElementById('hamburger-btn');
 const hamburgerDropdown = document.getElementById('hamburger-dropdown');
+const autoStartToggle = document.getElementById('auto-start-toggle');
+const launchAtStartupToggle = document.getElementById('launch-at-startup-toggle');
 
 // Schedule controls
 const scheduleTypeSelect = document.getElementById('schedule-type');
@@ -64,6 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateMonitoringStatus();
     loadAppVersion();
     setupIntervalStepping(); // Setup smart stepping for interval input
+    loadAndApplySettings(); // Load settings and apply them
 });
 
 // Event listeners
@@ -78,6 +81,15 @@ exportCsvBtn.addEventListener('click', exportCSV);
 scheduleTypeSelect.addEventListener('change', handleScheduleTypeChange);
 intervalInput.addEventListener('input', updateIntervalDisplay);
 cronExpressionInput.addEventListener('input', updateCronDescription);
+
+// Save schedule settings when they change
+scheduleTypeSelect.addEventListener('change', saveScheduleSettings);
+intervalInput.addEventListener('change', saveScheduleSettings);
+cronExpressionInput.addEventListener('change', saveScheduleSettings);
+
+// Settings toggle event listeners
+autoStartToggle.addEventListener('change', handleAutoStartToggle);
+launchAtStartupToggle.addEventListener('change', handleLaunchAtStartupToggle);
 
 // Cron preset button listeners
 document.addEventListener('click', (e) => {
@@ -1281,5 +1293,100 @@ function getCurrentSchedule() {
             type: 'interval',
             minutes: interval
         };
+    }
+}
+
+// Settings management functions
+async function loadAndApplySettings() {
+    try {
+        console.log('Loading settings...');
+        const settings = await window.electronAPI.loadSettings();
+        
+        if (settings) {
+            console.log('Settings loaded:', settings);
+            
+            // Apply schedule settings
+            if (settings.scheduleType === 'cron') {
+                scheduleTypeSelect.value = 'cron';
+                cronExpressionInput.value = settings.cronExpression || '*/5 * * * *';
+                handleScheduleTypeChange(); // Switch to cron view
+                updateCronDescription();
+            } else {
+                scheduleTypeSelect.value = 'interval';
+                intervalInput.value = settings.interval || 5;
+                handleScheduleTypeChange(); // Switch to interval view
+                updateIntervalDisplay();
+            }
+            
+            // Apply toggle settings
+            autoStartToggle.checked = settings.autoStart || false;
+            
+            // Get launch at startup status from system
+            const launchAtStartup = await window.electronAPI.getLaunchAtStartup();
+            launchAtStartupToggle.checked = launchAtStartup;
+            
+            // Auto-start monitoring if enabled
+            if (settings.autoStart && !isMonitoring) {
+                console.log('Auto-start is enabled, starting monitoring...');
+                // Add a small delay to ensure everything is initialized
+                setTimeout(() => {
+                    startMonitoring();
+                }, 1000);
+            }
+        }
+    } catch (error) {
+        console.error('Error loading settings:', error);
+    }
+}
+
+async function saveScheduleSettings() {
+    try {
+        const scheduleType = scheduleTypeSelect.value;
+        const settings = {
+            scheduleType: scheduleType,
+            interval: parseInt(intervalInput.value) || 5,
+            cronExpression: cronExpressionInput.value.trim() || '*/5 * * * *',
+            autoStart: autoStartToggle.checked,
+            launchAtStartup: launchAtStartupToggle.checked
+        };
+        
+        await window.electronAPI.saveSettings(settings);
+        console.log('Schedule settings saved');
+    } catch (error) {
+        console.error('Error saving schedule settings:', error);
+    }
+}
+
+async function handleAutoStartToggle() {
+    try {
+        const settings = await window.electronAPI.loadSettings();
+        settings.autoStart = autoStartToggle.checked;
+        await window.electronAPI.saveSettings(settings);
+        console.log('Auto-start setting saved:', autoStartToggle.checked);
+    } catch (error) {
+        console.error('Error saving auto-start setting:', error);
+        // Revert checkbox on error
+        autoStartToggle.checked = !autoStartToggle.checked;
+    }
+}
+
+async function handleLaunchAtStartupToggle() {
+    try {
+        const enable = launchAtStartupToggle.checked;
+        const result = await window.electronAPI.setLaunchAtStartup(enable);
+        
+        if (result.success) {
+            console.log('Launch at startup setting saved:', enable);
+        } else {
+            console.error('Failed to set launch at startup:', result.error);
+            // Revert checkbox on error
+            launchAtStartupToggle.checked = !enable;
+            alert('Failed to change startup setting: ' + (result.error || 'Unknown error'));
+        }
+    } catch (error) {
+        console.error('Error setting launch at startup:', error);
+        // Revert checkbox on error
+        launchAtStartupToggle.checked = !launchAtStartupToggle.checked;
+        alert('Failed to change startup setting: ' + error.message);
     }
 }
