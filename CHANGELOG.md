@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.1] - 2025-11-16
+
+### 🐛 Bug Fix
+- **Cron preset persistence** - Fixed an issue where clicking cron preset buttons did not update and persist the `cronExpression` setting. Programmatic preset selection now dispatches the input `change` event so existing save handlers run and the value is written to settings.json.
+
 ## [1.4.0]
 
 ### ✨ New Features

@@ -103,6 +103,11 @@ document.addEventListener('click', (e) => {
         } else {
             cronExpressionInput.value = cronExpression;
             updateCronDescription();
+            // Programmatically updating the input doesn't fire the 'change' event,
+            // so dispatch a change to trigger the existing saveScheduleSettings handler
+            // which listens for cronExpressionInput 'change'. Do not dispatch for the
+            // custom button since that intentionally focuses the input for manual edits.
+            cronExpressionInput.dispatchEvent(new Event('change'));
         }
     }
 });
