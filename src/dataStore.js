@@ -289,6 +289,59 @@ class DataStore {
         }
     }
 
+    /**
+     * Export data for a specific date range as CSV format
+     * @param {string} startDate - ISO date string (YYYY-MM-DD)
+     * @param {string} endDate - ISO date string (YYYY-MM-DD)
+     * @returns {string} CSV formatted data
+     */
+    exportAsCSVDateRange(startDate, endDate) {
+        try {
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            end.setHours(23, 59, 59, 999); // Include entire end date
+            
+            console.log('Exporting CSV for date range:', startDate, 'to', endDate);
+            
+            // Filter tests by date range
+            const filteredTests = this.data.speedTests.filter(test => {
+                const testDate = new Date(test.timestamp);
+                return testDate >= start && testDate <= end;
+            });
+            
+            console.log('Filtered tests count:', filteredTests.length);
+            
+            const headers = ['Date', 'Time', 'Download Speed (Mbps)', 'Upload Speed (Mbps)', 'Ping (ms)', 'Network Interface', 'ISP'];
+            const csvRows = [headers.join(',')];
+
+            if (filteredTests.length === 0) {
+                // Add a row indicating no data for this range
+                csvRows.push('"No data available for selected date range","","","","","",""');
+            } else {
+                filteredTests.forEach(test => {
+                    const date = new Date(test.timestamp);
+                    const dateStr = date.toLocaleDateString();
+                    const timeStr = date.toLocaleTimeString();
+                    const row = [
+                        `"${dateStr}"`,
+                        `"${timeStr}"`,
+                        test.download.toFixed(2),
+                        test.upload.toFixed(2),
+                        test.ping.toFixed(0),
+                        `"${test.networkInterface || 'Unknown'}"`,
+                        `"${test.isp || 'Unknown'}"`
+                    ];
+                    csvRows.push(row.join(','));
+                });
+            }
+
+            return csvRows.join('\n');
+        } catch (error) {
+            console.error('Error exporting CSV for date range:', error);
+            return '';
+        }
+    }
+
     async clearDataUntilDate(cutoffDate) {
         try {
             const cutoff = new Date(cutoffDate);

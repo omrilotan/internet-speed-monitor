@@ -12,7 +12,7 @@
         <header>
             <div class="header-left">
                 <h1>Internet Speed Monitor</h1>
-                <small id="app-version">Version 1.4.1</small>
+                <small id="app-version">Version 1.4.2</small>
             </div>
             <div class="status-indicator">
                 <span id="status-text">Stopped</span>
@@ -99,6 +99,37 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Export CSV with Date Range Modal -->
+                <div id="export-date-range-modal" class="modal" style="display: none;">
+                    <div class="modal-content">
+                        <span class="modal-close">&times;</span>
+                        <h3>Export Speed Test Data</h3>
+                        <p>Select a date range to export speed test results as CSV.</p>
+                        
+                        <div class="input-group">
+                            <label for="export-start-date">Start date:</label>
+                            <input type="date" id="export-start-date">
+                            <small class="input-hint">Earliest date to include in export</small>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="export-end-date">End date:</label>
+                            <input type="date" id="export-end-date">
+                            <small class="input-hint">Latest date to include in export</small>
+                        </div>
+                        
+                        <div class="export-info">
+                            <small id="export-date-info" style="display: none;">Records to export: <strong id="export-record-count">0</strong></small>
+                        </div>
+                        
+                        <div class="modal-buttons">
+                            <button id="preview-export-btn" class="btn btn-secondary">Preview</button>
+                            <button id="confirm-export-btn" class="btn btn-primary" disabled>Export CSV</button>
+                            <button id="cancel-export-btn" class="btn btn-secondary">Cancel</button>
+                        </div>
+                    </div>
+                </div>
             </section>
 
             <section class="current-stats">
@@ -136,7 +167,21 @@
             </section>
 
             <section class="chart-section">
-                <h2>Speed History & Recent Tests <small style="font-weight: normal; color: #666; font-size: 0.7em;">(last 20 data points)</small></h2>
+                <h2>Speed History & Recent Tests <small id="chart-subtitle" style="font-weight: normal; color: #666; font-size: 0.7em;">(date range)</small></h2>
+                <div class="chart-controls" style="margin: 8px 0 12px 0; display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
+                    <div>
+                        <label style="margin-right: 8px; font-weight: 500;">View:</label>
+                        <label style="margin-right: 12px;"><input type="radio" name="chart-view-mode" id="chart-view-last20" value="last20" checked> Last 20 data points</label>
+                        <label><input type="radio" name="chart-view-mode" id="chart-view-range" value="range"> Date range</label>
+                    </div>
+                    <div id="chart-range-controls" style="display: flex; gap: 8px; align-items: center;">
+                        <label for="chart-start-date">Start:</label>
+                        <input type="date" id="chart-start-date">
+                        <label for="chart-end-date">End:</label>
+                        <input type="date" id="chart-end-date">
+                        <button id="chart-apply-btn" class="btn btn-secondary">Apply</button>
+                    </div>
+                </div>
                 <div class="chart-container">
                     <canvas id="speedChart"></canvas>
                 </div>

@@ -757,6 +757,48 @@ ipcMain.handle('export-csv', async () => {
   }
 });
 
+// Export CSV with date range IPC handler
+ipcMain.handle('export-csv-date-range', async (event, startDate, endDate) => {
+  try {
+    if (!isInitialized || !dataStore) {
+      const initSuccess = await initializeModules();
+      if (!initSuccess) {
+        return { success: false, error: 'Failed to initialize data store' };
+      }
+    }
+    
+    log('Getting data for CSV export with date range:', startDate, 'to', endDate);
+    
+    const csvData = dataStore.exportAsCSVDateRange(startDate, endDate);
+    if (csvData && csvData.length > 0) {
+      // Use Electron's dialog to save the file
+      const { dialog } = require('electron');
+      const result = await dialog.showSaveDialog(mainWindow, {
+        title: 'Export Speed Test Data',
+        defaultPath: `speed-test-data-${startDate}_to_${endDate}.csv`,
+        filters: [
+          { name: 'CSV Files', extensions: ['csv'] },
+          { name: 'All Files', extensions: ['*'] }
+        ]
+      });
+      
+      if (!result.canceled && result.filePath) {
+        fs.writeFileSync(result.filePath, csvData);
+        const lines = csvData.split('\n').length - 1; // Subtract header
+        const recordCount = Math.max(0, lines);
+        return { success: true, filePath: result.filePath, message: `Exported ${recordCount} speed test records for the selected date range` };
+      } else {
+        return { success: false, error: 'Export cancelled' };
+      }
+    } else {
+      return { success: false, error: 'Failed to generate CSV data' };
+    }
+  } catch (error) {
+    logError('Error exporting CSV with date range:', error);
+    return { success: false, error: error.message };
+  }
+});
+
 // Test once now handler
 ipcMain.handle('test-once-now', async () => {
   log('Manual test requested via IPC');

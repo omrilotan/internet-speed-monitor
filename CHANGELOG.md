@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.2] - 2025-12-16
+
+### ✨ New Features
+- **Chart view toggle** - Toggle between viewing the last 20 data points or a custom date range with min/max constraints
+- **Export CSV with date range** - Export speed test results for a selected date range using an intuitive date picker modal
+
+### 🛠 Improvements
+- Chart defaults to showing last 20 data points for better visibility of recent trends
+- Date range controls in chart and export feature share consistent min/max validation logic
+
 ## [1.4.1] - 2025-11-16
 
 ### 🐛 Bug Fix

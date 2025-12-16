@@ -50,6 +50,29 @@ const previewClearBtn = document.getElementById('preview-clear-btn');
 const confirmClearBtn = document.getElementById('confirm-clear-btn');
 const cancelClearBtn = document.getElementById('cancel-clear-btn');
 const clearPreview = document.getElementById('clear-preview');
+
+// Export date range modal elements
+const exportDateRangeModal = document.getElementById('export-date-range-modal');
+const exportModalClose = exportDateRangeModal.querySelector('.modal-close');
+const exportStartDateInput = document.getElementById('export-start-date');
+const exportEndDateInput = document.getElementById('export-end-date');
+const previewExportBtn = document.getElementById('preview-export-btn');
+const confirmExportBtn = document.getElementById('confirm-export-btn');
+const cancelExportBtn = document.getElementById('cancel-export-btn');
+const exportDateInfo = document.getElementById('export-date-info');
+const exportRecordCount = document.getElementById('export-record-count');
+
+// Chart view controls
+const chartSubtitle = document.getElementById('chart-subtitle');
+const chartViewLast20 = document.getElementById('chart-view-last20');
+const chartViewRange = document.getElementById('chart-view-range');
+const chartRangeControls = document.getElementById('chart-range-controls');
+const chartStartDateInput = document.getElementById('chart-start-date');
+const chartEndDateInput = document.getElementById('chart-end-date');
+const chartApplyBtn = document.getElementById('chart-apply-btn');
+
+let chartViewMode = 'range'; // 'last2' | 'range'
+
 const medianPing = document.getElementById('median-ping');
 const resultsTable = document.getElementById('results-tbody');
 const updateNotification = document.getElementById('update-notification');
@@ -67,6 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadAppVersion();
     setupIntervalStepping(); // Setup smart stepping for interval input
     loadAndApplySettings(); // Load settings and apply them
+    setupChartViewControls();
 });
 
 // Event listeners
@@ -132,6 +156,21 @@ clearDataModal.addEventListener('click', (e) => {
     }
 });
 
+// Export date range modal event listeners
+exportModalClose.addEventListener('click', hideExportDateRangeModal);
+cancelExportBtn.addEventListener('click', hideExportDateRangeModal);
+previewExportBtn.addEventListener('click', previewExportRecordCount);
+confirmExportBtn.addEventListener('click', exportCSVDateRange);
+exportStartDateInput.addEventListener('change', previewExportRecordCount);
+exportEndDateInput.addEventListener('change', previewExportRecordCount);
+
+// Close modal when clicking outside
+exportDateRangeModal.addEventListener('click', (e) => {
+    if (e.target === exportDateRangeModal) {
+        hideExportDateRangeModal();
+    }
+});
+
 // Update notification event listeners
 dismissUpdateBtn.addEventListener('click', () => {
     updateNotification.style.display = 'none';
@@ -168,7 +207,8 @@ window.electronAPI.onSpeedTestResult((event, result) => {
     
     updateCurrentStatsEnhanced(result);
     addToTable(result);
-    updateChart(result);
+    // Re-render chart according to current view selection
+    refreshChartForCurrentView();
     
     // Update median stats with the new data
     updateMedianStats();
@@ -414,13 +454,120 @@ async function clearHistory() {
     }
 }
 
-async function exportCSV() {
+// Clear data modal functions
+function showClearDataModal() {
+    // Set default cutoff date to 30 days ago
+    const defaultDate = new Date();
+    defaultDate.setDate(defaultDate.getDate() - 30);
+    cutoffDateInput.valueAsDate = defaultDate;
+    clearDataModal.style.display = 'flex';
+}
+
+function hideClearDataModal() {
+    clearDataModal.style.display = 'none';
+    clearPreview.style.display = 'none';
+    confirmClearBtn.disabled = true;
+}
+
+// Export date range modal functions
+function showExportDateRangeModal() {
+    // Find earliest and latest dates from allSpeedTests
+    let earliestDate = null;
+    let latestDate = null;
+    
+    if (allSpeedTests && allSpeedTests.length > 0) {
+        // allSpeedTests is sorted with newest first, so:
+        // Latest is the first element
+        latestDate = new Date(allSpeedTests[0].created_at || allSpeedTests[0].timestamp);
+        // Earliest is the last element
+        earliestDate = new Date(allSpeedTests[allSpeedTests.length - 1].created_at || allSpeedTests[allSpeedTests.length - 1].timestamp);
+    } else {
+        // If no data, use today as both start and end
+        latestDate = new Date();
+        earliestDate = new Date();
+    }
+    
+    // Set date inputs to earliest and latest dates
+    exportStartDateInput.valueAsDate = earliestDate;
+    exportEndDateInput.valueAsDate = latestDate;
+    
+    // Set min and max attributes to restrict picker to data range
+    // Both inputs should allow selecting any date within the full data range
+    const earliestDateStr = earliestDate.toISOString().split('T')[0];
+    const latestDateStr = latestDate.toISOString().split('T')[0];
+    
+    // Both start and end date inputs can select any date in the data range
+    exportStartDateInput.min = earliestDateStr;
+    exportStartDateInput.max = latestDateStr;
+    exportEndDateInput.min = earliestDateStr;
+    exportEndDateInput.max = latestDateStr;
+    
+    exportDateRangeModal.style.display = 'flex';
+    previewExportRecordCount();
+}
+
+function hideExportDateRangeModal() {
+    exportDateRangeModal.style.display = 'none';
+    exportDateInfo.style.display = 'none';
+    confirmExportBtn.disabled = true;
+}
+
+async function previewExportRecordCount() {
     try {
-        console.log('Exporting CSV...');
-        const response = await window.electronAPI.exportCSV();
+        let startDate = exportStartDateInput.value;
+        let endDate = exportEndDateInput.value;
+        
+        if (!startDate || !endDate) {
+            exportDateInfo.style.display = 'none';
+            confirmExportBtn.disabled = true;
+            return;
+        }
+        
+        // Ensure start date is not after end date
+        if (startDate > endDate) {
+            // Swap them
+            const temp = startDate;
+            startDate = endDate;
+            endDate = temp;
+            exportStartDateInput.value = startDate;
+            exportEndDateInput.value = endDate;
+        }
+        
+        // Count records in the selected range
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999); // Include entire end date
+        
+        const filtered = allSpeedTests.filter(test => {
+            const testDate = new Date(test.created_at || test.timestamp);
+            return testDate >= start && testDate <= end;
+        });
+        
+        exportRecordCount.textContent = filtered.length;
+        exportDateInfo.style.display = 'block';
+        confirmExportBtn.disabled = filtered.length === 0;
+    } catch (error) {
+        console.error('Error previewing export record count:', error);
+    }
+}
+
+async function exportCSVDateRange() {
+    try {
+        const startDate = exportStartDateInput.value;
+        const endDate = exportEndDateInput.value;
+        
+        if (!startDate || !endDate) {
+            alert('Please select both start and end dates');
+            return;
+        }
+        
+        console.log('Exporting CSV for date range:', startDate, 'to', endDate);
+        const response = await window.electronAPI.exportCSVDateRange(startDate, endDate);
+        
         if (response.success) {
             const message = response.message || 'Data exported successfully';
             alert(message + '\nFile saved to: ' + response.filePath);
+            hideExportDateRangeModal();
         } else {
             alert('Failed to export data: ' + response.error);
         }
@@ -428,6 +575,11 @@ async function exportCSV() {
         console.error('Error exporting CSV:', error);
         alert('Failed to export data: ' + error.message);
     }
+}
+
+async function exportCSV() {
+    // Show the date range modal instead of exporting directly
+    showExportDateRangeModal();
 }
 
 async function updateMonitoringStatus() {
@@ -622,6 +774,138 @@ function updateChart(result) {
     speedChart.update();
 }
 
+function setupChartViewControls() {
+    // Initialize radio buttons and range controls
+    if (chartViewLast20) chartViewLast20.checked = true;
+    chartViewMode = 'last20';
+    chartRangeControls.style.display = 'none';
+    updateChartSubtitle();
+
+    const setDateRangeBounds = () => {
+        // Determine earliest and latest dates from allSpeedTests
+        let earliestDate = null;
+        let latestDate = null;
+        if (allSpeedTests && allSpeedTests.length > 0) {
+            // Newest first
+            latestDate = new Date(allSpeedTests[0].created_at || allSpeedTests[0].timestamp);
+            earliestDate = new Date(allSpeedTests[allSpeedTests.length - 1].created_at || allSpeedTests[allSpeedTests.length - 1].timestamp);
+        } else {
+            latestDate = new Date();
+            earliestDate = new Date();
+        }
+
+        const earliestStr = earliestDate.toISOString().split('T')[0];
+        const latestStr = latestDate.toISOString().split('T')[0];
+
+        chartStartDateInput.min = earliestStr;
+        chartStartDateInput.max = latestStr;
+        chartEndDateInput.min = earliestStr;
+        chartEndDateInput.max = latestStr;
+        chartStartDateInput.valueAsDate = earliestDate;
+        chartEndDateInput.valueAsDate = latestDate;
+    };
+
+    setDateRangeBounds();
+
+    // Event listeners
+    if (chartViewLast20) {
+        chartViewLast20.addEventListener('change', () => {
+            if (chartViewLast20.checked) {
+                chartViewMode = 'last20';
+                chartRangeControls.style.display = 'none';
+                updateChartSubtitle();
+                refreshChartForCurrentView();
+            }
+        });
+    }
+    if (chartViewRange) {
+        chartViewRange.addEventListener('change', () => {
+            if (chartViewRange.checked) {
+                chartViewMode = 'range';
+                chartRangeControls.style.display = 'flex';
+                setDateRangeBounds();
+                updateChartSubtitle();
+                refreshChartForCurrentView();
+            }
+        });
+    }
+
+    if (chartApplyBtn) {
+        chartApplyBtn.addEventListener('click', () => {
+            refreshChartForCurrentView();
+        });
+    }
+
+    // Keep date range valid on change
+    chartStartDateInput?.addEventListener('change', () => {
+        if (chartEndDateInput.value && chartStartDateInput.value > chartEndDateInput.value) {
+            chartEndDateInput.value = chartStartDateInput.value;
+        }
+    });
+    chartEndDateInput?.addEventListener('change', () => {
+        if (chartStartDateInput.value && chartEndDateInput.value < chartStartDateInput.value) {
+            chartStartDateInput.value = chartEndDateInput.value;
+        }
+    });
+}
+
+function updateChartSubtitle() {
+    if (!chartSubtitle) return;
+    if (chartViewMode === 'last20') {
+        chartSubtitle.textContent = '(last twenty data points)';
+    } else {
+        chartSubtitle.textContent = '(date range)';
+    }
+}
+
+function renderChartFromData(items) {
+    if (!speedChart) return;
+    // items expected in chronological order for x-axis readability
+    const labels = [];
+    const downloads = [];
+    const uploads = [];
+    items.forEach(item => {
+        const d = new Date(item.timestamp || item.created_at);
+        const datePart = d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+        const timePart = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+        labels.push(`${datePart} ${timePart}`);
+        downloads.push(item.download);
+        uploads.push(item.upload);
+    });
+
+    speedChart.data.labels = labels;
+    speedChart.data.datasets[0].data = downloads;
+    speedChart.data.datasets[1].data = uploads;
+    speedChart.update();
+}
+
+function refreshChartForCurrentView() {
+    if (!allSpeedTests) return;
+    let items = [];
+    if (chartViewMode === 'last20') {
+        // Take newest twenty tests, then reverse to chronological
+        items = allSpeedTests.slice(0, 20).reverse();
+    } else {
+        // Date range
+        const startVal = chartStartDateInput.value;
+        const endVal = chartEndDateInput.value;
+        if (!startVal || !endVal) {
+            // If not set yet, show all available (up to 100 kept)
+            items = [...allSpeedTests].reverse();
+        } else {
+            const start = new Date(startVal);
+            const end = new Date(endVal);
+            end.setHours(23, 59, 59, 999);
+            const filtered = allSpeedTests.filter(test => {
+                const t = new Date(test.created_at || test.timestamp);
+                return t >= start && t <= end;
+            });
+            items = filtered.reverse();
+        }
+    }
+    renderChartFromData(items);
+}
+
 async function loadHistoricalData() {
     try {
         const data = await window.electronAPI.getSpeedTests(100); // Get more data for median calculation
@@ -666,11 +950,8 @@ async function loadHistoricalData() {
             addToTable(result);
         });
         
-        // Add to chart (take first 20 newest, then reverse for chronological display)
-        const chartData = data.slice(0, 20).reverse();
-        chartData.forEach(result => {
-            updateChart(result);
-        });
+        // Render chart according to selected view
+        refreshChartForCurrentView();
         
         // Update median stats
         updateMedianStats();
