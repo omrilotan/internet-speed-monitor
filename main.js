@@ -799,6 +799,28 @@ ipcMain.handle('export-csv-date-range', async (event, startDate, endDate) => {
   }
 });
 
+// Get date range bounds IPC handler
+ipcMain.handle('get-date-range-bounds', async (event) => {
+  try {
+    if (!isInitialized || !dataStore) {
+      const initSuccess = await initializeModules();
+      if (!initSuccess) {
+        return { success: false, error: 'Failed to initialize data store', earliest: null, latest: null };
+      }
+    }
+
+    const bounds = dataStore.getDateRangeBounds();
+    return { 
+      success: true, 
+      earliest: bounds.earliest ? bounds.earliest.toISOString() : null,
+      latest: bounds.latest ? bounds.latest.toISOString() : null
+    };
+  } catch (error) {
+    logError('Error getting date range bounds:', error);
+    return { success: false, error: error.message, earliest: null, latest: null };
+  }
+});
+
 // Test once now handler
 ipcMain.handle('test-once-now', async () => {
   log('Manual test requested via IPC');

@@ -396,6 +396,34 @@ class DataStore {
             console.error('Error closing data store:', error);
         }
     }
+
+    /**
+     * Get the earliest and latest dates from all stored speed tests
+     * Used to set date picker bounds without loading all records
+     * @returns {Object} { earliest: Date or null, latest: Date or null }
+     */
+    getDateRangeBounds() {
+        try {
+            if (!this.data.speedTests || this.data.speedTests.length === 0) {
+                return { earliest: null, latest: null };
+            }
+
+            // Data is sorted newest first, so first item is latest
+            const newest = this.data.speedTests[0];
+            const oldest = this.data.speedTests[this.data.speedTests.length - 1];
+
+            const latestDate = new Date(newest.timestamp || newest.created_at);
+            const earliestDate = new Date(oldest.timestamp || oldest.created_at);
+
+            return {
+                earliest: earliestDate,
+                latest: latestDate
+            };
+        } catch (error) {
+            console.error('Error getting date range bounds:', error);
+            return { earliest: null, latest: null };
+        }
+    }
 }
 
 module.exports = DataStore;

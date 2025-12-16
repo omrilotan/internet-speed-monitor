@@ -16,6 +16,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   clearDataUntilDate: (cutoffDate) => ipcRenderer.invoke('clear-data-until-date', cutoffDate),
   exportCSV: () => ipcRenderer.invoke('export-csv'),
   exportCSVDateRange: (startDate, endDate) => ipcRenderer.invoke('export-csv-date-range', startDate, endDate),
+  getDateRangeBounds: () => ipcRenderer.invoke('get-date-range-bounds'),
   
   // Debug
   getDebugLog: () => ipcRenderer.invoke('get-debug-log'),

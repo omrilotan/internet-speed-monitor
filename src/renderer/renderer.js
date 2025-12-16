@@ -202,9 +202,9 @@ window.electronAPI.onSpeedTestResult((event, result) => {
     // Add the new result to the allSpeedTests array at the beginning (most recent first)
     allSpeedTests.unshift(result);
     
-    // Keep only the last 100 results to match loadHistoricalData behavior
-    if (allSpeedTests.length > 100) {
-        allSpeedTests = allSpeedTests.slice(0, 100);
+    // Keep only the last 504 results to match loadHistoricalData behavior (one week at 20-min intervals)
+    if (allSpeedTests.length > 504) {
+        allSpeedTests = allSpeedTests.slice(0, 504);
     }
     
     updateCurrentStatsEnhanced(result);
@@ -859,34 +859,45 @@ function formatDateYYYYMMDD(date) {
 function updateChartDateRangeBounds() {
     if (!chartStartDateInput || !chartEndDateInput) return;
 
-    let earliestDate, latestDate;
-    if (allSpeedTests && allSpeedTests.length > 0) {
-        const newest = allSpeedTests[0];
-        const oldest = allSpeedTests[allSpeedTests.length - 1];
-        // Prefer measurement timestamp; fallback to created_at
-        latestDate = new Date(newest.timestamp || newest.created_at);
-        earliestDate = new Date(oldest.timestamp || oldest.created_at);
-    } else {
-        // Fallback to today if no data yet
-        earliestDate = new Date();
-        latestDate = new Date();
-    }
+    // Fetch actual min/max dates from datastore (reflects full data, not 100-record subset)
+    window.electronAPI.getDateRangeBounds().then(result => {
+        let earliestDate, latestDate;
 
-    const minStr = formatDateYYYYMMDD(earliestDate);
-    const maxStr = formatDateYYYYMMDD(latestDate);
+        if (result.success && result.earliest && result.latest) {
+            // Use bounds from full datastore
+            earliestDate = new Date(result.earliest);
+            latestDate = new Date(result.latest);
+        } else if (allSpeedTests && allSpeedTests.length > 0) {
+            // Fallback to 100-record subset if IPC fails
+            const newest = allSpeedTests[0];
+            const oldest = allSpeedTests[allSpeedTests.length - 1];
+            latestDate = new Date(newest.timestamp || newest.created_at);
+            earliestDate = new Date(oldest.timestamp || oldest.created_at);
+        } else {
+            // Fallback to today if no data yet
+            earliestDate = new Date();
+            latestDate = new Date();
+        }
 
-    chartStartDateInput.min = minStr;
-    chartStartDateInput.max = maxStr;
-    chartEndDateInput.min = minStr;
-    chartEndDateInput.max = maxStr;
+        const minStr = formatDateYYYYMMDD(earliestDate);
+        const maxStr = formatDateYYYYMMDD(latestDate);
 
-    // Initialize values if empty or clamp if out of bounds
-    if (!chartStartDateInput.value) chartStartDateInput.value = minStr;
-    if (!chartEndDateInput.value) chartEndDateInput.value = maxStr;
-    if (chartStartDateInput.value < minStr) chartStartDateInput.value = minStr;
-    if (chartStartDateInput.value > maxStr) chartStartDateInput.value = maxStr;
-    if (chartEndDateInput.value < minStr) chartEndDateInput.value = minStr;
-    if (chartEndDateInput.value > maxStr) chartEndDateInput.value = maxStr;
+        chartStartDateInput.min = minStr;
+        chartStartDateInput.max = maxStr;
+        chartEndDateInput.min = minStr;
+        chartEndDateInput.max = maxStr;
+
+        // Initialize values if empty or clamp if out of bounds
+        if (!chartStartDateInput.value) chartStartDateInput.value = minStr;
+        if (!chartEndDateInput.value) chartEndDateInput.value = maxStr;
+        if (chartStartDateInput.value < minStr) chartStartDateInput.value = minStr;
+        if (chartStartDateInput.value > maxStr) chartStartDateInput.value = maxStr;
+        if (chartEndDateInput.value < minStr) chartEndDateInput.value = minStr;
+        if (chartEndDateInput.value > maxStr) chartEndDateInput.value = maxStr;
+    }).catch(error => {
+        console.error('Error fetching date range bounds:', error);
+        // Silent fallback; bounds will use 100-record subset or today
+    });
 }
 
 function updateChartSubtitle() {
@@ -967,7 +978,7 @@ function refreshChartForCurrentView() {
 
 async function loadHistoricalData() {
     try {
-        const data = await window.electronAPI.getSpeedTests(100); // Get more data for median calculation
+        const data = await window.electronAPI.getSpeedTests(504); // Get one week of data (504 = 3*24*7, one test every 20min)
         
         console.log('=== LOAD HISTORICAL DATA ===');
         console.log('Received data count:', data ? data.length : 0);

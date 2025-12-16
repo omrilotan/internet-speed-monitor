@@ -1,6 +1,6 @@
 {
   "name": "internet-speed-monitor",
-  "version": "1.4.3",
+  "version": "1.4.4",
   "description": "Electron app for monitoring internet connectivity speed at set intervals",
   "main": "main.js",
   "scripts": {
