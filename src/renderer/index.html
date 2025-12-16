@@ -12,7 +12,7 @@
         <header>
             <div class="header-left">
                 <h1>Internet Speed Monitor</h1>
-                <small id="app-version">Version 1.4.2</small>
+                <small id="app-version">Version 1.4.3</small>
             </div>
             <div class="status-indicator">
                 <span id="status-text">Stopped</span>
@@ -171,7 +171,9 @@
                 <div class="chart-controls" style="margin: 8px 0 12px 0; display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
                     <div>
                         <label style="margin-right: 8px; font-weight: 500;">View:</label>
-                        <label style="margin-right: 12px;"><input type="radio" name="chart-view-mode" id="chart-view-last20" value="last20" checked> Last 20 data points</label>
+                        <label style="margin-right: 12px;"><input type="radio" name="chart-view-mode" id="chart-view-last-day" value="lastDay" checked> Last Day</label>
+                        <label style="margin-right: 12px;"><input type="radio" name="chart-view-mode" id="chart-view-last7" value="last7"> Last 7 days</label>
+                        <label style="margin-right: 12px;"><input type="radio" name="chart-view-mode" id="chart-view-last20" value="last20"> Last 20 data points</label>
                         <label><input type="radio" name="chart-view-mode" id="chart-view-range" value="range"> Date range</label>
                     </div>
                     <div id="chart-range-controls" style="display: flex; gap: 8px; align-items: center;">

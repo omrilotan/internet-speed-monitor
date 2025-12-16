@@ -64,6 +64,8 @@ const exportRecordCount = document.getElementById('export-record-count');
 
 // Chart view controls
 const chartSubtitle = document.getElementById('chart-subtitle');
+const chartViewLastDay = document.getElementById('chart-view-last-day');
+const chartViewLast7 = document.getElementById('chart-view-last7');
 const chartViewLast20 = document.getElementById('chart-view-last20');
 const chartViewRange = document.getElementById('chart-view-range');
 const chartRangeControls = document.getElementById('chart-range-controls');
@@ -71,7 +73,7 @@ const chartStartDateInput = document.getElementById('chart-start-date');
 const chartEndDateInput = document.getElementById('chart-end-date');
 const chartApplyBtn = document.getElementById('chart-apply-btn');
 
-let chartViewMode = 'range'; // 'last2' | 'range'
+let chartViewMode = 'range'; // 'lastDay' | 'last7' | 'last20' | 'range'
 
 const medianPing = document.getElementById('median-ping');
 const resultsTable = document.getElementById('results-tbody');
@@ -713,6 +715,7 @@ function initializeChart() {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            animation: false,
             scales: {
                 y: {
                     beginAtZero: true,
@@ -776,43 +779,38 @@ function updateChart(result) {
 
 function setupChartViewControls() {
     // Initialize radio buttons and range controls
-    if (chartViewLast20) chartViewLast20.checked = true;
-    chartViewMode = 'last20';
-    chartRangeControls.style.display = 'none';
+    if (chartViewLastDay) chartViewLastDay.checked = true;
+    chartViewMode = 'lastDay';
+    if (chartRangeControls) chartRangeControls.style.display = 'none';
     updateChartSubtitle();
-
-    const setDateRangeBounds = () => {
-        // Determine earliest and latest dates from allSpeedTests
-        let earliestDate = null;
-        let latestDate = null;
-        if (allSpeedTests && allSpeedTests.length > 0) {
-            // Newest first
-            latestDate = new Date(allSpeedTests[0].created_at || allSpeedTests[0].timestamp);
-            earliestDate = new Date(allSpeedTests[allSpeedTests.length - 1].created_at || allSpeedTests[allSpeedTests.length - 1].timestamp);
-        } else {
-            latestDate = new Date();
-            earliestDate = new Date();
-        }
-
-        const earliestStr = earliestDate.toISOString().split('T')[0];
-        const latestStr = latestDate.toISOString().split('T')[0];
-
-        chartStartDateInput.min = earliestStr;
-        chartStartDateInput.max = latestStr;
-        chartEndDateInput.min = earliestStr;
-        chartEndDateInput.max = latestStr;
-        chartStartDateInput.valueAsDate = earliestDate;
-        chartEndDateInput.valueAsDate = latestDate;
-    };
-
-    setDateRangeBounds();
+    updateChartDateRangeBounds();
 
     // Event listeners
+    if (chartViewLastDay) {
+        chartViewLastDay.addEventListener('change', () => {
+            if (chartViewLastDay.checked) {
+                chartViewMode = 'lastDay';
+                if (chartRangeControls) chartRangeControls.style.display = 'none';
+                updateChartSubtitle();
+                refreshChartForCurrentView();
+            }
+        });
+    }
+    if (chartViewLast7) {
+        chartViewLast7.addEventListener('change', () => {
+            if (chartViewLast7.checked) {
+                chartViewMode = 'last7';
+                if (chartRangeControls) chartRangeControls.style.display = 'none';
+                updateChartSubtitle();
+                refreshChartForCurrentView();
+            }
+        });
+    }
     if (chartViewLast20) {
         chartViewLast20.addEventListener('change', () => {
             if (chartViewLast20.checked) {
                 chartViewMode = 'last20';
-                chartRangeControls.style.display = 'none';
+                if (chartRangeControls) chartRangeControls.style.display = 'none';
                 updateChartSubtitle();
                 refreshChartForCurrentView();
             }
@@ -822,8 +820,8 @@ function setupChartViewControls() {
         chartViewRange.addEventListener('change', () => {
             if (chartViewRange.checked) {
                 chartViewMode = 'range';
-                chartRangeControls.style.display = 'flex';
-                setDateRangeBounds();
+                if (chartRangeControls) chartRangeControls.style.display = 'flex';
+                updateChartDateRangeBounds();
                 updateChartSubtitle();
                 refreshChartForCurrentView();
             }
@@ -849,9 +847,55 @@ function setupChartViewControls() {
     });
 }
 
+// Format a Date to local YYYY-MM-DD (avoids timezone off-by-one with toISOString)
+function formatDateYYYYMMDD(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+}
+
+// Update the chart date range inputs' min/max according to available data
+function updateChartDateRangeBounds() {
+    if (!chartStartDateInput || !chartEndDateInput) return;
+
+    let earliestDate, latestDate;
+    if (allSpeedTests && allSpeedTests.length > 0) {
+        const newest = allSpeedTests[0];
+        const oldest = allSpeedTests[allSpeedTests.length - 1];
+        // Prefer measurement timestamp; fallback to created_at
+        latestDate = new Date(newest.timestamp || newest.created_at);
+        earliestDate = new Date(oldest.timestamp || oldest.created_at);
+    } else {
+        // Fallback to today if no data yet
+        earliestDate = new Date();
+        latestDate = new Date();
+    }
+
+    const minStr = formatDateYYYYMMDD(earliestDate);
+    const maxStr = formatDateYYYYMMDD(latestDate);
+
+    chartStartDateInput.min = minStr;
+    chartStartDateInput.max = maxStr;
+    chartEndDateInput.min = minStr;
+    chartEndDateInput.max = maxStr;
+
+    // Initialize values if empty or clamp if out of bounds
+    if (!chartStartDateInput.value) chartStartDateInput.value = minStr;
+    if (!chartEndDateInput.value) chartEndDateInput.value = maxStr;
+    if (chartStartDateInput.value < minStr) chartStartDateInput.value = minStr;
+    if (chartStartDateInput.value > maxStr) chartStartDateInput.value = maxStr;
+    if (chartEndDateInput.value < minStr) chartEndDateInput.value = minStr;
+    if (chartEndDateInput.value > maxStr) chartEndDateInput.value = maxStr;
+}
+
 function updateChartSubtitle() {
     if (!chartSubtitle) return;
-    if (chartViewMode === 'last20') {
+    if (chartViewMode === 'lastDay') {
+        chartSubtitle.textContent = '(last day)';
+    } else if (chartViewMode === 'last7') {
+        chartSubtitle.textContent = '(last 7 days)';
+    } else if (chartViewMode === 'last20') {
         chartSubtitle.textContent = '(last twenty data points)';
     } else {
         chartSubtitle.textContent = '(date range)';
@@ -882,7 +926,22 @@ function renderChartFromData(items) {
 function refreshChartForCurrentView() {
     if (!allSpeedTests) return;
     let items = [];
-    if (chartViewMode === 'last20') {
+    const now = new Date();
+    if (chartViewMode === 'lastDay') {
+        const cutoff = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+        const filtered = allSpeedTests.filter(test => {
+            const t = new Date(test.created_at || test.timestamp);
+            return t >= cutoff && t <= now;
+        });
+        items = filtered.reverse();
+    } else if (chartViewMode === 'last7') {
+        const cutoff = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        const filtered = allSpeedTests.filter(test => {
+            const t = new Date(test.created_at || test.timestamp);
+            return t >= cutoff && t <= now;
+        });
+        items = filtered.reverse();
+    } else if (chartViewMode === 'last20') {
         // Take newest twenty tests, then reverse to chronological
         items = allSpeedTests.slice(0, 20).reverse();
     } else {
@@ -919,6 +978,9 @@ async function loadHistoricalData() {
         
         // Store all data for median calculation
         allSpeedTests = [...data];
+
+        // After data arrives, update date-range bounds for chart controls
+        updateChartDateRangeBounds();
         
         // Reset chart date tracking when loading historical data
         lastChartDate = null;
