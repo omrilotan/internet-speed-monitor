@@ -56,11 +56,11 @@ const exportDateRangeModal = document.getElementById('export-date-range-modal');
 const exportModalClose = exportDateRangeModal.querySelector('.modal-close');
 const exportStartDateInput = document.getElementById('export-start-date');
 const exportEndDateInput = document.getElementById('export-end-date');
-const previewExportBtn = document.getElementById('preview-export-btn');
 const confirmExportBtn = document.getElementById('confirm-export-btn');
 const cancelExportBtn = document.getElementById('cancel-export-btn');
 const exportDateInfo = document.getElementById('export-date-info');
 const exportRecordCount = document.getElementById('export-record-count');
+const exportAllBtn = document.getElementById('export-all-btn');
 
 // Chart view controls
 const chartSubtitle = document.getElementById('chart-subtitle');
@@ -161,10 +161,10 @@ clearDataModal.addEventListener('click', (e) => {
 // Export date range modal event listeners
 exportModalClose.addEventListener('click', hideExportDateRangeModal);
 cancelExportBtn.addEventListener('click', hideExportDateRangeModal);
-previewExportBtn.addEventListener('click', previewExportRecordCount);
 confirmExportBtn.addEventListener('click', exportCSVDateRange);
 exportStartDateInput.addEventListener('change', previewExportRecordCount);
 exportEndDateInput.addEventListener('change', previewExportRecordCount);
+exportAllBtn.addEventListener('click', exportAllCSV);
 
 // Close modal when clicking outside
 exportDateRangeModal.addEventListener('click', (e) => {
@@ -472,19 +472,24 @@ function hideClearDataModal() {
 }
 
 // Export date range modal functions
-function showExportDateRangeModal() {
-    // Find earliest and latest dates from allSpeedTests
+async function showExportDateRangeModal() {
+    // Get actual earliest and latest dates from the data store
     let earliestDate = null;
     let latestDate = null;
     
-    if (allSpeedTests && allSpeedTests.length > 0) {
-        // allSpeedTests is sorted with newest first, so:
-        // Latest is the first element
-        latestDate = new Date(allSpeedTests[0].created_at || allSpeedTests[0].timestamp);
-        // Earliest is the last element
-        earliestDate = new Date(allSpeedTests[allSpeedTests.length - 1].created_at || allSpeedTests[allSpeedTests.length - 1].timestamp);
-    } else {
-        // If no data, use today as both start and end
+    try {
+        const bounds = await window.electronAPI.getDateRangeBounds();
+        if (bounds.success && bounds.earliest && bounds.latest) {
+            earliestDate = new Date(bounds.earliest);
+            latestDate = new Date(bounds.latest);
+        } else {
+            // Fallback to today if no data
+            latestDate = new Date();
+            earliestDate = new Date();
+        }
+    } catch (error) {
+        console.error('Error getting date range bounds:', error);
+        // Fallback to today
         latestDate = new Date();
         earliestDate = new Date();
     }
@@ -581,7 +586,35 @@ async function exportCSVDateRange() {
 
 async function exportCSV() {
     // Show the date range modal instead of exporting directly
-    showExportDateRangeModal();
+    await showExportDateRangeModal();
+}
+
+async function exportAllCSV() {
+    try {
+        // Get the full date range bounds
+        const bounds = await window.electronAPI.getDateRangeBounds();
+        if (!bounds.success || !bounds.earliest || !bounds.latest) {
+            alert('No data available to export');
+            return;
+        }
+        
+        // Extract just the date part (YYYY-MM-DD)
+        const startDate = bounds.earliest.split('T')[0];
+        const endDate = bounds.latest.split('T')[0];
+        
+        console.log('Exporting all data from', startDate, 'to', endDate);
+        const response = await window.electronAPI.exportCSVDateRange(startDate, endDate);
+        
+        if (response.success) {
+            const message = response.message || 'All data exported successfully';
+            alert(message + '\nFile saved to: ' + response.filePath);
+        } else {
+            alert('Failed to export data: ' + response.error);
+        }
+    } catch (error) {
+        console.error('Error exporting all CSV:', error);
+        alert('Failed to export data: ' + error.message);
+    }
 }
 
 async function updateMonitoringStatus() {
