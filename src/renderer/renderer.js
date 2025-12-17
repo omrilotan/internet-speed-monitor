@@ -202,9 +202,9 @@ window.electronAPI.onSpeedTestResult((event, result) => {
     // Add the new result to the allSpeedTests array at the beginning (most recent first)
     allSpeedTests.unshift(result);
     
-    // Keep only the last 504 results to match loadHistoricalData behavior (one week at 20-min intervals)
-    if (allSpeedTests.length > 504) {
-        allSpeedTests = allSpeedTests.slice(0, 504);
+    // Keep only the last 100 results to match loadHistoricalData behavior
+    if (allSpeedTests.length > 100) {
+        allSpeedTests = allSpeedTests.slice(0, 100);
     }
     
     updateCurrentStatsEnhanced(result);
@@ -779,30 +779,30 @@ function updateChart(result) {
 
 function setupChartViewControls() {
     // Initialize radio buttons and range controls
-    if (chartViewLastDay) chartViewLastDay.checked = true;
-    chartViewMode = 'lastDay';
+    if (chartViewLast20) chartViewLast20.checked = true;
+    chartViewMode = 'last20';
     if (chartRangeControls) chartRangeControls.style.display = 'none';
     updateChartSubtitle();
     updateChartDateRangeBounds();
 
     // Event listeners
     if (chartViewLastDay) {
-        chartViewLastDay.addEventListener('change', () => {
+        chartViewLastDay.addEventListener('change', async () => {
             if (chartViewLastDay.checked) {
                 chartViewMode = 'lastDay';
                 if (chartRangeControls) chartRangeControls.style.display = 'none';
                 updateChartSubtitle();
-                refreshChartForCurrentView();
+                await refreshChartForLastDayAsync();
             }
         });
     }
     if (chartViewLast7) {
-        chartViewLast7.addEventListener('change', () => {
+        chartViewLast7.addEventListener('change', async () => {
             if (chartViewLast7.checked) {
                 chartViewMode = 'last7';
                 if (chartRangeControls) chartRangeControls.style.display = 'none';
                 updateChartSubtitle();
-                refreshChartForCurrentView();
+                await refreshChartForLast7Async();
             }
         });
     }
@@ -823,14 +823,18 @@ function setupChartViewControls() {
                 if (chartRangeControls) chartRangeControls.style.display = 'flex';
                 updateChartDateRangeBounds();
                 updateChartSubtitle();
-                refreshChartForCurrentView();
+                // Do not render from sampled data here; wait for user to Apply
             }
         });
     }
 
     if (chartApplyBtn) {
-        chartApplyBtn.addEventListener('click', () => {
-            refreshChartForCurrentView();
+        chartApplyBtn.addEventListener('click', async () => {
+            if (chartViewMode === 'range') {
+                await refreshChartForSelectedRangeAsync();
+            } else {
+                refreshChartForCurrentView();
+            }
         });
     }
 
@@ -939,46 +943,77 @@ function refreshChartForCurrentView() {
     let items = [];
     const now = new Date();
     if (chartViewMode === 'lastDay') {
-        const cutoff = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-        const filtered = allSpeedTests.filter(test => {
-            const t = new Date(test.created_at || test.timestamp);
-            return t >= cutoff && t <= now;
-        });
-        items = filtered.reverse();
+        return;
     } else if (chartViewMode === 'last7') {
-        const cutoff = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-        const filtered = allSpeedTests.filter(test => {
-            const t = new Date(test.created_at || test.timestamp);
-            return t >= cutoff && t <= now;
-        });
-        items = filtered.reverse();
+        return;
     } else if (chartViewMode === 'last20') {
         // Take newest twenty tests, then reverse to chronological
         items = allSpeedTests.slice(0, 20).reverse();
     } else {
-        // Date range
-        const startVal = chartStartDateInput.value;
-        const endVal = chartEndDateInput.value;
-        if (!startVal || !endVal) {
-            // If not set yet, show all available (up to 100 kept)
-            items = [...allSpeedTests].reverse();
-        } else {
-            const start = new Date(startVal);
-            const end = new Date(endVal);
-            end.setHours(23, 59, 59, 999);
-            const filtered = allSpeedTests.filter(test => {
-                const t = new Date(test.created_at || test.timestamp);
-                return t >= start && t <= end;
-            });
-            items = filtered.reverse();
-        }
+        // Range mode rendering is handled asynchronously via refreshChartForSelectedRangeAsync
+        return;
     }
     renderChartFromData(items);
 }
 
+// Fetch full data for selected date range from datastore (no sampling) and render
+async function refreshChartForSelectedRangeAsync() {
+    if (!chartStartDateInput || !chartEndDateInput) return;
+    const startVal = chartStartDateInput.value;
+    const endVal = chartEndDateInput.value;
+    if (!startVal || !endVal) return;
+
+    try {
+        // Optionally indicate loading state in subtitle
+        const prevSubtitle = chartSubtitle?.textContent;
+        if (chartSubtitle) chartSubtitle.textContent = '(loading range…)';
+
+        const data = await window.electronAPI.getSpeedTestsByDateRange(startVal, endVal);
+        // data comes newest-first; chart expects chronological for labels
+        const chronological = (data || []).slice().reverse();
+        renderChartFromData(chronological);
+
+        if (chartSubtitle) chartSubtitle.textContent = '(date range)';
+    } catch (err) {
+        console.error('Failed to load date-range data:', err);
+        // Fallback: do nothing; user can retry
+        if (chartSubtitle) chartSubtitle.textContent = '(date range)';
+    }
+}
+
+async function refreshChartForLastDayAsync() {
+    try {
+        const now = new Date();
+        const start = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+        if (chartSubtitle) chartSubtitle.textContent = '(loading last day…)';
+        const data = await window.electronAPI.getSpeedTestsByDateRange(start.toISOString(), now.toISOString());
+        const chronological = (data || []).slice().reverse();
+        renderChartFromData(chronological);
+        if (chartSubtitle) chartSubtitle.textContent = '(last day)';
+    } catch (err) {
+        console.error('Failed to load last day data:', err);
+        if (chartSubtitle) chartSubtitle.textContent = '(last day)';
+    }
+}
+
+async function refreshChartForLast7Async() {
+    try {
+        const now = new Date();
+        const start = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        if (chartSubtitle) chartSubtitle.textContent = '(loading last 7 days…)';
+        const data = await window.electronAPI.getSpeedTestsByDateRange(start.toISOString(), now.toISOString());
+        const chronological = (data || []).slice().reverse();
+        renderChartFromData(chronological);
+        if (chartSubtitle) chartSubtitle.textContent = '(last 7 days)';
+    } catch (err) {
+        console.error('Failed to load last 7 days data:', err);
+        if (chartSubtitle) chartSubtitle.textContent = '(last 7 days)';
+    }
+}
+
 async function loadHistoricalData() {
     try {
-        const data = await window.electronAPI.getSpeedTests(504); // Get one week of data (504 = 3*24*7, one test every 20min)
+        const data = await window.electronAPI.getSpeedTests(100);
         
         console.log('=== LOAD HISTORICAL DATA ===');
         console.log('Received data count:', data ? data.length : 0);

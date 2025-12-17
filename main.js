@@ -633,6 +633,25 @@ ipcMain.handle('get-speed-tests', async (event, limit) => {
   return [];
 });
 
+// Get speed tests by date range (unsampled) IPC handler
+ipcMain.handle('get-speed-tests-by-range', async (event, startDate, endDate) => {
+  try {
+    if (!isInitialized || !dataStore) {
+      const initSuccess = await initializeModules();
+      if (!initSuccess) {
+        return [];
+      }
+    }
+
+    // Fetch all records within the date range without sampling
+    const tests = await dataStore.getSpeedTestsByDateRange(startDate, endDate);
+    return tests || [];
+  } catch (error) {
+    logError('Error getting speed tests by range:', error);
+    return [];
+  }
+});
+
 ipcMain.handle('get-monitoring-status', async () => {
   if (!isInitialized) {
     await initializeModules();
