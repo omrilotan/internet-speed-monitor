@@ -210,7 +210,10 @@ window.electronAPI.onSpeedTestResult((event, result) => {
     updateCurrentStatsEnhanced(result);
     addToTable(result);
     // Re-render chart according to current view selection
-    refreshChartForCurrentView();
+    // Always update Last 20 view if it's selected
+    if (chartViewMode === 'last20') {
+        refreshChartForCurrentView();
+    }
     
     // Update median stats with the new data
     updateMedianStats();
