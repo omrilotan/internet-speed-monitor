@@ -49,19 +49,37 @@ The main process handles:
 - System integration
 
 Key IPC handlers:
-- `start-monitoring` - Begins periodic speed tests with interval or cron expression
-- `stop-monitoring` - Stops monitoring
-- `test-once-now` - Performs single speed test without starting monitoring
-- `speed-test-started` - Event sent when any test begins
-- `get-monitoring-status` - Retrieves current monitoring state (includes next test time)
-- `get-speed-tests` - Retrieves stored speed data
-- `get-historical-data` - Gets historical data for charts
-- `clear-history` - Removes all stored data
-- `export-csv` - Exports data to CSV format
-- `get-debug-log` - Retrieves debug log contents
-- `clear-debug-log` - Clears the debug log file
-- `validate-cron` - Validates cron expression syntax
-- `get-next-cron-run` - Calculates next execution time for cron expression
+- **Speed Monitoring**
+  - `start-monitoring` - Begins periodic speed tests with interval or cron expression
+  - `stop-monitoring` - Stops active monitoring
+  - `test-once-now` - Performs single speed test without starting monitoring
+  - `get-monitoring-status` - Retrieves current monitoring state with next test time
+
+- **Data Management**
+  - `get-speed-tests` - Retrieves up to N most recent speed tests
+  - `get-historical-data` - Gets historical data for chart visualization
+  - `get-speed-tests-by-range` - Retrieves tests within a date range
+  - `get-date-range-bounds` - Gets earliest and latest test dates
+  - `clear-history` - Removes all stored speed test data
+  - `clear-data-until-date` - Removes tests up to a specific date
+  - `export-csv` - Exports all data to CSV format
+  - `export-csv-date-range` - Exports data for a specific date range to CSV
+
+- **Debug & Logging**
+  - `get-debug-log` - Retrieves debug log file contents
+  - `clear-debug-log` - Clears the debug log file
+
+- **External & System**
+  - `open-external` - Opens external URLs in default browser
+  - `check-for-updates` - Checks GitHub releases for newer versions
+  - `get-current-version` - Returns current application version
+  - `get-next-test-time` - Calculates next execution time for interval/cron schedule
+
+- **Settings & System Integration**
+  - `load-settings` - Loads saved application settings
+  - `save-settings` - Persists application settings to file
+  - `set-launch-at-startup` - Configures app to launch at system startup
+  - `get-launch-at-startup` - Retrieves launch-at-startup configuration status
 
 ### Preload Script (`preload.js`)
 
@@ -70,7 +88,7 @@ The preload script provides a secure API bridge between the main and renderer pr
 ```javascript
 window.electronAPI = {
   // Speed monitoring
-  startMonitoring: (interval) => ipcRenderer.invoke('start-monitoring', interval),
+  startMonitoring: (schedule) => ipcRenderer.invoke('start-monitoring', schedule),
   stopMonitoring: () => ipcRenderer.invoke('stop-monitoring'),
   getMonitoringStatus: () => ipcRenderer.invoke('get-monitoring-status'),
   testOnceNow: () => ipcRenderer.invoke('test-once-now'),
@@ -78,17 +96,36 @@ window.electronAPI = {
   // Data management
   getSpeedTests: (limit) => ipcRenderer.invoke('get-speed-tests', limit),
   getHistoricalData: (limit) => ipcRenderer.invoke('get-historical-data', limit),
+  getSpeedTestsByDateRange: (startDate, endDate) => ipcRenderer.invoke('get-speed-tests-by-range', startDate, endDate),
   clearHistory: () => ipcRenderer.invoke('clear-history'),
+  clearDataUntilDate: (cutoffDate) => ipcRenderer.invoke('clear-data-until-date', cutoffDate),
   exportCSV: () => ipcRenderer.invoke('export-csv'),
+  exportCSVDateRange: (startDate, endDate) => ipcRenderer.invoke('export-csv-date-range', startDate, endDate),
+  getDateRangeBounds: () => ipcRenderer.invoke('get-date-range-bounds'),
   
   // Debug
   getDebugLog: () => ipcRenderer.invoke('get-debug-log'),
   clearDebugLog: () => ipcRenderer.invoke('clear-debug-log'),
   
-  // Events
+  // External & Utilities
+  openExternal: (url) => ipcRenderer.invoke('open-external', url),
+  
+  // Version checking & updates
+  checkForUpdates: () => ipcRenderer.invoke('check-for-updates'),
+  getCurrentVersion: () => ipcRenderer.invoke('get-current-version'),
+  getNextTestTime: (schedule) => ipcRenderer.invoke('get-next-test-time', schedule),
+  
+  // Settings management
+  loadSettings: () => ipcRenderer.invoke('load-settings'),
+  saveSettings: (settings) => ipcRenderer.invoke('save-settings', settings),
+  setLaunchAtStartup: (enable) => ipcRenderer.invoke('set-launch-at-startup', enable),
+  getLaunchAtStartup: () => ipcRenderer.invoke('get-launch-at-startup'),
+  
+  // Event listeners
   onSpeedTestResult: (callback) => ipcRenderer.on('speed-test-result', callback),
   onSpeedTestStarted: (callback) => ipcRenderer.on('speed-test-started', callback),
-  onMonitoringStatus: (callback) => ipcRenderer.on('monitoring-status', callback)
+  onMonitoringStatus: (callback) => ipcRenderer.on('monitoring-status', callback),
+  removeAllListeners: (channel) => ipcRenderer.removeAllListeners(channel)
 }
 ```
 
@@ -134,28 +171,37 @@ class SpeedMonitor {
 ### Data Storage (`src/dataStore.js`)
 
 #### Storage Format
-Data is stored in SQLite database format in the user's application data directory:
+Data is stored in JSON format in the user's application data directory:
 
-```sql
-CREATE TABLE speed_tests (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  timestamp TEXT NOT NULL,
-  downloadSpeed REAL NOT NULL,
-  uploadSpeed REAL NOT NULL,
-  ping REAL NOT NULL
-);
+```json
+{
+  "speedTests": [
+    {
+      "id": 1702809600000,
+      "timestamp": "2025-12-17T12:00:00Z",
+      "download": 150.5,
+      "upload": 45.2,
+      "ping": 25,
+      "server": "Server Name",
+      "isp": "ISP Name",
+      "networkInterface": "WiFi",
+      "created_at": "2025-12-17T12:00:00.000Z"
+    }
+  ]
+}
 ```
 
 #### Storage Location
-- **Windows**: `%APPDATA%/Internet Speed Monitor/speed-data.db`
-- **macOS**: `~/Library/Application Support/Internet Speed Monitor/speed-data.db`
-- **Linux**: `~/.config/Internet Speed Monitor/speed-data.db`
+- **Windows**: `%APPDATA%/Internet Speed Monitor/speed_tests.json`
+- **macOS**: `~/Library/Application Support/Internet Speed Monitor/speed_tests.json`
+- **Linux**: `~/.config/Internet Speed Monitor/speed_tests.json`
 
 #### Data Management
-- Records are stored in `speed-data.db` (SQLite database)
-- Automatic cleanup of records older than 30 days
+- Records are stored in `speed_tests.json` (JSON format)
+- Data is sorted by creation date in descending order (newest first)
+- All test data is retained (no automatic cleanup)
 - Export functionality to CSV format
-- Thread-safe database operations with proper error handling
+- Records include timestamp, speeds, ping, server info, ISP info, and network interface details
 
 ### Frontend (`src/renderer/`)
 

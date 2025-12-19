@@ -10,9 +10,9 @@ This is an Electron application that monitors internet connectivity speed at set
 
 ## Development Guidelines
 - Use Node.js modules for speed testing functionality
-- Implement SQLite for local data storage
+- Use JSON format for local data storage (stored in speed_tests.json)
 - Create simple UI for displaying current speeds and historical data
-- Follow Electron security best practices
+- Follow Electron security best practices with context isolation and secure IPC
 
 ## Key Features
 - Periodic internet speed testing
