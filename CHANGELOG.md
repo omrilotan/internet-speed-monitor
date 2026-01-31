@@ -5,12 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.4.7] - 2025-12-17
+## [1.4.8]
+
+### 🐛 Bug Fixes
+- Chart: Fixed issue where Last 20 data points view did not update after new speed test completed if Date Range view was previously selected.
+
+### 🛠 Improvement
+- Upgraded Electron to 40.1.0 for latest security and stability improvements.
+
+## [1.4.7]
 
 ### 🐛 Bug Fixes
 - Chart: Last 20 data points view now updates automatically when new speed test completes (when that view is selected).
 
-## [1.4.6] - 2025-12-17
+## [1.4.6]
 
 ### 🐛 Bug Fixes
 - CSV Export: Fixed start date initialization to use actual earliest date from data store instead of sampled data.
@@ -19,7 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### ✨ Features
 - CSV Export: Added "Export All" option in export modal to quickly export all historical data without selecting a date range.
 
-## [1.4.5] - 2025-12-17
+## [1.4.5]
 
 ### 🛠 Changes
 - Default historical sample size reverted to 100 for faster initial load and UI responsiveness.
@@ -28,12 +36,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Chart defaults to Last 20 data points view for immediate visibility of recent trends.
 - Added section title "Recent Tests (last 20 data points)" above results table for clarity.
 
-## [1.4.4] - 2025-12-16
+## [1.4.4]
 
 ### 🛠 Improvements
 - Increase historical data sample size from 100 to 504 records for richer graph visualization and more accurate trend analysis (one week of data at 20-minute intervals)
 
-## [1.4.3] - 2025-12-16
+## [1.4.3]
 
 ### 🐛 Bug Fixes
 - Date range picker: correctly initializes min/max after historical data loads, so earlier dates are selectable (no longer stuck on today). Uses local YYYY-MM-DD to avoid timezone off-by-one.
@@ -41,7 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### 🛠 Improvements
 - Disable chart animations for snappier updates across all views.
 
-## [1.4.2] - 2025-12-16
+## [1.4.2]
 
 ### ✨ New Features
 - **Chart view toggle** - Toggle between viewing the last 20 data points or a custom date range with min/max constraints
@@ -51,7 +59,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Chart defaults to showing last 20 data points for better visibility of recent trends
 - Date range controls in chart and export feature share consistent min/max validation logic
 
-## [1.4.1] - 2025-11-16
+## [1.4.1]
 
 ### 🐛 Bug Fix
 - **Cron preset persistence** - Fixed an issue where clicking cron preset buttons did not update and persist the `cronExpression` setting. Programmatic preset selection now dispatches the input `change` event so existing save handlers run and the value is written to settings.json.
