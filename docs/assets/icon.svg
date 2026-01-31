@@ -1,84 +1,14 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <!-- Gradient for the main circle -->
-    <radialGradient id="mainGradient" cx="0.3" cy="0.3" r="0.8">
-      <stop offset="0%" style="stop-color:#4A90E2;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#2C5AA0;stop-opacity:1" />
-    </radialGradient>
-    
-    <!-- Gradient for speed indicators -->
-    <linearGradient id="speedGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" style="stop-color:#FF6B35;stop-opacity:1" />
-      <stop offset="50%" style="stop-color:#F7931E;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#27AE60;stop-opacity:1" />
-    </linearGradient>
-  </defs>
-  
-  <!-- Main background circle -->
-  <circle cx="256" cy="256" r="240" fill="url(#mainGradient)" stroke="#1A4480" stroke-width="8"/>
-  
-  <!-- Speed gauge outer ring -->
-  <circle cx="256" cy="256" r="180" fill="none" stroke="#E8F4FD" stroke-width="12" opacity="0.3"/>
-  
-  <!-- Speed gauge active arc (showing speed) -->
-  <path d="M 76 256 A 180 180 0 1 1 436 256" 
-        fill="none" 
-        stroke="url(#speedGradient)" 
-        stroke-width="16" 
-        stroke-linecap="round"
-        opacity="0.9"/>
-  
-  <!-- Center hub -->
-  <circle cx="256" cy="256" r="45" fill="#FFFFFF" stroke="#2C5AA0" stroke-width="4"/>
-  
-  <!-- Speed indicator needle -->
-  <line x1="256" y1="256" x2="380" y2="180" 
-        stroke="#E74C3C" 
-        stroke-width="6" 
-        stroke-linecap="round"
-        transform="rotate(45 256 256)"/>
-  
-  <!-- WiFi signal waves -->
-  <g transform="translate(256, 320)">
-    <!-- Wave 1 -->
-    <path d="M -40 0 Q 0 -30 40 0" 
-          fill="none" 
-          stroke="#FFFFFF" 
-          stroke-width="4" 
-          opacity="0.8"/>
-    <!-- Wave 2 -->
-    <path d="M -25 0 Q 0 -18 25 0" 
-          fill="none" 
-          stroke="#FFFFFF" 
-          stroke-width="4" 
-          opacity="0.9"/>
-    <!-- Wave 3 -->
-    <path d="M -10 0 Q 0 -8 10 0" 
-          fill="none" 
-          stroke="#FFFFFF" 
-          stroke-width="4" 
-          opacity="1"/>
-    <!-- Signal dot -->
-    <circle cx="0" cy="0" r="3" fill="#FFFFFF"/>
-  </g>
-  
-  <!-- Speed text indicators -->
-  <g fill="#FFFFFF" font-family="Arial, sans-serif" font-weight="bold" text-anchor="middle">
-    <!-- Top speed label -->
-    <text x="256" y="120" font-size="24" opacity="0.8">SPEED</text>
-    <!-- Bottom monitoring label -->
-    <text x="256" y="420" font-size="18" opacity="0.7">MONITOR</text>
-  </g>
-  
-  <!-- Decorative speed marks -->
-  <g stroke="#FFFFFF" stroke-width="3" opacity="0.6">
-    <!-- Speed marks around the gauge -->
-    <line x1="128" y1="128" x2="138" y2="138"/>
-    <line x1="384" y1="128" x2="374" y2="138"/>
-    <line x1="76" y1="256" x2="96" y2="256"/>
-    <line x1="416" y1="256" x2="436" y2="256"/>
-    <line x1="128" y1="384" x2="138" y2="374"/>
-    <line x1="384" y1="384" x2="374" y2="374"/>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke-linecap="square" stroke-miterlimit="10" viewBox="0 0 512 512">
+    <clipPath id="a">
+        <path d="M0 0h512v512H0V0z"/>
+    </clipPath>
+    <g fill-rule="evenodd" clip-path="url(#a)">
+        <path fill="#2980b9" d="M0 256.978c0-141.385 114.615-256 256-256a256 256 0 0 1 256 256c0 141.385-114.615 256-256 256S0 398.363 0 256.978z"/>
+        <path fill="#3498db" d="M12.714 256.984c0-134.367 108.925-243.292 243.291-243.292a243.291 243.291 0 0 1 243.292 243.292c0 134.366-108.926 243.29-243.292 243.29-134.366 0-243.291-108.924-243.291-243.29z"/>
+        <path fill="#fff" d="M55.259 256.977c0-110.866 89.874-200.74 200.74-200.74a200.74 200.74 0 0 1 200.74 200.74c0 110.866-89.875 200.74-200.74 200.74-110.866 0-200.74-89.874-200.74-200.74z"/>
+        <path fill="#3498db" d="M82.644 256.976c0-95.74 77.613-173.354 173.354-173.354a173.354 173.354 0 0 1 173.354 173.354c0 95.741-77.613 173.355-173.354 173.355-95.74 0-173.354-77.614-173.354-173.355z"/>
+        <path fill="#3498db" d="M428.675 427.16c-93.863 93.862-245.942 94.19-340.208.734l169.735-171.206z"/>
+        <path fill="#fff" d="M270.127 275.198c-10.141-11.648-18.357-24.73-24.358-38.784l142.265-56.202z"/>
+        <path fill="#fff" d="M232.766 256.989c0-12.838 10.4-23.244 23.229-23.244a23.22 23.22 0 0 1 16.425 6.808 23.252 23.252 0 0 1 6.803 16.436c0 12.837-10.4 23.244-23.228 23.244-12.829 0-23.229-10.407-23.229-23.244z"/>
+    </g>
 </svg>

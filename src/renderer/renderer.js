@@ -87,12 +87,14 @@ const appVersion = document.getElementById('app-version');
 document.addEventListener('DOMContentLoaded', () => {
     console.log('=== DOM CONTENT LOADED ===');
     initializeChart();
+    // Set up chart view state (including default "last 20 data points")
+    setupChartViewControls();
+    // Now load historical data so it can render according to the active view
     loadHistoricalData();
     updateMonitoringStatus();
     loadAppVersion();
     setupIntervalStepping(); // Setup smart stepping for interval input
     loadAndApplySettings(); // Load settings and apply them
-    setupChartViewControls();
 });
 
 // Event listeners
@@ -843,12 +845,13 @@ function setupChartViewControls() {
         });
     }
     if (chartViewLast20) {
-        chartViewLast20.addEventListener('change', () => {
+        chartViewLast20.addEventListener('change', async () => {
             if (chartViewLast20.checked) {
                 chartViewMode = 'last20';
                 if (chartRangeControls) chartRangeControls.style.display = 'none';
                 updateChartSubtitle();
-                refreshChartForCurrentView();
+                // Load the last 20 data points when switching to this mode
+                await loadAndRefreshLast20Data();
             }
         });
     }
@@ -1044,6 +1047,24 @@ async function refreshChartForLast7Async() {
     } catch (err) {
         console.error('Failed to load last 7 days data:', err);
         if (chartSubtitle) chartSubtitle.textContent = '(last 7 days)';
+    }
+}
+
+async function loadAndRefreshLast20Data() {
+    try {
+        if (chartSubtitle) chartSubtitle.textContent = '(loading last 20…)';
+        const data = await window.electronAPI.getSpeedTests(20);
+        
+        // Update allSpeedTests with the latest data
+        if (data && data.length > 0) {
+            allSpeedTests = [...data];
+        }
+        
+        refreshChartForCurrentView();
+        if (chartSubtitle) chartSubtitle.textContent = '(last twenty data points)';
+    } catch (err) {
+        console.error('Failed to load last 20 data:', err);
+        if (chartSubtitle) chartSubtitle.textContent = '(last twenty data points)';
     }
 }
 
