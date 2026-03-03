@@ -728,6 +728,10 @@ function addToTable(result) {
 }
 
 function initializeChart() {
+    if (typeof Chart === 'undefined' || Chart === null) {
+        console.error('Chart.js failed to load - chart functionality disabled');
+        return;
+    }
     const ctx = document.getElementById('speedChart').getContext('2d');
     speedChart = new Chart(ctx, {
         type: 'line',
@@ -779,6 +783,10 @@ function initializeChart() {
 }
 
 function updateChart(result) {
+    if (!speedChart) {
+        console.warn('Chart not initialized - skipping chart update');
+        return;
+    }
     const timestamp = new Date(result.timestamp);
     const currentDate = timestamp.toDateString(); // "Mon Sep 25 2025"
     const time = timestamp.toLocaleTimeString([], { 
@@ -1089,9 +1097,11 @@ async function loadHistoricalData() {
         lastChartDate = null;
         
         // Clear existing chart data
-        speedChart.data.labels = [];
-        speedChart.data.datasets[0].data = [];
-        speedChart.data.datasets[1].data = [];
+        if (speedChart) {
+            speedChart.data.labels = [];
+            speedChart.data.datasets[0].data = [];
+            speedChart.data.datasets[1].data = [];
+        }
         
         // Clear existing table data
         resultsTable.innerHTML = '';
@@ -1389,14 +1399,6 @@ function updateMedianStats() {
 // Update the existing updateCurrentStats function to also update medians
 function updateCurrentStatsEnhanced(result) {
     updateCurrentStats(result);
-    
-    // Add to all tests array for median calculation
-    allSpeedTests.push(result);
-    
-    // Keep only last 100 tests for median calculation
-    if (allSpeedTests.length > 100) {
-        allSpeedTests = allSpeedTests.slice(-100);
-    }
     
     updateMedianStats();
     

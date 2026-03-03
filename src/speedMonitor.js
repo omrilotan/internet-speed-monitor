@@ -259,8 +259,19 @@ class SpeedMonitor {
                 upload: 0,
                 ping: 0,
                 server: 'Error',
+                isp: null,
+                networkInterface: null,
                 error: error.message
             };
+
+            // Persist failed tests as zero-value records so they appear in history/graphs
+            if (this.dataStore) {
+                try {
+                    await this.dataStore.saveSpeedTest(errorResult);
+                } catch (saveError) {
+                    console.error('Failed to save error speed test result:', saveError);
+                }
+            }
             
             if (this.sendResultCallback) {
                 this.sendResultCallback(errorResult);
