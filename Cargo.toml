@@ -38,7 +38,7 @@ chrono = "0.4"
 cron = "0.17"
 
 # System integration
-dirs = "6"
+dirs = "7"
 open = "5"
 auto-launch = "0.6"
 image = { version = "0.25", default-features = false, features = ["png"] }
