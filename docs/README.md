@@ -50,17 +50,17 @@ docs/
 - **Keyword Optimization** - Strategic keyword placement
 - **Long-tail Keywords** - Targeting specific user searches
 - **Rich Snippets** - FAQ structured data for featured snippets
-- **Backlinks to Dependencies** - Quality outbound links to Chart.js, Fast.com API
+- **Backlinks to Dependencies** - Quality outbound links to Rust, egui, Fast.com
 - **Internal Linking** - Proper site navigation structure
 
 ## 🔗 Dependency Backlinks
 
 The website includes strategic backlinks to our key dependencies:
 
-- **[Chart.js](https://www.chartjs.org/)** - Professional data visualization library
-- **[Fast Speedtest API](https://www.npmjs.com/package/fast-speedtest-api)** - npm package for speed testing
+- **[Rust](https://www.rust-lang.org/)** - Systems programming language the app is written in
+- **[egui](https://github.com/emilk/egui)** - Immediate-mode GUI toolkit powering the interface and charts
+- **[Tokio](https://tokio.rs/)** - Async runtime for background speed tests
 - **[Fast.com by Netflix](https://fast.com/)** - Speed testing service
-- **[Electron Framework](https://www.electronjs.org/)** - Cross-platform desktop app framework
 
 These backlinks:
 - Provide value to users wanting to learn about the technology
@@ -168,8 +168,8 @@ To preview the website locally:
 - Local speed test data storage
 
 ### Technical Keywords
-- Electron speed monitoring app
-- Chart.js network visualization
+- Rust speed monitoring app
+- egui network visualization
 - Fast.com API integration
 - Cross-platform connectivity tracker
 - Open source speed test tool

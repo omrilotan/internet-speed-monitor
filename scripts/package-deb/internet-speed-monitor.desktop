@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Internet Speed Monitor
+GenericName=Internet Speed Monitor
+Comment=Monitor your internet connection speed over time
+Exec=internet-speed-monitor
+Icon=internet-speed-monitor
+Terminal=false
+Categories=Network;Monitor;Utility;
+Keywords=speed;internet;bandwidth;network;
+StartupWMClass=com.omrilotan.internet-speed-monitor
