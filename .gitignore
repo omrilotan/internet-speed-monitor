@@ -1,13 +1,6 @@
-# Dependencies
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Build outputs
+# Rust build output
+target/
 dist/
-build/
-out/
 
 # OS generated files
 .DS_Store
@@ -28,20 +21,6 @@ Thumbs.db
 logs
 *.log
 
-# Runtime data
-pids
-*.pid
-*.seed
-*.pid.lock
-
-# Coverage directory used by tools like istanbul
-coverage/
-
-# Electron
-# Build files
-app/dist/
-release/
-
 # App specific
 data/
 *.db
@@ -54,3 +33,7 @@ data/
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Legacy Node / Python tooling
+node_modules/
+.venv/

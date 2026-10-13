@@ -1,0 +1,73 @@
+[package]
+name = "internet-speed-monitor"
+version = "2.0.0"
+edition = "2024"
+rust-version = "1.88"
+description = "Desktop app for monitoring internet connectivity speed at set intervals"
+authors = ["Omri Lotan <omri@omrilotan.com>"]
+license = "Unlicense"
+homepage = "https://github.com/omrilotan/internet-speed-monitor"
+repository = "https://github.com/omrilotan/internet-speed-monitor.git"
+keywords = ["internet", "speed", "monitor", "connectivity"]
+categories = ["network-programming", "gui"]
+default-run = "internet-speed-monitor"
+build = "build.rs"
+
+[[bin]]
+name = "internet-speed-monitor"
+path = "src/main.rs"
+
+[dependencies]
+# GUI
+eframe = { version = "0.36", default-features = false, features = ["default_fonts", "glow", "wayland", "x11"] }
+egui = "0.36"
+egui_extras = { version = "0.36", features = ["datepicker"] }
+egui_plot = "0.37"
+rfd = "0.17"
+jiff = "0.2"
+
+# Async + networking
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "time", "net", "sync"] }
+tokio-util = "0.7"
+reqwest = { version = "0.13", features = ["json"] }
+
+# Data
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+chrono = "0.4"
+cron = "0.17"
+
+# System integration
+dirs = "6"
+open = "5"
+auto-launch = "0.6"
+image = { version = "0.25", default-features = false, features = ["png"] }
+
+# Diagnostics
+log = "0.4"
+
+[build-dependencies]
+winresource = "0.1"
+
+[dev-dependencies]
+egui_kittest = { version = "0.36", features = ["wgpu", "snapshot"] }
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+strip = true
+
+[package.metadata.bundle]
+name = "Internet Speed Monitor"
+identifier = "com.omrilotan.internet-speed-monitor"
+icon = ["docs/assets/icon.icns", "docs/assets/icon-256x256.png", "docs/assets/icon-512x512.png"]
+category = "public.app-category.utilities"
+short_description = "Monitor your internet speed over time"
+long_description = "A desktop application that monitors your internet connection speed automatically and helps you track your network performance over time."
+copyright = "Unlicense"
+deb_depends = ["libgtk-3-0", "libxkbcommon0", "libgl1"]
+
+[package.metadata.bundle.osx]
+minimum_system_version = "10.15"
+url_schemes = ["internet-speed-monitor"]

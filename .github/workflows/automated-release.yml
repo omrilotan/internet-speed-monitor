@@ -11,6 +11,10 @@ on:
 permissions:
   contents: write
 
+env:
+  CARGO_TERM_COLOR: always
+  PRODUCT_NAME: Internet Speed Monitor
+
 jobs:
   check-version-and-release:
     runs-on: ubuntu-latest
@@ -18,39 +22,46 @@ jobs:
       should-release: ${{ steps.check.outputs.create-tag }}
       tag-name: ${{ steps.check.outputs.tag-name }}
       version: ${{ steps.check.outputs.version }}
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v6
       with:
         fetch-depth: 0  # Fetch all history and tags
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v6
-      with:
-        node-version: '24'
-        cache: 'npm'
-    
-    - name: Install dependencies
-      run: npm ci
 
-    - name: Run tests (if present)
-      run: npm test --if-present
+    - name: Setup Rust
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        components: rustfmt, clippy
+
+    - name: Cache cargo
+      uses: Swatinem/rust-cache@v2
+
+    - name: Install Linux build dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libgtk-3-dev libxkbcommon-dev libwayland-dev libssl-dev pkg-config
+
+    - name: Check formatting
+      run: cargo fmt --all -- --check
+
+    - name: Lint
+      run: cargo clippy --all-targets -- -D warnings
+
+    - name: Run tests
+      run: cargo test
 
     - name: Check if release needed
       id: check
       run: |
-        # Get current version from package.json
-        CURRENT_VERSION=$(node -p "require('./package.json').version")
+        CURRENT_VERSION=$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[0].version')
         TAG_NAME="v$CURRENT_VERSION"
-        
+
         echo "Current version: $CURRENT_VERSION"
         echo "Expected tag: $TAG_NAME"
-        
-        # Fetch all tags
+
         git fetch --tags
-        
-        # Check if tag already exists
+
         if git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
           echo "Tag $TAG_NAME already exists, no action needed"
           echo "create-tag=false" >> $GITHUB_OUTPUT
@@ -65,159 +76,181 @@ jobs:
     needs: check-version-and-release
     if: needs.check-version-and-release.outputs.should-release == 'true'
     runs-on: ${{ matrix.os }}
-    
+
     strategy:
+      fail-fast: false
       matrix:
-        os: [macos-latest, windows-latest, ubuntu-latest]
-    
+        include:
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            arch: arm64
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            arch: x64
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            arch: x64
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            arch: x64
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v6
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v6
+
+    - name: Setup Rust
+      uses: dtolnay/rust-toolchain@stable
       with:
-        node-version: '24'
-        cache: 'npm'
-    
-    - name: Install dependencies
-      run: npm ci
-    
-    - name: Build Electron app
+        targets: ${{ matrix.target }}
+
+    - name: Cache cargo
+      uses: Swatinem/rust-cache@v2
+      with:
+        key: ${{ matrix.target }}
+
+    - name: Install Linux build dependencies
+      if: runner.os == 'Linux'
       run: |
-        if [ "$RUNNER_OS" == "Linux" ]; then
-          npm run build:linux
-        elif [ "$RUNNER_OS" == "Windows" ]; then
-          npm run build:win
-        elif [ "$RUNNER_OS" == "macOS" ]; then
-          npm run build:mac
-        fi
-      shell: bash
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        CSC_IDENTITY_AUTO_DISCOVERY: false
-        DEBUG: electron-builder
-    
-    - name: Upload artifacts (macOS)
-      if: matrix.os == 'macos-latest' && github.ref == 'refs/heads/main'
+        sudo apt-get update
+        sudo apt-get install -y libgtk-3-dev libxkbcommon-dev libwayland-dev libssl-dev pkg-config
+
+    - name: Install cargo-bundle
+      if: runner.os == 'macOS'
+      run: cargo install cargo-bundle --locked
+
+    - name: Build
+      run: cargo build --release --target ${{ matrix.target }}
+
+    - name: Package (macOS)
+      if: runner.os == 'macOS'
+      run: |
+        set -euo pipefail
+        VERSION="${{ needs.check-version-and-release.outputs.version }}"
+        ARCH="${{ matrix.arch }}"
+        cargo bundle --release --target ${{ matrix.target }}
+        APP="target/${{ matrix.target }}/release/bundle/osx/${PRODUCT_NAME}.app"
+        mkdir -p dist
+        hdiutil create -volname "${PRODUCT_NAME}" -srcfolder "$APP" -ov -format UDZO "dist/${PRODUCT_NAME}-${VERSION}-${ARCH}.dmg"
+        ditto -c -k --sequesterRsrc --keepParent "$APP" "dist/${PRODUCT_NAME}-${VERSION}-${ARCH}-mac.zip"
+        ls -la dist
+
+    - name: Package (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        $version = "${{ needs.check-version-and-release.outputs.version }}"
+        New-Item -ItemType Directory -Force -Path dist | Out-Null
+        $exe = "target\${{ matrix.target }}\release\internet-speed-monitor.exe"
+        # Installer: replaces 1.x and earlier 2.x installs, keeps user data.
+        $makensis = "${env:ProgramFiles(x86)}\NSIS\makensis.exe"
+        if (-not (Test-Path $makensis)) { choco install nsis -y --no-progress; }
+        & $makensis -V2 "-DVERSION=$version" "-DSOURCE_DIR=$(Split-Path -Parent (Resolve-Path $exe))" "-DICON=$(Resolve-Path docs\assets\icon.ico)" "-DOUTFILE=$(Resolve-Path dist)\$env:PRODUCT_NAME Setup $version.exe" scripts\package-windows\installer.nsi
+        if ($LASTEXITCODE -ne 0) { throw "makensis failed" }
+        # Portable build for people who do not want to install.
+        Compress-Archive -Path $exe -DestinationPath "dist\$env:PRODUCT_NAME-$version-win-${{ matrix.arch }}-portable.zip" -Force
+        Get-ChildItem dist
+
+    - name: Package (Linux)
+      if: runner.os == 'Linux'
+      run: |
+        set -euo pipefail
+        VERSION="${{ needs.check-version-and-release.outputs.version }}"
+        # Same package name as 1.x, so it upgrades a 1.x install in place.
+        scripts/package-deb/procedure.sh "target/${{ matrix.target }}/release/internet-speed-monitor" "$VERSION" amd64 dist
+        tar -C "target/${{ matrix.target }}/release" -czf "dist/internet-speed-monitor-${VERSION}-linux-${{ matrix.arch }}.tar.gz" internet-speed-monitor
+        ls -la dist
+
+    - name: Upload artifacts
+      if: github.ref == 'refs/heads/main'
       uses: actions/upload-artifact@v6
       with:
-        name: macos-builds
-        path: |
-          dist/*.dmg
-          dist/*.zip
-          dist/*.blockmap
-          dist/latest-mac.yml
-    
-    - name: Upload artifacts (Windows)
-      if: matrix.os == 'windows-latest' && github.ref == 'refs/heads/main'
-      uses: actions/upload-artifact@v6
-      with:
-        name: windows-builds
-        path: |
-          dist/*.exe
-          dist/*.nsis.7z
-          dist/*.blockmap
-          dist/latest.yml
-    
-    - name: Upload artifacts (Linux)
-      if: matrix.os == 'ubuntu-latest' && github.ref == 'refs/heads/main'
-      uses: actions/upload-artifact@v6
-      with:
-        name: linux-builds
-        path: |
-          dist/*.AppImage
-          dist/*.deb
-          dist/*.blockmap
-          dist/latest-linux.yml
+        name: build-${{ matrix.target }}
+        path: dist/*
 
   release:
     needs: [check-version-and-release, build]
     if: needs.check-version-and-release.outputs.should-release == 'true' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v6
       with:
         fetch-depth: 0
-    
+
     - name: Configure Git
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-    
+
     - name: Create and push tag
       run: |
         TAG_NAME="${{ needs.check-version-and-release.outputs.tag-name }}"
         VERSION="${{ needs.check-version-and-release.outputs.version }}"
-        
+
         echo "Creating tag: $TAG_NAME for version $VERSION"
-        
-        # Create annotated tag with release notes
-        TAG_MESSAGE="Release $TAG_NAME - Automatically created for version $VERSION"
-        
-        git tag -a "$TAG_NAME" -m "$TAG_MESSAGE"
+        git tag -a "$TAG_NAME" -m "Release $TAG_NAME - Automatically created for version $VERSION"
         git push origin "$TAG_NAME"
-        
-        echo "Successfully created and pushed tag: $TAG_NAME"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        
+
     - name: Download all artifacts
       uses: actions/download-artifact@v7
-      
+      with:
+        path: artifacts
+        merge-multiple: true
+
     - name: Display structure of downloaded files
-      run: ls -la
-      
+      run: ls -la artifacts
+
     - name: Create Release
       id: create_release
       uses: softprops/action-gh-release@v2
       with:
         tag_name: ${{ needs.check-version-and-release.outputs.tag-name }}
-        files: |
-          macos-builds/*
-          windows-builds/*
-          linux-builds/*
+        files: artifacts/*
         name: Release ${{ needs.check-version-and-release.outputs.tag-name }}
         body: |
           ## Internet Speed Monitor ${{ needs.check-version-and-release.outputs.tag-name }}
-          
+
           ### 🚀 What's New
-          
+
           Check out the [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for detailed changes.
-          
+
           ### 📥 Downloads
-          
+
           Choose the appropriate download for your operating system:
-          
+
           #### macOS
-          - **Internet Speed Monitor-${{ needs.check-version-and-release.outputs.version }}.dmg** - Standard installer for macOS (Intel & Apple Silicon)
-          - **Internet Speed Monitor-${{ needs.check-version-and-release.outputs.version }}-mac.zip** - Portable application archive
-          
+          - **Internet Speed Monitor-${{ needs.check-version-and-release.outputs.version }}-arm64.dmg** - Apple Silicon installer
+          - **Internet Speed Monitor-${{ needs.check-version-and-release.outputs.version }}-x64.dmg** - Intel installer
+          - **Internet Speed Monitor-${{ needs.check-version-and-release.outputs.version }}-<arch>-mac.zip** - Portable application archive
+
           #### Windows
-          - **Internet Speed Monitor Setup ${{ needs.check-version-and-release.outputs.version }}.exe** - Windows installer (recommended)
-          - **Internet Speed Monitor ${{ needs.check-version-and-release.outputs.version }}.exe** - Portable executable
-          
+          - **Internet Speed Monitor Setup ${{ needs.check-version-and-release.outputs.version }}.exe** - Installer (recommended; replaces 1.x and keeps your history)
+          - **Internet Speed Monitor-${{ needs.check-version-and-release.outputs.version }}-win-x64-portable.zip** - Portable executable, no installer
+
           #### Linux
-          - **Internet Speed Monitor-${{ needs.check-version-and-release.outputs.version }}.AppImage** - Universal Linux application (recommended)
           - **internet-speed-monitor_${{ needs.check-version-and-release.outputs.version }}_amd64.deb** - Debian/Ubuntu package
-          
+          - **internet-speed-monitor-${{ needs.check-version-and-release.outputs.version }}-linux-x64.tar.gz** - Standalone binary
+
           ### 🔧 Installation
-          
-          1. **macOS**: Download the .dmg file and drag the app to Applications
-          2. **Windows**: Download and run the .exe installer
-          3. **Linux**: Download the .AppImage, make it executable (`chmod +x`), and run
-          
+
+          1. **macOS**: Download the .dmg file and drag the app to Applications, replacing the old version
+          2. **Windows**: Run the Setup .exe. It removes version 1.x automatically
+          3. **Linux**: Install the .deb with `sudo apt install ./internet-speed-monitor_*.deb`. It upgrades a 1.x .deb in place. AppImage users can delete the old AppImage file
+
+          Your speed test history and settings carry over from 1.x. A copy of the 1.x history is saved as `speed_tests.backup-1.x.json` in the app storage folder (Help → Open App Storage Folder).
+
           ### 📋 System Requirements
-          
-          - **macOS**: 10.14 (Mojave) or later
+
+          - **macOS**: 10.15 (Catalina) or later
           - **Windows**: Windows 10 or later
-          - **Linux**: Ubuntu 16.04+, Fedora 24+, Debian 9+ or equivalent
-          
+          - **Linux**: A desktop with OpenGL and either X11 or Wayland
+
           ---
-          
-          *This release was automatically generated when version ${{ needs.check-version-and-release.outputs.version }} was detected in package.json*
+
+          *This release was automatically generated when version ${{ needs.check-version-and-release.outputs.version }} was detected in Cargo.toml*
         draft: false
         prerelease: false
         generate_release_notes: true

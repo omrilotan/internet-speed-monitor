@@ -7,8 +7,8 @@
     <!-- Primary Meta Tags -->
     <title>Internet Speed Monitor - Free Desktop App for Network Performance Tracking</title>
     <meta name="title" content="Internet Speed Monitor - Free Desktop App for Network Performance Tracking">
-    <meta name="description" content="Download our free Internet Speed Monitor desktop app for Windows, macOS & Linux. Automatic speed testing, real-time charts, local data storage. Built with Electron, Chart.js & Fast.com API.">
-    <meta name="keywords" content="internet speed monitor, network performance tracker, speed test app, connectivity monitor, bandwidth tracker, ISP monitoring, internet speed test, network diagnostics, electron app, desktop speed test, automatic speed monitoring, chart.js visualization, fast.com api, network analytics">
+    <meta name="description" content="Download our free Internet Speed Monitor desktop app for Windows, macOS & Linux. Automatic speed testing, real-time charts, local data storage. Built in Rust with egui & the Fast.com API.">
+    <meta name="keywords" content="internet speed monitor, network performance tracker, speed test app, connectivity monitor, bandwidth tracker, ISP monitoring, internet speed test, network diagnostics, rust app, native desktop speed test, automatic speed monitoring, egui visualization, fast.com api, network analytics">
     <meta name="robots" content="index, follow">
     <meta name="language" content="English">
     <meta name="revisit-after" content="7 days">
@@ -64,12 +64,12 @@
       "screenshot": "https://omrilotan.github.io/internet-speed-monitor/screenshot.png",
       "applicationCategory": "UtilitiesApplication",
       "operatingSystem": ["Windows", "macOS", "Linux"],
-    "softwareVersion": "1.4.9",
+    "softwareVersion": "2.0.0",
       "datePublished": "2024-01-01",
       "dateModified": "2025-12-19",
       "license": "https://unlicense.org/",
-      "programmingLanguage": "JavaScript",
-      "runtimePlatform": "Electron",
+      "programmingLanguage": "Rust",
+      "runtimePlatform": "Native",
       "codeRepository": "https://github.com/omrilotan/internet-speed-monitor",
       "softwareRequirements": "Windows 10+, macOS 10.15+, or Linux",
       "installUrl": "https://github.com/omrilotan/internet-speed-monitor/releases",
@@ -164,7 +164,7 @@
                 <div class="feature-card">
                     <div class="feature-icon">📊</div>
                     <h3>Real-time Charts</h3>
-                    <p>Beautiful visualizations of your internet speed over time with interactive charts powered by <a href="https://www.chartjs.org/" target="_blank" rel="noopener nofollow">Chart.js</a> for professional data visualization and trend analysis.</p>
+                    <p>Beautiful visualizations of your internet speed over time with interactive charts powered by <a href="https://github.com/emilk/egui_plot" target="_blank" rel="noopener nofollow">egui_plot</a> for professional data visualization and trend analysis.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">�</div>
@@ -229,20 +229,20 @@
                                 <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
                             </svg>
                         </div>
-                        <h3><a href="https://www.electronjs.org/" target="_blank" rel="noopener nofollow">Electron Framework</a></h3>
-                        <p>Cross-platform desktop app development with web technologies. Enables native-like performance across Windows, macOS, and Linux.</p>
+                        <h3><a href="https://www.rust-lang.org/" target="_blank" rel="noopener nofollow">Rust</a></h3>
+                        <p>A fast, memory-safe systems language. The app is a single native binary with no bundled browser runtime, so it starts instantly and stays lightweight on Windows, macOS, and Linux.</p>
                     </div>
                     
                     <div class="tech-card">
                         <div class="tech-icon">📊</div>
-                        <h3><a href="https://www.chartjs.org/" target="_blank" rel="noopener nofollow">Chart.js</a></h3>
-                        <p>Professional data visualization library providing beautiful, responsive charts for real-time speed monitoring and historical trend analysis.</p>
+                        <h3><a href="https://github.com/emilk/egui" target="_blank" rel="noopener nofollow">egui</a></h3>
+                        <p>An immediate-mode GUI toolkit for Rust. Powers the responsive interface and the smooth, interactive speed charts for real-time monitoring and historical trend analysis.</p>
                     </div>
                     
                     <div class="tech-card">
                         <div class="tech-icon">⚡</div>
-                        <h3><a href="https://www.npmjs.com/package/fast-speedtest-api" target="_blank" rel="noopener nofollow">Fast Speedtest API</a></h3>
-                        <p>Reliable internet speed testing powered by Netflix's Fast.com infrastructure for accurate download speed measurements worldwide.</p>
+                        <h3><a href="https://tokio.rs/" target="_blank" rel="noopener nofollow">Tokio</a></h3>
+                        <p>An asynchronous runtime for Rust. Runs speed tests, scheduling and lookups in the background so the interface always stays responsive.</p>
                     </div>
                     
                     <div class="tech-card">

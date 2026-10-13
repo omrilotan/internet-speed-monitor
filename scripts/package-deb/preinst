@@ -1,0 +1,19 @@
+#!/bin/sh
+set -e
+
+# Version 1.x (Electron) pointed /usr/bin/internet-speed-monitor at
+# /opt/Internet Speed Monitor/ through update-alternatives. Remove that link group before
+# 2.x unpacks its binary to the same path, so the old link can never be restored over it.
+case "$1" in
+	install|upgrade)
+		if command -v update-alternatives >/dev/null 2>&1 \
+			&& update-alternatives --query internet-speed-monitor >/dev/null 2>&1; then
+			update-alternatives --remove-all internet-speed-monitor >/dev/null 2>&1 || true
+		fi
+		if [ -L /usr/bin/internet-speed-monitor ]; then
+			rm -f /usr/bin/internet-speed-monitor
+		fi
+		;;
+esac
+
+exit 0

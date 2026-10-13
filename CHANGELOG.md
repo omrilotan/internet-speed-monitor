@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0]
+
+### 🦀 Rewrite
+- The application has been rewritten from Electron/JavaScript to Rust (eframe/egui). It is now a single native binary: faster start-up, far lower memory use and no bundled browser runtime.
+- Existing data carries over: `speed_tests.json`, `settings.json` and `debug.log` keep the same format and location.
+
+### ⬆️ Upgrading from 1.x
+- Installing 2.0 replaces 1.x: the macOS app has the same bundle id, the Windows installer removes 1.x with its own uninstaller, and the Linux `.deb` upgrades the 1.x package in place.
+- A copy of the 1.x history is saved as `speed_tests.backup-1.x.json` before 2.0 first writes to it.
+- Caches and browser storage that Electron left in the data folder are removed on first launch.
+- "Start with computer" carries over on Windows and macOS.
+- History loading tolerates values 1.x could write (such as `null` speeds), keeps fields it does not know, and never overwrites a file it could not read.
+
+### ✨ Features
+- Ping is now a real measurement (median TCP connect round-trip to a Fast.com edge) instead of a simulated value.
+- Network interface detection on macOS also recognises USB/Thunderbolt Ethernet adapters.
+- Chart grid lines snap to clock boundaries (minutes, hours, days) and round speed values.
+- Date range chart view includes the whole end day.
+
+### 🛠 Changes
+- Menus: File (Quit), View (zoom, fullscreen) and Help (About, debug log, storage folder, links) are now drawn inside the window.
+- Dialogs (alerts, confirmations, export, clear data, about) are in-app modals instead of browser popups.
+- Releases now ship separate macOS builds for Apple Silicon and Intel, a Windows installer plus portable zip, and a Linux `.deb` plus tarball.
+- Builds and tests run through Cargo; the `npm` scripts, Electron builder and Node tooling are gone.
+
 ## [1.4.9]
 
 ### 🐛 Bug Fixes
