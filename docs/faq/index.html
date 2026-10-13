@@ -85,7 +85,7 @@
     }
     </script>
     
-    <link rel="stylesheet" href="../styles.css?v=1.4.9-20260303">
+    <link rel="stylesheet" href="../styles.css?v=2.0.0-20261013">
     <style>
         .faq-content {
             max-width: 800px;
@@ -177,7 +177,7 @@
                 How do I install Internet Speed Monitor on macOS?
             </div>
             <div class="faq-answer">
-                <p>Download the <span class="code">.dmg</span> file from our releases page, double-click it, and drag the app to your Applications folder. If you see a security warning, go to System Preferences > Security & Privacy and click "Open Anyway".</p>
+                <p>Download the <span class="code">.dmg</span> file for your Mac (<span class="code">arm64</span> for Apple Silicon, <span class="code">x64</span> for Intel) from our releases page, double-click it, and drag the app to your Applications folder. If you see a security warning, go to System Preferences > Security & Privacy and click "Open Anyway".</p>
             </div>
         </div>
 
@@ -192,10 +192,19 @@
 
         <div class="faq-item">
             <div class="faq-question">
-                How do I make the Linux AppImage executable?
+                How do I install Internet Speed Monitor on Linux?
             </div>
             <div class="faq-answer">
-                <p>Open a terminal, navigate to where you downloaded the file, and run: <span class="code">chmod +x Internet-Speed-Monitor.AppImage</span>. Then you can double-click to run it or execute it from the terminal.</p>
+                <p>Download the <span class="code">.deb</span> package and run <span class="code">sudo apt install ./internet-speed-monitor_*_amd64.deb</span>. On other distributions, extract the <span class="code">.tar.gz</span> and run the <span class="code">internet-speed-monitor</span> binary.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                Will I lose my history when upgrading from version 1.x?
+            </div>
+            <div class="faq-answer">
+                <p>No. Version 2 reads the same history and settings files. Installing it replaces 1.x: the macOS app is replaced in Applications, the Windows installer removes 1.x for you, and the Linux <span class="code">.deb</span> upgrades the old package. A copy of your 1.x history is saved as <span class="code">speed_tests.backup-1.x.json</span> before version 2 changes anything. If you used the 1.x AppImage or portable <span class="code">.exe</span>, delete the old file yourself.</p>
             </div>
         </div>
 
@@ -436,6 +445,6 @@
         });
     </script>
 
-    <script src="../script.js?v=1.4.9-20260303"></script>
+    <script src="../script.js?v=2.0.0-20261013"></script>
 </body>
 </html>

@@ -19,8 +19,8 @@
     <meta property="og:title" content="Internet Speed Monitor - Free Desktop App for Network Performance Tracking">
     <meta property="og:description" content="Download our free Internet Speed Monitor desktop app for Windows, macOS & Linux. Automatic speed testing, real-time charts, local data storage.">
     <meta property="og:image" content="https://omrilotan.github.io/internet-speed-monitor/screenshot.png">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
+    <meta property="og:image:width" content="2400">
+    <meta property="og:image:height" content="2000">
     <meta property="og:site_name" content="Internet Speed Monitor">
     <meta property="og:locale" content="en_US">
     
@@ -66,7 +66,7 @@
       "operatingSystem": ["Windows", "macOS", "Linux"],
     "softwareVersion": "2.0.0",
       "datePublished": "2024-01-01",
-      "dateModified": "2025-12-19",
+      "dateModified": "2026-10-13",
       "license": "https://unlicense.org/",
       "programmingLanguage": "Rust",
       "runtimePlatform": "Native",
@@ -99,7 +99,7 @@
     }
     </script>
     
-    <link rel="stylesheet" href="styles.css?v=1.4.9-20260303">
+    <link rel="stylesheet" href="styles.css?v=2.0.0-20261013">
     </head>
 </head>
 <body>
@@ -113,6 +113,7 @@
                 </div>
                 <nav class="nav-links">
                     <a href="#features">Features</a>
+                    <a href="#screenshots">Screenshots</a>
                     <a href="#download">Download</a>
                     <a href="#documentation">Docs</a>
                     <a href="https://github.com/omrilotan/internet-speed-monitor" target="_blank" rel="noopener">GitHub</a>
@@ -141,7 +142,7 @@
                 </div>
             </div>
             <div class="hero-image">
-                <img src="screenshot.png" alt="Internet Speed Monitor App Screenshot" class="app-screenshot">
+                <img src="screenshot.png" alt="Internet Speed Monitor monitoring on an hourly schedule, with the latest results, medians and a chart of recent tests" class="app-screenshot" width="2400" height="2000">
             </div>
         </div>
     </section>
@@ -211,6 +212,35 @@
                     <h3>Cross-platform</h3>
                     <p>Available for Windows, macOS, and Linux. Works seamlessly across all major operating systems.</p>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Screenshots Section -->
+    <section id="screenshots" class="screenshots">
+        <div class="container">
+            <h2 class="section-title">📸 Screenshots</h2>
+            <div class="screenshots-grid">
+                <figure class="screenshot-card screenshot-wide">
+                    <img src="screenshots/history-last-7-days.png" alt="Chart of download and upload speed over the last 7 days" width="2288" height="970" loading="lazy">
+                    <figcaption>Speed history for the last 20 tests, last day, last 7 days or any date range</figcaption>
+                </figure>
+                <figure class="screenshot-card screenshot-wide">
+                    <img src="screenshots/recent-tests.png" alt="Table of recent speed tests with time, download, upload, ping, server, network interface and ISP" width="2288" height="848" loading="lazy">
+                    <figcaption>Every result with its server, network interface and ISP</figcaption>
+                </figure>
+                <figure class="screenshot-card">
+                    <img src="screenshots/export-csv.png" alt="Export Speed Test Data dialog with start and end dates and the number of records to export" width="1280" height="1240" loading="lazy">
+                    <figcaption>Export everything, or a date range, to CSV</figcaption>
+                </figure>
+                <figure class="screenshot-card">
+                    <img src="screenshots/clear-data.png" alt="Clear Data Until Date dialog previewing how many tests will be removed and kept" width="1280" height="1240" loading="lazy">
+                    <figcaption>Preview what will be removed before clearing old data</figcaption>
+                </figure>
+                <figure class="screenshot-card screenshot-wide">
+                    <img src="screenshots/options-menu.png" alt="Options menu with Export as CSV, Auto-start monitoring, Start with computer, Clear All History and Clear Data Until" width="1304" height="584" loading="lazy">
+                    <figcaption>Export, auto-start and history cleanup in the options menu</figcaption>
+                </figure>
             </div>
         </div>
     </section>
@@ -329,31 +359,40 @@
                 </div>
                 
                 <div class="download-buttons">
-                    <a href="https://github.com/omrilotan/internet-speed-monitor/releases/download/v1.4.9/Internet.Speed.Monitor-1.4.9.dmg" class="download-btn" target="_blank" rel="noopener">
+                    <a href="https://github.com/omrilotan/internet-speed-monitor/releases/download/v2.0.0/Internet.Speed.Monitor-2.0.0-arm64.dmg" class="download-btn" target="_blank" rel="noopener">
                         <div class="download-icon">🍎</div>
                         <div class="download-info">
-                            <span class="download-platform">macOS</span>
+                            <span class="download-platform">macOS (Apple Silicon)</span>
                             <span class="download-format">.dmg file</span>
                         </div>
                     </a>
-                    <a href="https://github.com/omrilotan/internet-speed-monitor/releases/download/v1.4.9/Internet.Speed.Monitor.Setup.1.4.9.exe" class="download-btn" target="_blank" rel="noopener">
+                    <a href="https://github.com/omrilotan/internet-speed-monitor/releases/download/v2.0.0/Internet.Speed.Monitor-2.0.0-x64.dmg" class="download-btn" target="_blank" rel="noopener">
+                        <div class="download-icon">🍎</div>
+                        <div class="download-info">
+                            <span class="download-platform">macOS (Intel)</span>
+                            <span class="download-format">.dmg file</span>
+                        </div>
+                    </a>
+                    <a href="https://github.com/omrilotan/internet-speed-monitor/releases/download/v2.0.0/Internet.Speed.Monitor.Setup.2.0.0.exe" class="download-btn" target="_blank" rel="noopener">
                         <div class="download-icon">🪟</div>
                         <div class="download-info">
                             <span class="download-platform">Windows</span>
                             <span class="download-format">.exe installer</span>
                         </div>
                     </a>
-                    <a href="https://github.com/omrilotan/internet-speed-monitor/releases/download/v1.4.9/Internet.Speed.Monitor-1.4.9.AppImage" class="download-btn" target="_blank" rel="noopener">
+                    <a href="https://github.com/omrilotan/internet-speed-monitor/releases/download/v2.0.0/internet-speed-monitor_2.0.0_amd64.deb" class="download-btn" target="_blank" rel="noopener">
                         <div class="download-icon">🐧</div>
                         <div class="download-info">
                             <span class="download-platform">Linux</span>
-                            <span class="download-format">.AppImage file</span>
+                            <span class="download-format">.deb package</span>
                         </div>
                     </a>
                 </div>
-                
+
+                <p class="upgrade-note">Upgrading from 1.x? Install the new version as usual. It replaces the old one and keeps your speed test history and settings.</p>
+
                 <div class="version-info">
-                    Current version: <strong>v1.4.9</strong> • 
+                    Current version: <strong>v2.0.0</strong> • 
                     <a href="https://github.com/omrilotan/internet-speed-monitor/releases" target="_blank" rel="noopener">Release Notes</a>
             </div>
         </div>
@@ -432,6 +471,6 @@
         </div>
     </footer>
 
-    <script src="script.js?v=1.4.9-20260303"></script>
+    <script src="script.js?v=2.0.0-20261013"></script>
 </body>
 </html>

@@ -48,7 +48,7 @@
     }
     </script>
     
-    <link rel="stylesheet" href="../styles.css?v=1.4.9-20260303">
+    <link rel="stylesheet" href="../styles.css?v=2.0.0-20261013">
     <style>
         .guide-content {
             max-width: 800px;
@@ -118,9 +118,9 @@
             <h3>Step 1: Download the Application</h3>
             <p>Choose the appropriate version for your operating system:</p>
             <ul>
-                <li><strong>macOS:</strong> Download the <code>.dmg</code> file from the <a href="https://github.com/omrilotan/internet-speed-monitor/releases" target="_blank">releases page</a></li>
-                <li><strong>Windows:</strong> Download the <code>.exe</code> installer</li>
-                <li><strong>Linux:</strong> Download the <code>.AppImage</code> file</li>
+                <li><strong>macOS:</strong> Download the <code>.dmg</code> file for your Mac (<code>arm64</code> for Apple Silicon, <code>x64</code> for Intel) from the <a href="https://github.com/omrilotan/internet-speed-monitor/releases/latest" target="_blank">releases page</a></li>
+                <li><strong>Windows:</strong> Download the <code>Setup</code> <code>.exe</code> installer</li>
+                <li><strong>Linux:</strong> Download the <code>.deb</code> package (Debian, Ubuntu and derivatives) or the <code>.tar.gz</code> binary</li>
             </ul>
             
             <div class="note">
@@ -134,23 +134,28 @@
             <h4>macOS Installation:</h4>
             <ol>
                 <li>Double-click the downloaded <code>.dmg</code> file</li>
-                <li>Drag the Internet Speed Monitor app to your Applications folder</li>
+                <li>Drag the Internet Speed Monitor app to your Applications folder (choose <strong>Replace</strong> if you are upgrading)</li>
                 <li>Launch from Applications or Spotlight search</li>
             </ol>
             
             <h4>Windows Installation:</h4>
             <ol>
                 <li>Double-click the downloaded <code>.exe</code> file</li>
-                <li>Follow the installation wizard</li>
+                <li>Follow the installation wizard. If version 1.x is installed, it is removed for you</li>
                 <li>Launch from Start Menu or Desktop shortcut</li>
             </ol>
             
             <h4>Linux Installation:</h4>
             <ol>
-                <li>Make the AppImage executable: <code>chmod +x Internet-Speed-Monitor.AppImage</code></li>
-                <li>Double-click to run, or execute from terminal</li>
+                <li>Install the package: <code>sudo apt install ./internet-speed-monitor_*_amd64.deb</code> (this also upgrades version 1.x)</li>
+                <li>Launch from your applications menu, or run <code>internet-speed-monitor</code> from a terminal</li>
+                <li>Or extract the <code>.tar.gz</code> and run the <code>internet-speed-monitor</code> binary directly</li>
             </ol>
             
+            <div class="note">
+                <strong>⬆️ Upgrading from 1.x:</strong> Your speed test history and settings carry over. A copy of the old history is kept as <code>speed_tests.backup-1.x.json</code> in the app storage folder (Help → Open App Storage Folder). If you used the 1.x AppImage or portable <code>.exe</code>, delete the old file yourself.
+            </div>
+
             <div class="warning">
                 <strong>⚠️ Security Note:</strong> On macOS, you may need to allow the app in System Preferences > Security & Privacy if you see a security warning.
             </div>
@@ -274,6 +279,6 @@
         </div>
     </footer>
 
-    <script src="../script.js?v=1.4.9-20260303"></script>
+    <script src="../script.js?v=2.0.0-20261013"></script>
 </body>
 </html>

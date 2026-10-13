@@ -27,7 +27,7 @@ If applicable, add screenshots to help explain your problem.
 ## Environment
 - OS: [e.g. macOS 14.0, Windows 11, Ubuntu 22.04]
 - App Version: [e.g. 1.0.0]
-- Installation Method: [e.g. DMG, EXE, AppImage]
+- Installation Method: [e.g. DMG, Setup EXE, portable ZIP, DEB, tar.gz]
 
 ## Speed Test Details
 - Internet Provider: [e.g. Comcast, Verizon]
