@@ -1,273 +1,96 @@
-// Smooth scrolling for navigation links
-document.addEventListener('DOMContentLoaded', function() {
-    // Add smooth scrolling to all links with hash
-    const links = document.querySelectorAll('a[href^="#"]');
-    
-    links.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            const targetId = this.getAttribute('href').substring(1);
-            const targetElement = document.getElementById(targetId);
-            
-            if (targetElement) {
-                const headerHeight = document.querySelector('.header').offsetHeight;
-                const targetPosition = targetElement.offsetTop - headerHeight - 20;
-                
-                window.scrollTo({
-                    top: targetPosition,
-                    behavior: 'smooth'
-                });
-            }
+// Progressive enhancement for the website. Everything works without JavaScript; this adds
+// scroll reveals, the active section in the nav, the mobile menu, and an easter egg.
+document.documentElement.classList.add('js');
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Reveal elements as they enter the viewport, staggered within each group.
+    const revealables = document.querySelectorAll('.reveal');
+    if ('IntersectionObserver' in window) {
+        const groups = new Map();
+        revealables.forEach((el) => {
+            const siblings = groups.get(el.parentElement) || 0;
+            el.style.setProperty('--i', String(siblings % 4));
+            groups.set(el.parentElement, siblings + 1);
         });
-    });
-    
-    // Add active state to navigation links
-    const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
-    const sections = document.querySelectorAll('section[id]');
-    
-    function updateActiveLink() {
-        const scrollY = window.pageYOffset;
-        const headerHeight = document.querySelector('.header').offsetHeight;
-        
-        sections.forEach(section => {
-            const sectionTop = section.offsetTop - headerHeight - 50;
-            const sectionBottom = sectionTop + section.offsetHeight;
-            const sectionId = section.getAttribute('id');
-            
-            if (scrollY >= sectionTop && scrollY < sectionBottom) {
-                navLinks.forEach(link => {
-                    link.classList.remove('active');
-                    if (link.getAttribute('href') === `#${sectionId}`) {
-                        link.classList.add('active');
-                    }
+
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+        revealables.forEach((el) => revealObserver.observe(el));
+
+        // Highlight the nav link of the section in view.
+        const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
+        const sections = [...navLinks]
+            .map((link) => document.getElementById(link.getAttribute('href').slice(1)))
+            .filter(Boolean);
+        const sectionObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (!entry.isIntersecting) return;
+                navLinks.forEach((link) => {
+                    link.classList.toggle('active', link.getAttribute('href') === `#${entry.target.id}`);
                 });
-            }
+            });
+        }, { rootMargin: '-40% 0px -55% 0px' });
+        sections.forEach((section) => sectionObserver.observe(section));
+    } else {
+        revealables.forEach((el) => el.classList.add('is-visible'));
+    }
+
+    // Mobile menu
+    const nav = document.querySelector('.nav');
+    const navLinks = document.querySelector('.nav-links');
+    if (nav && navLinks) {
+        const button = document.createElement('button');
+        button.className = 'mobile-menu-btn';
+        button.type = 'button';
+        button.setAttribute('aria-label', 'Toggle menu');
+        button.setAttribute('aria-expanded', 'false');
+        button.textContent = '☰';
+        nav.insertBefore(button, navLinks);
+
+        const setOpen = (open) => {
+            navLinks.classList.toggle('mobile-open', open);
+            button.setAttribute('aria-expanded', String(open));
+            button.textContent = open ? '✕' : '☰';
+        };
+
+        button.addEventListener('click', () => setOpen(!navLinks.classList.contains('mobile-open')));
+        navLinks.addEventListener('click', (event) => {
+            if (event.target.closest('a')) setOpen(false);
+        });
+        document.addEventListener('click', (event) => {
+            if (!nav.contains(event.target)) setOpen(false);
+        });
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') setOpen(false);
         });
     }
-    
-    // Update active link on scroll
-    window.addEventListener('scroll', updateActiveLink);
-    updateActiveLink(); // Initial call
-    
-    // Add animation on scroll
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-    };
-    
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.opacity = '1';
-                entry.target.style.transform = 'translateY(0)';
-            }
-        });
-    }, observerOptions);
-    
-    // Observe elements for animation
-    const animatedElements = document.querySelectorAll('.feature-card, .use-case, .doc-card, .step');
-    animatedElements.forEach(el => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(20px)';
-        el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-        observer.observe(el);
-    });
-    
-    // Handle download button clicks with analytics (placeholder)
-    const downloadButtons = document.querySelectorAll('.download-btn');
-    downloadButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            const platform = this.querySelector('.download-platform').textContent;
-            console.log(`Download clicked: ${platform}`);
-            
-            // You can add analytics tracking here
-            // gtag('event', 'download', {
-            //     'platform': platform,
-            //     'version': '1.0.2'
-            // });
-        });
-    });
-    
-    // Mobile menu toggle
-    const setupMobileMenu = () => {
-        const nav = document.querySelector('.nav');
-        const navLinks = document.querySelector('.nav-links');
-        let mobileMenuBtn = document.querySelector('.mobile-menu-btn');
-        
-        // Create mobile menu button if it doesn't exist
-        if (!mobileMenuBtn) {
-            mobileMenuBtn = document.createElement('button');
-            mobileMenuBtn.className = 'mobile-menu-btn';
-            mobileMenuBtn.innerHTML = '☰';
-            mobileMenuBtn.setAttribute('aria-label', 'Toggle mobile menu');
-            mobileMenuBtn.setAttribute('aria-expanded', 'false');
-            
-            // Insert before nav links
-            nav.insertBefore(mobileMenuBtn, navLinks);
-        }
-        
-        // Toggle mobile menu
-        mobileMenuBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            const isOpen = navLinks.classList.contains('mobile-open');
-            navLinks.classList.toggle('mobile-open');
-            mobileMenuBtn.setAttribute('aria-expanded', !isOpen);
-            mobileMenuBtn.innerHTML = !isOpen ? '✕' : '☰';
-        });
-        
-        // Close menu when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!nav.contains(e.target) && navLinks.classList.contains('mobile-open')) {
-                navLinks.classList.remove('mobile-open');
-                mobileMenuBtn.setAttribute('aria-expanded', 'false');
-                mobileMenuBtn.innerHTML = '☰';
-            }
-        });
-        
-        // Close menu when clicking on nav links
-        navLinks.addEventListener('click', (e) => {
-            if (e.target.tagName === 'A') {
-                navLinks.classList.remove('mobile-open');
-                mobileMenuBtn.setAttribute('aria-expanded', 'false');
-                mobileMenuBtn.innerHTML = '☰';
-            }
-        });
-        
-        // Show/hide mobile menu button based on screen size
-        const checkScreenSize = () => {
-            if (window.innerWidth <= 768) {
-                mobileMenuBtn.style.display = 'block';
-                if (!navLinks.classList.contains('mobile-open')) {
-                    navLinks.style.display = 'none';
-                }
-            } else {
-                mobileMenuBtn.style.display = 'none';
-                navLinks.style.display = 'flex';
-                navLinks.classList.remove('mobile-open');
-                mobileMenuBtn.setAttribute('aria-expanded', 'false');
-                mobileMenuBtn.innerHTML = '☰';
-            }
-        };
-        
-        window.addEventListener('resize', checkScreenSize);
-        checkScreenSize();
-    };
-    
-    // Initialize mobile menu
-    setupMobileMenu();
-    
-    // Add CSS for mobile menu
-    const style = document.createElement('style');
-    style.textContent = `
-        .mobile-menu-btn {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--text-primary);
-            padding: 8px;
-            transition: color 0.2s;
-        }
-        
-        .mobile-menu-btn:hover {
-            color: var(--primary-color);
-        }
-        
-        .nav-links.mobile-open {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: var(--background);
-            display: flex !important;
-            flex-direction: column;
-            padding: 20px;
-            border-top: 1px solid var(--border);
-            box-shadow: var(--shadow-lg);
-            z-index: 1000;
-        }
-        
-        .nav-links.mobile-open a {
-            padding: 12px 0;
-            border-bottom: 1px solid var(--border);
-            text-align: center;
-        }
-        
-        .nav-links.mobile-open a:last-child {
-            border-bottom: none;
-        }
-        
-        .nav-links a.active {
-            color: var(--primary-color);
-        }
-        
-        @media (max-width: 768px) {
-            .nav-links {
-                display: none;
-            }
-            
-            .mobile-menu-btn {
-                display: block;
-            }
-            
-            .nav {
-                position: relative;
-            }
-        }
-    `;
-    document.head.appendChild(style);
 
-    function konamiCode(callback, { once = false } = {}) {
-        const sequence = [];
-        const konamiCombo = 'ArrowUp,ArrowUp,ArrowDown,ArrowDown,ArrowLeft,ArrowRight,ArrowLeft,ArrowRight,KeyB,KeyA';
-        function keydownHandler(event) {
-            sequence.push(event.code);
-            const combo = sequence.join(',');
-            if (!konamiCombo.startsWith(combo)) {
-                sequence.length = 0;
-                return;
-            }
-            if (combo === konamiCombo) {
-                sequence.length = 0;
-                if (once) document.removeEventListener('keydown', keydownHandler);
-                callback();
-            }
+    // Konami code easter egg
+    const konami = 'ArrowUp,ArrowUp,ArrowDown,ArrowDown,ArrowLeft,ArrowRight,ArrowLeft,ArrowRight,KeyB,KeyA';
+    const sequence = [];
+    document.addEventListener('keydown', (event) => {
+        sequence.push(event.code);
+        const combo = sequence.join(',');
+        if (!konami.startsWith(combo)) {
+            sequence.length = 0;
+            return;
         }
-        document.addEventListener('keydown', keydownHandler);
-    };
-
-    konamiCode(() => {
-        const { animation } = document.body.style;
-        if (animation) return;
+        if (combo !== konami) return;
+        sequence.length = 0;
+        if (document.body.style.animation) return;
+        const style = document.createElement('style');
+        style.textContent = '@keyframes rainbow { from { filter: hue-rotate(0deg); } to { filter: hue-rotate(360deg); } }';
+        document.head.appendChild(style);
         document.body.style.animation = 'rainbow 2s linear infinite';
         setTimeout(() => {
             document.body.style.animation = '';
         }, 10000);
     });
-
-    // Add rainbow animation CSS
-    const rainbowStyle = document.createElement('style');
-    rainbowStyle.textContent = `
-        @keyframes rainbow {
-            0% { filter: hue-rotate(0deg); }
-            100% { filter: hue-rotate(360deg); }
-        }
-    `;
-    document.head.appendChild(rainbowStyle);
 });
-
-// Service Worker registration (for PWA capabilities)
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        // Uncomment when you create a service worker
-        // navigator.serviceWorker.register('/sw.js')
-        //     .then(registration => {
-        //         console.log('SW registered: ', registration);
-        //     })
-        //     .catch(registrationError => {
-        //         console.log('SW registration failed: ', registrationError);
-        //     });
-    });
-}

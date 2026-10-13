@@ -99,119 +99,151 @@
     }
     </script>
     
+    <link rel="preload" href="fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="styles.css?v=2.0.0-20261013">
-    </head>
 </head>
 <body>
+    <svg xmlns="http://www.w3.org/2000/svg" class="icon-sprite" aria-hidden="true" focusable="false">
+        <symbol id="i-calendar" viewBox="0 0 256 256"><path d="M216,48V88H40V48a8,8,0,0,1,8-8H208A8,8,0,0,1,216,48Z" opacity="0.2"/><path d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Zm-68-76a12,12,0,1,1-12-12A12,12,0,0,1,140,132Zm44,0a12,12,0,1,1-12-12A12,12,0,0,1,184,132ZM96,172a12,12,0,1,1-12-12A12,12,0,0,1,96,172Zm44,0a12,12,0,1,1-12-12A12,12,0,0,1,140,172Zm44,0a12,12,0,1,1-12-12A12,12,0,0,1,184,172Z"/></symbol>
+        <symbol id="i-lightning" viewBox="0 0 256 256"><path d="M96,240l16-80L48,136,160,16,144,96l64,24Z" opacity="0.2"/><path d="M215.79,118.17a8,8,0,0,0-5-5.66L153.18,90.9l14.66-73.33a8,8,0,0,0-13.69-7l-112,120a8,8,0,0,0,3,13l57.63,21.61L88.16,238.43a8,8,0,0,0,13.69,7l112-120A8,8,0,0,0,215.79,118.17ZM109.37,214l10.47-52.38a8,8,0,0,0-5-9.06L62,132.71l84.62-90.66L136.16,94.43a8,8,0,0,0,5,9.06l52.8,19.8Z"/></symbol>
+        <symbol id="i-chart" viewBox="0 0 256 256"><path d="M224,64V208H32V48H208A16,16,0,0,1,224,64Z" opacity="0.2"/><path d="M232,208a8,8,0,0,1-8,8H32a8,8,0,0,1-8-8V48a8,8,0,0,1,16,0V156.69l50.34-50.35a8,8,0,0,1,11.32,0L128,132.69,180.69,80H160a8,8,0,0,1,0-16h40a8,8,0,0,1,8,8v40a8,8,0,0,1-16,0V91.31l-58.34,58.35a8,8,0,0,1-11.32,0L96,123.31l-56,56V200H224A8,8,0,0,1,232,208Z"/></symbol>
+        <symbol id="i-median" viewBox="0 0 256 256"><path d="M208,40V208H152V40Z" opacity="0.2"/><path d="M224,200h-8V40a8,8,0,0,0-8-8H152a8,8,0,0,0-8,8V80H96a8,8,0,0,0-8,8v40H48a8,8,0,0,0-8,8v64H32a8,8,0,0,0,0,16H224a8,8,0,0,0,0-16ZM160,48h40V200H160ZM104,96h40V200H104ZM56,144H88v56H56Z"/></symbol>
+        <symbol id="i-timer" viewBox="0 0 256 256"><path d="M216,136a88,88,0,1,1-88-88A88,88,0,0,1,216,136Z" opacity="0.2"/><path d="M128,40a96,96,0,1,0,96,96A96.11,96.11,0,0,0,128,40Zm0,176a80,80,0,1,1,80-80A80.09,80.09,0,0,1,128,216ZM173.66,90.34a8,8,0,0,1,0,11.32l-40,40a8,8,0,0,1-11.32-11.32l40-40A8,8,0,0,1,173.66,90.34ZM96,16a8,8,0,0,1,8-8h48a8,8,0,0,1,0,16H104A8,8,0,0,1,96,16Z"/></symbol>
+        <symbol id="i-history" viewBox="0 0 256 256"><path d="M216,80c0,26.51-39.4,48-88,48S40,106.51,40,80s39.4-48,88-48S216,53.49,216,80Z" opacity="0.2"/><path d="M128,24C74.17,24,32,48.6,32,80v96c0,31.4,42.17,56,96,56s96-24.6,96-56V80C224,48.6,181.83,24,128,24Zm80,104c0,9.62-7.88,19.43-21.61,26.92C170.93,163.35,150.19,168,128,168s-42.93-4.65-58.39-13.08C55.88,147.43,48,137.62,48,128V111.36c17.06,15,46.23,24.64,80,24.64s62.94-9.68,80-24.64ZM69.61,53.08C85.07,44.65,105.81,40,128,40s42.93,4.65,58.39,13.08C200.12,60.57,208,70.38,208,80s-7.88,19.43-21.61,26.92C170.93,115.35,150.19,120,128,120s-42.93-4.65-58.39-13.08C55.88,99.43,48,89.62,48,80S55.88,60.57,69.61,53.08ZM186.39,202.92C170.93,211.35,150.19,216,128,216s-42.93-4.65-58.39-13.08C55.88,195.43,48,185.62,48,176V159.36c17.06,15,46.23,24.64,80,24.64s62.94-9.68,80-24.64V176C208,185.62,200.12,195.43,186.39,202.92Z"/></symbol>
+        <symbol id="i-drive" viewBox="0 0 256 256"><path d="M216,152v48a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V152a8,8,0,0,1,8-8H208A8,8,0,0,1,216,152ZM208,48H48a8,8,0,0,0-8,8v48a8,8,0,0,0,8,8H208a8,8,0,0,0,8-8V56A8,8,0,0,0,208,48Z" opacity="0.2"/><path d="M208,136H48a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V152A16,16,0,0,0,208,136Zm0,64H48V152H208v48Zm0-160H48A16,16,0,0,0,32,56v48a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V56A16,16,0,0,0,208,40Zm0,64H48V56H208v48ZM192,80a12,12,0,1,1-12-12A12,12,0,0,1,192,80Zm0,96a12,12,0,1,1-12-12A12,12,0,0,1,192,176Z"/></symbol>
+        <symbol id="i-export" viewBox="0 0 256 256"><path d="M208,104V216H48V104Z" opacity="0.2"/><path d="M216,112v96a16,16,0,0,1-16,16H56a16,16,0,0,1-16-16V112A16,16,0,0,1,56,96H80a8,8,0,0,1,0,16H56v96H200V112H176a8,8,0,0,1,0-16h24A16,16,0,0,1,216,112ZM93.66,69.66,120,43.31V136a8,8,0,0,0,16,0V43.31l26.34,26.35a8,8,0,0,0,11.32-11.32l-40-40a8,8,0,0,0-11.32,0l-40,40A8,8,0,0,0,93.66,69.66Z"/></symbol>
+        <symbol id="i-broom" viewBox="0 0 256 256"><path d="M192.8,165.12,43.93,105.57A110.88,110.88,0,0,1,61.47,82.38a8,8,0,0,1,8.67-1.81L95.52,90.85a16,16,0,0,0,20.82-9l21-53.1c4.15-10,15.47-15.33,25.63-11.53a20,20,0,0,1,11.51,26.39L153.13,96.71a16,16,0,0,0,8.93,20.75L187,127.3a8,8,0,0,1,5,7.43V152A104.58,104.58,0,0,0,192.8,165.12Z" opacity="0.2"/><path d="M235.5,216.81c-22.56-11-35.5-34.58-35.5-64.8V134.73a15.94,15.94,0,0,0-10.09-14.87L165,110a8,8,0,0,1-4.48-10.34l21.32-53a28,28,0,0,0-16.1-37,28.14,28.14,0,0,0-35.82,16,.61.61,0,0,0,0,.12L108.9,79a8,8,0,0,1-10.37,4.49L73.11,73.14A15.89,15.89,0,0,0,55.74,76.8C34.68,98.45,24,123.75,24,152a111.45,111.45,0,0,0,31.18,77.53A8,8,0,0,0,61,232H232a8,8,0,0,0,3.5-15.19ZM67.14,88l25.41,10.3a24,24,0,0,0,31.23-13.45l21-53c2.56-6.11,9.47-9.27,15.43-7a12,12,0,0,1,6.88,15.92L145.69,93.76a24,24,0,0,0,13.43,31.14L184,134.73V152c0,.33,0,.66,0,1L55.77,101.71A108.84,108.84,0,0,1,67.14,88Zm48,128a87.53,87.53,0,0,1-24.34-42,8,8,0,0,0-15.49,4,105.16,105.16,0,0,0,18.36,38H64.44A95.54,95.54,0,0,1,40,152a85.9,85.9,0,0,1,7.73-36.29l137.8,55.12c3,18,10.56,33.48,21.89,45.16Z"/></symbol>
+        <symbol id="i-wifi" viewBox="0 0 256 256"><path d="M238.2,87.69l-104,125.43a8,8,0,0,1-12.3,0L17.8,87.69a7.79,7.79,0,0,1,1.31-11.21,180.75,180.75,0,0,1,217.78,0A7.79,7.79,0,0,1,238.2,87.69Z" opacity="0.2"/><path d="M247.89,80.91a15.93,15.93,0,0,0-6.17-10.81A186.67,186.67,0,0,0,128,32,186.67,186.67,0,0,0,14.28,70.1,15.93,15.93,0,0,0,8.11,80.91,15.65,15.65,0,0,0,11.65,92.8l104,125.43A15.93,15.93,0,0,0,128,224h0a15.93,15.93,0,0,0,12.31-5.77l104-125.43A15.65,15.65,0,0,0,247.89,80.91ZM128,208,24.09,82.74A170.76,170.76,0,0,1,128,48,170.76,170.76,0,0,1,231.91,82.74Z"/></symbol>
+        <symbol id="i-globe" viewBox="0 0 256 256"><path d="M213.09,172.48a96,96,0,0,1-80.41,51.41l3.17-16.44a8,8,0,0,0-2-6.95l-19.74-20.33a8,8,0,0,1-1.44-8.69l13.7-30.74a8,8,0,0,1,8.38-4.67l22.82,3.08a8.11,8.11,0,0,1,3.12,1.11ZM116.71,95,129,88.24a7.46,7.46,0,0,0,1.5-1.07l26.91-24.33A8,8,0,0,0,159,53l-10.5-18.81A96.62,96.62,0,0,0,128,32,95.61,95.61,0,0,0,67.78,53.23L56,81.08A8,8,0,0,0,55.88,87l11.5,30.67a8,8,0,0,0,5.81,5l2.69.58L89.2,100a8,8,0,0,1,6.94-4h16.71A7.9,7.9,0,0,0,116.71,95Z" opacity="0.2"/><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm88,104a87.62,87.62,0,0,1-6.4,32.94l-44.7-27.49a15.92,15.92,0,0,0-6.24-2.23l-22.82-3.08a16.11,16.11,0,0,0-16,7.86h-8.72l-3.8-7.86a15.91,15.91,0,0,0-11-8.67l-8-1.73L96.14,104h16.71a16.06,16.06,0,0,0,7.73-2l12.25-6.76a16.62,16.62,0,0,0,3-2.14l26.91-24.34A15.93,15.93,0,0,0,166,49.1l-.36-.65A88.11,88.11,0,0,1,216,128ZM143.31,41.34,152,56.9,125.09,81.24,112.85,88H96.14a16,16,0,0,0-13.88,8l-8.73,15.23L63.38,84.19,74.32,58.32a87.87,87.87,0,0,1,69-17ZM40,128a87.53,87.53,0,0,1,8.54-37.8l11.34,30.27a16,16,0,0,0,11.62,10l21.43,4.61L96.74,143a16.09,16.09,0,0,0,14.4,9h1.48l-7.23,16.23a16,16,0,0,0,2.86,17.37l.14.14L128,205.94l-1.94,10A88.11,88.11,0,0,1,40,128Zm102.58,86.78,1.13-5.81a16.09,16.09,0,0,0-4-13.9,1.85,1.85,0,0,1-.14-.14L120,174.74,133.7,144l22.82,3.08,45.72,28.12A88.18,88.18,0,0,1,142.58,214.78Z"/></symbol>
+        <symbol id="i-devices" viewBox="0 0 256 256"><path d="M200,64V80H176a16,16,0,0,0-16,16v80H40a16,16,0,0,1-16-16V64A16,16,0,0,1,40,48H184A16,16,0,0,1,200,64Z" opacity="0.2"/><path d="M224,72H208V64a24,24,0,0,0-24-24H40A24,24,0,0,0,16,64v96a24,24,0,0,0,24,24H152v8a24,24,0,0,0,24,24h48a24,24,0,0,0,24-24V96A24,24,0,0,0,224,72ZM40,168a8,8,0,0,1-8-8V64a8,8,0,0,1,8-8H184a8,8,0,0,1,8,8v8H176a24,24,0,0,0-24,24v72Zm192,24a8,8,0,0,1-8,8H176a8,8,0,0,1-8-8V96a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8Zm-96,16a8,8,0,0,1-8,8H88a8,8,0,0,1,0-16h40A8,8,0,0,1,136,208Zm80-96a8,8,0,0,1-8,8H192a8,8,0,0,1,0-16h16A8,8,0,0,1,216,112Z"/></symbol>
+        <symbol id="i-house" viewBox="0 0 256 256"><path d="M216,116.69V216H152V152H104v64H40V116.69l82.34-82.35a8,8,0,0,1,11.32,0Z" opacity="0.2"/><path d="M240,208H224V136l2.34,2.34A8,8,0,0,0,237.66,127L139.31,28.68a16,16,0,0,0-22.62,0L18.34,127a8,8,0,0,0,11.32,11.31L32,136v72H16a8,8,0,0,0,0,16H240a8,8,0,0,0,0-16ZM48,120l80-80,80,80v88H160V152a8,8,0,0,0-8-8H104a8,8,0,0,0-8,8v56H48Zm96,88H112V160h32Z"/></symbol>
+        <symbol id="i-briefcase" viewBox="0 0 256 256"><path d="M224,118.31V200a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V118.31h0A191.14,191.14,0,0,0,128,144,191.08,191.08,0,0,0,224,118.31Z" opacity="0.2"/><path d="M104,112a8,8,0,0,1,8-8h32a8,8,0,0,1,0,16H112A8,8,0,0,1,104,112ZM232,72V200a16,16,0,0,1-16,16H40a16,16,0,0,1-16-16V72A16,16,0,0,1,40,56H80V48a24,24,0,0,1,24-24h48a24,24,0,0,1,24,24v8h40A16,16,0,0,1,232,72ZM96,56h64V48a8,8,0,0,0-8-8H104a8,8,0,0,0-8,8ZM40,72v41.62A184.07,184.07,0,0,0,128,136a184,184,0,0,0,88-22.39V72ZM216,200V131.63A200.25,200.25,0,0,1,128,152a200.19,200.19,0,0,1-88-20.36V200H216Z"/></symbol>
+        <symbol id="i-game" viewBox="0 0 256 256"><path d="M216.86,207.57a28,28,0,0,1-24.66-7.77L150.09,152H172a51.94,51.94,0,0,0,51.2-61h0l16.36,84.17A28,28,0,0,1,216.86,207.57Z" opacity="0.2"/><path d="M176,112H152a8,8,0,0,1,0-16h24a8,8,0,0,1,0,16ZM104,96H96V88a8,8,0,0,0-16,0v8H72a8,8,0,0,0,0,16h8v8a8,8,0,0,0,16,0v-8h8a8,8,0,0,0,0-16ZM241.48,200.65a36,36,0,0,1-54.94,4.81c-.12-.12-.24-.24-.35-.37L146.48,160h-37L69.81,205.09l-.35.37A36.08,36.08,0,0,1,44,216,36,36,0,0,1,8.56,173.75a.68.68,0,0,1,0-.14L24.93,89.52A59.88,59.88,0,0,1,83.89,40H172a60.08,60.08,0,0,1,59,49.25c0,.06,0,.12,0,.18l16.37,84.17a.68.68,0,0,1,0,.14A35.74,35.74,0,0,1,241.48,200.65ZM172,144a44,44,0,0,0,0-88H83.89A43.9,43.9,0,0,0,40.68,92.37l0,.13L24.3,176.59A20,20,0,0,0,58,194.3l41.92-47.59a8,8,0,0,1,6-2.71Zm59.7,32.59-8.74-45A60,60,0,0,1,172,160h-4.2L198,194.31a20.09,20.09,0,0,0,17.46,5.39,20,20,0,0,0,16.23-23.11Z"/></symbol>
+        <symbol id="i-video" viewBox="0 0 256 256"><path d="M200,72V184a8,8,0,0,1-8,8H32a8,8,0,0,1-8-8V72a8,8,0,0,1,8-8H192A8,8,0,0,1,200,72Z" opacity="0.2"/><path d="M251.77,73a8,8,0,0,0-8.21.39L208,97.05V72a16,16,0,0,0-16-16H32A16,16,0,0,0,16,72V184a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V159l35.56,23.71A8,8,0,0,0,248,184a8,8,0,0,0,8-8V80A8,8,0,0,0,251.77,73ZM192,184H32V72H192V184Zm48-22.95-32-21.33V116.28L240,95Z"/></symbol>
+        <symbol id="i-terminal" viewBox="0 0 256 256"><path d="M224,56V200a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V56a8,8,0,0,1,8-8H216A8,8,0,0,1,224,56Z" opacity="0.2"/><path d="M128,128a8,8,0,0,1-3,6.25l-40,32a8,8,0,1,1-10-12.5L107.19,128,75,102.25a8,8,0,1,1,10-12.5l40,32A8,8,0,0,1,128,128Zm48,24H136a8,8,0,0,0,0,16h40a8,8,0,0,0,0-16Zm56-96V200a16,16,0,0,1-16,16H40a16,16,0,0,1-16-16V56A16,16,0,0,1,40,40H216A16,16,0,0,1,232,56ZM216,200V56H40V200H216Z"/></symbol>
+        <symbol id="i-graduation" viewBox="0 0 256 256"><path d="M216,113.07v53.22a8,8,0,0,1-2,5.31c-11.3,12.59-38.9,36.4-86,36.4s-74.68-23.81-86-36.4a8,8,0,0,1-2-5.31V113.07L128,160Z" opacity="0.2"/><path d="M251.76,88.94l-120-64a8,8,0,0,0-7.52,0l-120,64a8,8,0,0,0,0,14.12L32,117.87v48.42a15.91,15.91,0,0,0,4.06,10.65C49.16,191.53,78.51,216,128,216a130,130,0,0,0,48-8.76V240a8,8,0,0,0,16,0V199.51a115.63,115.63,0,0,0,27.94-22.57A15.91,15.91,0,0,0,224,166.29V117.87l27.76-14.81a8,8,0,0,0,0-14.12ZM128,200c-43.27,0-68.72-21.14-80-33.71V126.4l76.24,40.66a8,8,0,0,0,7.52,0L176,143.47v46.34C163.4,195.69,147.52,200,128,200Zm80-33.75a97.83,97.83,0,0,1-16,14.25V134.93l16-8.53ZM188,118.94l-.22-.13-56-29.87a8,8,0,0,0-7.52,14.12L171,128l-43,22.93L25,96,128,41.07,231,96Z"/></symbol>
+        <symbol id="i-cpu" viewBox="0 0 256 256"><path d="M200,48H56a8,8,0,0,0-8,8V200a8,8,0,0,0,8,8H200a8,8,0,0,0,8-8V56A8,8,0,0,0,200,48ZM152,152H104V104h48Z" opacity="0.2"/><path d="M152,96H104a8,8,0,0,0-8,8v48a8,8,0,0,0,8,8h48a8,8,0,0,0,8-8V104A8,8,0,0,0,152,96Zm-8,48H112V112h32Zm88,0H216V112h16a8,8,0,0,0,0-16H216V56a16,16,0,0,0-16-16H160V24a8,8,0,0,0-16,0V40H112V24a8,8,0,0,0-16,0V40H56A16,16,0,0,0,40,56V96H24a8,8,0,0,0,0,16H40v32H24a8,8,0,0,0,0,16H40v40a16,16,0,0,0,16,16H96v16a8,8,0,0,0,16,0V216h32v16a8,8,0,0,0,16,0V216h40a16,16,0,0,0,16-16V160h16a8,8,0,0,0,0-16Zm-32,56H56V56H200v95.87s0,.09,0,.13,0,.09,0,.13V200Z"/></symbol>
+        <symbol id="i-gauge" viewBox="0 0 256 256"><path d="M232,152v24a8,8,0,0,1-8,8H32a8,8,0,0,1-8-8V153.13C24,95.65,70.15,48.2,127.63,48A104,104,0,0,1,232,152Z" opacity="0.2"/><path d="M207.06,72.67A111.24,111.24,0,0,0,128,40h-.4C66.07,40.21,16,91,16,153.13V176a16,16,0,0,0,16,16H224a16,16,0,0,0,16-16V152A111.25,111.25,0,0,0,207.06,72.67ZM224,176H119.71l54.76-75.3a8,8,0,0,0-12.94-9.42L99.92,176H32V153.13c0-3.08.15-6.12.43-9.13H56a8,8,0,0,0,0-16H35.27c10.32-38.86,44-68.24,84.73-71.66V80a8,8,0,0,0,16,0V56.33A96.14,96.14,0,0,1,221,128H200a8,8,0,0,0,0,16h23.67c.21,2.65.33,5.31.33,8Z"/></symbol>
+        <symbol id="i-apple" viewBox="0 0 256 256"><path d="M128.23,30A40,40,0,0,1,167,0h1a8,8,0,0,1,0,16h-1a24,24,0,0,0-23.24,18,8,8,0,1,1-15.5-4ZM223.3,169.59a8.07,8.07,0,0,0-2.8-3.4C203.53,154.53,200,134.64,200,120c0-17.67,13.47-33.06,21.5-40.67a8,8,0,0,0,0-11.62C208.82,55.74,187.82,48,168,48a72.23,72.23,0,0,0-40,12.13,71.56,71.56,0,0,0-90.71,9.09A74.63,74.63,0,0,0,16,123.4a127,127,0,0,0,40.14,89.73A39.8,39.8,0,0,0,83.59,224h87.68a39.84,39.84,0,0,0,29.12-12.57,125,125,0,0,0,17.82-24.6C225.23,174,224.33,172,223.3,169.59Z"/></symbol>
+        <symbol id="i-windows" viewBox="0 0 256 256"><path d="M104,144v51.64a8,8,0,0,1-8,8,8.54,8.54,0,0,1-1.43-.13l-64-11.64A8,8,0,0,1,24,184V144a8,8,0,0,1,8-8H96A8,8,0,0,1,104,144Zm-2.87-89.78a8,8,0,0,0-6.56-1.73l-64,11.64A8,8,0,0,0,24,72v40a8,8,0,0,0,8,8H96a8,8,0,0,0,8-8V60.36A8,8,0,0,0,101.13,54.22ZM208,136H128a8,8,0,0,0-8,8v57.45a8,8,0,0,0,6.57,7.88l80,14.54A7.61,7.61,0,0,0,208,224a8,8,0,0,0,8-8V144A8,8,0,0,0,208,136Zm5.13-102.14a8,8,0,0,0-6.56-1.73l-80,14.55A8,8,0,0,0,120,54.55V112a8,8,0,0,0,8,8h80a8,8,0,0,0,8-8V40A8,8,0,0,0,213.13,33.86Z"/></symbol>
+        <symbol id="i-linux" viewBox="0 0 256 256"><path d="M161.22,209.74a4,4,0,0,1-3.31,6.26H98.1a4,4,0,0,1-3.31-6.26,40,40,0,0,1,66.43,0Zm68.93,3.37a8.29,8.29,0,0,1-6.43,2.89H184.56a4,4,0,0,1-3.76-2.65,56,56,0,0,0-105.59,0A4,4,0,0,1,71.45,216H32.23a8.2,8.2,0,0,1-6.42-2.93A8,8,0,0,1,25.75,203c.06-.07,7.64-9.78,15.12-28.72C47.77,156.8,56,127.64,56,88a72,72,0,0,1,144,0c0,39.64,8.23,68.8,15.13,86.28,7.48,18.94,15.06,28.65,15.13,28.74A8,8,0,0,1,230.15,213.11ZM88,100a12,12,0,1,0,12-12A12,12,0,0,0,88,100Zm79.16,32.42a8,8,0,0,0-10.73-3.58L128,143.06,99.58,128.84a8,8,0,0,0-7.15,14.32l32,16a8,8,0,0,0,7.15,0l32-16A8,8,0,0,0,167.16,132.42ZM168,100a12,12,0,1,0-12,12A12,12,0,0,0,168,100Z"/></symbol>
+        <symbol id="i-github" viewBox="0 0 256 256"><path d="M216,104v8a56.06,56.06,0,0,1-48.44,55.47A39.8,39.8,0,0,1,176,192v40a8,8,0,0,1-8,8H104a8,8,0,0,1-8-8V216H72a40,40,0,0,1-40-40A24,24,0,0,0,8,152a8,8,0,0,1,0-16,40,40,0,0,1,40,40,24,24,0,0,0,24,24H96v-8a39.8,39.8,0,0,1,8.44-24.53A56.06,56.06,0,0,1,56,112v-8a58.14,58.14,0,0,1,7.69-28.32A59.78,59.78,0,0,1,69.07,28,8,8,0,0,1,76,24a59.75,59.75,0,0,1,48,24h24a59.75,59.75,0,0,1,48-24,8,8,0,0,1,6.93,4,59.74,59.74,0,0,1,5.37,47.68A58,58,0,0,1,216,104Z"/></symbol>
+        <symbol id="i-book" viewBox="0 0 256 256"><path d="M232,48H160a40,40,0,0,0-32,16A40,40,0,0,0,96,48H24a8,8,0,0,0-8,8V200a8,8,0,0,0,8,8H96a24,24,0,0,1,24,24,8,8,0,0,0,16,0,24,24,0,0,1,24-24h72a8,8,0,0,0,8-8V56A8,8,0,0,0,232,48ZM96,192H32V64H96a24,24,0,0,1,24,24V200A39.81,39.81,0,0,0,96,192Zm128,0H160a39.81,39.81,0,0,0-24,8V88a24,24,0,0,1,24-24h64ZM160,88h40a8,8,0,0,1,0,16H160a8,8,0,0,1,0-16Zm48,40a8,8,0,0,1-8,8H160a8,8,0,0,1,0-16h40A8,8,0,0,1,208,128Zm0,32a8,8,0,0,1-8,8H160a8,8,0,0,1,0-16h40A8,8,0,0,1,208,160Z"/></symbol>
+        <symbol id="i-rocket" viewBox="0 0 256 256"><path d="M223.85,47.12a16,16,0,0,0-15-15c-12.58-.75-44.73.4-71.41,27.07L132.69,64H74.36A15.91,15.91,0,0,0,63,68.68L28.7,103a16,16,0,0,0,9.07,27.16l38.47,5.37,44.21,44.21,5.37,38.49a15.94,15.94,0,0,0,10.78,12.92,16.11,16.11,0,0,0,5.1.83A15.91,15.91,0,0,0,153,227.3L187.32,193A15.91,15.91,0,0,0,192,181.64V123.31l4.77-4.77C223.45,91.86,224.6,59.71,223.85,47.12ZM74.36,80h42.33L77.16,119.52,40,114.34Zm74.41-9.45a76.65,76.65,0,0,1,59.11-22.47,76.46,76.46,0,0,1-22.42,59.16L128,164.68,91.32,128ZM176,181.64,141.67,216l-5.19-37.17L176,139.31Zm-74.16,9.5C97.34,201,82.29,224,40,224a8,8,0,0,1-8-8c0-42.29,23-57.34,32.86-61.85a8,8,0,0,1,6.64,14.56c-6.43,2.93-20.62,12.36-23.12,38.91,26.55-2.5,36-16.69,38.91-23.12a8,8,0,1,1,14.56,6.64Z"/></symbol>
+        <symbol id="i-question" viewBox="0 0 256 256"><path d="M140,180a12,12,0,1,1-12-12A12,12,0,0,1,140,180ZM128,72c-22.06,0-40,16.15-40,36v4a8,8,0,0,0,16,0v-4c0-11,10.77-20,24-20s24,9,24,20-10.77,20-24,20a8,8,0,0,0-8,8v8a8,8,0,0,0,16,0v-.72c18.24-3.35,32-17.9,32-35.28C168,88.15,150.06,72,128,72Zm104,56A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"/></symbol>
+        <symbol id="i-pull" viewBox="0 0 256 256"><path d="M104,64A32,32,0,1,0,64,95v66a32,32,0,1,0,16,0V95A32.06,32.06,0,0,0,104,64ZM56,64A16,16,0,1,1,72,80,16,16,0,0,1,56,64ZM88,192a16,16,0,1,1-16-16A16,16,0,0,1,88,192Zm120-31V110.63a23.85,23.85,0,0,0-7-17L163.31,56H192a8,8,0,0,0,0-16H144a8,8,0,0,0-8,8V96a8,8,0,0,0,16,0V67.31L189.66,105a8,8,0,0,1,2.34,5.66V161a32,32,0,1,0,16,0Zm-8,47a16,16,0,1,1,16-16A16,16,0,0,1,200,208Z"/></symbol>
+        <symbol id="i-arrow" viewBox="0 0 256 256"><path d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"/></symbol>
+        <symbol id="i-download" viewBox="0 0 256 256"><path d="M224,144v64a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V144a8,8,0,0,1,16,0v56H208V144a8,8,0,0,1,16,0Zm-101.66,5.66a8,8,0,0,0,11.32,0l40-40a8,8,0,0,0-11.32-11.32L136,124.69V32a8,8,0,0,0-16,0v92.69L93.66,98.34a8,8,0,0,0-11.32,11.32Z"/></symbol>
+        <symbol id="i-check" viewBox="0 0 256 256"><path d="M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34ZM232,128A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"/></symbol>
+        <symbol id="i-heart" viewBox="0 0 256 256"><path d="M240,102c0,70-103.79,126.66-108.21,129a8,8,0,0,1-7.58,0C119.79,228.66,16,172,16,102A62.07,62.07,0,0,1,78,40c20.65,0,38.73,8.88,50,23.89C139.27,48.88,157.35,40,178,40A62.07,62.07,0,0,1,240,102Z"/></symbol>
+    </svg>
+
+
     <!-- Header -->
     <header class="header">
         <div class="container">
             <div class="nav">
-                <div class="logo">
-                    <img src="assets/icon-64x64.png" alt="Internet Speed Monitor" class="logo-icon">
+                <a href="#top" class="logo">
+                    <img src="assets/icon-64x64.png" alt="Internet Speed Monitor" class="logo-icon" width="32" height="32">
                     <span class="logo-text">Internet Speed Monitor</span>
-                </div>
+                </a>
                 <nav class="nav-links">
                     <a href="#features">Features</a>
                     <a href="#screenshots">Screenshots</a>
-                    <a href="#download">Download</a>
                     <a href="#documentation">Docs</a>
                     <a href="https://github.com/omrilotan/internet-speed-monitor" target="_blank" rel="noopener">GitHub</a>
+                    <a href="#download" class="nav-cta">Download</a>
                 </nav>
             </div>
         </div>
     </header>
 
+    <main id="top">
     <!-- Hero Section -->
     <section class="hero">
-        <div class="container">
-            <div class="hero-content">
+        <div class="container hero-grid">
+            <div class="hero-copy">
                 <h1 class="hero-title">Monitor Your Internet Speed <span class="highlight">Automatically</span></h1>
                 <p class="hero-description">
-                    A beautiful, easy-to-use desktop application that tracks your internet connection performance 
+                    A beautiful, easy-to-use desktop application that tracks your internet connection performance
                     with real-time charts and detailed analytics. All data stays on your device.
                 </p>
                 <div class="hero-actions">
-                    <a href="#download" class="btn btn-primary">Download Now</a>
-                    <a href="https://github.com/omrilotan/internet-speed-monitor" class="btn btn-secondary" target="_blank" rel="noopener">
-                        <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                        </svg>
-                        View on GitHub
-                    </a>
+                    <a href="#download" class="btn btn-primary"><svg class="btn-icon" aria-hidden="true"><use href="#i-download"/></svg>Download</a>
+                    <a href="https://github.com/omrilotan/internet-speed-monitor" class="btn btn-secondary" target="_blank" rel="noopener"><svg class="btn-icon" aria-hidden="true"><use href="#i-github"/></svg>View on GitHub</a>
                 </div>
             </div>
-            <div class="hero-image">
-                <img src="screenshot.png" alt="Internet Speed Monitor monitoring on an hourly schedule, with the latest results, medians and a chart of recent tests" class="app-screenshot" width="2400" height="2000">
-            </div>
+            <figure class="hero-visual">
+                <img src="screenshot.png" alt="Internet Speed Monitor monitoring on an hourly schedule, with the latest results, medians and a chart of recent tests" class="app-screenshot" width="2400" height="2000" fetchpriority="high">
+            </figure>
         </div>
     </section>
 
     <!-- Features Section -->
     <section id="features" class="features">
         <div class="container">
-            <h2 class="section-title">✨ Powerful Features</h2>
+            <h2 class="section-title">Powerful Features</h2>
             <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">🚀</div>
+                <article class="feature reveal">
+                    <span class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg></span>
                     <h3>Flexible Scheduling</h3>
-                    <p>Choose from Simple Interval presets (5m, 15m, 30m, 1h, 1d) or advanced Cron Expressions for precise timing. Includes work hours preset and custom schedules.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">⚡</div>
+                    <p>Choose a simple interval or a cron expression for precise timing, with presets for 5m, 15m, 30m, 1h and work hours.</p>
+                </article>
+                <article class="feature reveal">
+                    <span class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-lightning"/></svg></span>
                     <h3>Instant Testing</h3>
                     <p>Test Once Now button for immediate speed tests without starting monitoring. Get instant results when you need them.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📊</div>
+                </article>
+                <article class="feature reveal">
+                    <span class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-chart"/></svg></span>
                     <h3>Real-time Charts</h3>
                     <p>Beautiful visualizations of your internet speed over time with interactive charts powered by <a href="https://github.com/emilk/egui_plot" target="_blank" rel="noopener nofollow">egui_plot</a> for professional data visualization and trend analysis.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">�</div>
+                </article>
+                <article class="feature reveal">
+                    <span class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-median"/></svg></span>
                     <h3>Median Statistics</h3>
-                    <p>Track median performance across all historical data for better insights into your typical internet speeds.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">⏱️</div>
+                    <p>Track median performance across your recent history for better insights into your typical internet speeds.</p>
+                </article>
+                <article class="feature reveal">
+                    <span class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-timer"/></svg></span>
                     <h3>Smart Status</h3>
-                    <p>Real-time status indicators with countdown to next test and visual feedback during active testing.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">�📈</div>
+                    <p>Real-time status indicators with the time of the next test and visual feedback during active testing.</p>
+                </article>
+                <article class="feature reveal">
+                    <span class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-history"/></svg></span>
                     <h3>Performance Tracking</h3>
                     <p>Keep detailed history of download speeds, upload speeds, and ping measurements for complete insights.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">💾</div>
+                </article>
+                <article class="feature reveal">
+                    <span class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-drive"/></svg></span>
                     <h3>Local Storage</h3>
                     <p>All your data stays on your device - no cloud required. Complete privacy and control over your data.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📤</div>
+                </article>
+                <article class="feature reveal">
+                    <span class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-export"/></svg></span>
                     <h3>Easy Export</h3>
                     <p>Export your speed data to CSV for further analysis in spreadsheets or other tools.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🧹</div>
+                </article>
+                <article class="feature reveal">
+                    <span class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-broom"/></svg></span>
                     <h3>Data Management</h3>
                     <p>Clear history and debug logs with dedicated buttons. Full control over your app's data and logs.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🌐</div>
+                </article>
+                <article class="feature reveal">
+                    <span class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-wifi"/></svg></span>
                     <h3>Network Detection</h3>
                     <p>Automatically detects your network interface type (WiFi, Ethernet, etc.) for each speed test, providing better insights into connection performance.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🏢</div>
+                </article>
+                <article class="feature reveal">
+                    <span class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-globe"/></svg></span>
                     <h3>ISP Information</h3>
                     <p>Automatically identifies and displays your Internet Service Provider for each test, helping track ISP performance over time.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🔄</div>
+                </article>
+                <article class="feature reveal">
+                    <span class="feature-icon"><svg class="icon" aria-hidden="true"><use href="#i-devices"/></svg></span>
                     <h3>Cross-platform</h3>
                     <p>Available for Windows, macOS, and Linux. Works seamlessly across all major operating systems.</p>
-                </div>
+                </article>
             </div>
         </div>
     </section>
@@ -219,25 +251,25 @@
     <!-- Screenshots Section -->
     <section id="screenshots" class="screenshots">
         <div class="container">
-            <h2 class="section-title">📸 Screenshots</h2>
-            <div class="screenshots-grid">
-                <figure class="screenshot-card screenshot-wide">
+            <h2 class="section-title">Screenshots</h2>
+            <div class="shots">
+                <figure class="shot shot-history reveal">
                     <img src="screenshots/history-last-7-days.png" alt="Chart of download and upload speed over the last 7 days" width="2288" height="970" loading="lazy">
                     <figcaption>Speed history for the last 20 tests, last day, last 7 days or any date range</figcaption>
                 </figure>
-                <figure class="screenshot-card screenshot-wide">
-                    <img src="screenshots/recent-tests.png" alt="Table of recent speed tests with time, download, upload, ping, server, network interface and ISP" width="2288" height="848" loading="lazy">
-                    <figcaption>Every result with its server, network interface and ISP</figcaption>
-                </figure>
-                <figure class="screenshot-card">
+                <figure class="shot shot-export reveal">
                     <img src="screenshots/export-csv.png" alt="Export Speed Test Data dialog with start and end dates and the number of records to export" width="1280" height="1240" loading="lazy">
                     <figcaption>Export everything, or a date range, to CSV</figcaption>
                 </figure>
-                <figure class="screenshot-card">
+                <figure class="shot shot-clear reveal">
                     <img src="screenshots/clear-data.png" alt="Clear Data Until Date dialog previewing how many tests will be removed and kept" width="1280" height="1240" loading="lazy">
                     <figcaption>Preview what will be removed before clearing old data</figcaption>
                 </figure>
-                <figure class="screenshot-card screenshot-wide">
+                <figure class="shot shot-tests reveal">
+                    <img src="screenshots/recent-tests.png" alt="Table of recent speed tests with time, download, upload, ping, server, network interface and ISP" width="2288" height="848" loading="lazy">
+                    <figcaption>Every result with its server, network interface and ISP</figcaption>
+                </figure>
+                <figure class="shot shot-menu reveal">
                     <img src="screenshots/options-menu.png" alt="Options menu with Export as CSV, Auto-start monitoring, Start with computer, Clear All History and Clear Data Until" width="1304" height="584" loading="lazy">
                     <figcaption>Export, auto-start and history cleanup in the options menu</figcaption>
                 </figure>
@@ -247,51 +279,42 @@
 
     <!-- Technology Section -->
     <section class="technology">
-        <div class="container">
-            <h2 class="section-title">🛠️ Built with Modern Technology</h2>
-            <div class="tech-content">
+        <div class="container tech-layout">
+            <div class="tech-copy">
+                <h2 class="section-title">Built with Modern Technology</h2>
                 <p class="tech-intro">Internet Speed Monitor is built using industry-leading open source technologies to deliver reliable performance and beautiful user experience.</p>
-                
-                <div class="tech-grid">
-                    <div class="tech-card">
-                        <div class="tech-icon">
-                            <svg viewBox="0 0 24 24" fill="currentColor" width="48" height="48">
-                                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-                            </svg>
-                        </div>
-                        <h3><a href="https://www.rust-lang.org/" target="_blank" rel="noopener nofollow">Rust</a></h3>
-                        <p>A fast, memory-safe systems language. The app is a single native binary with no bundled browser runtime, so it starts instantly and stays lightweight on Windows, macOS, and Linux.</p>
-                    </div>
-                    
-                    <div class="tech-card">
-                        <div class="tech-icon">📊</div>
-                        <h3><a href="https://github.com/emilk/egui" target="_blank" rel="noopener nofollow">egui</a></h3>
-                        <p>An immediate-mode GUI toolkit for Rust. Powers the responsive interface and the smooth, interactive speed charts for real-time monitoring and historical trend analysis.</p>
-                    </div>
-                    
-                    <div class="tech-card">
-                        <div class="tech-icon">⚡</div>
-                        <h3><a href="https://tokio.rs/" target="_blank" rel="noopener nofollow">Tokio</a></h3>
-                        <p>An asynchronous runtime for Rust. Runs speed tests, scheduling and lookups in the background so the interface always stays responsive.</p>
-                    </div>
-                    
-                    <div class="tech-card">
-                        <div class="tech-icon">🌐</div>
-                        <h3><a href="https://fast.com/" target="_blank" rel="noopener nofollow">Fast.com by Netflix</a></h3>
-                        <p>Trusted speed testing service used by millions. Provides accurate, unthrottled speed measurements from Netflix's global CDN network.</p>
-                    </div>
-                </div>
-                
                 <div class="tech-benefits">
                     <h3>Why These Technologies?</h3>
                     <ul>
-                        <li><strong>Reliability:</strong> Proven technologies used by millions of developers and applications worldwide</li>
-                        <li><strong>Performance:</strong> Optimized for speed and efficiency with minimal resource usage</li>
-                        <li><strong>Accuracy:</strong> Netflix's Fast.com provides the most accurate speed measurements available</li>
-                        <li><strong>Privacy:</strong> All processing happens locally on your device - no data sent to third parties</li>
-                        <li><strong>Open Source:</strong> Built on open source foundations you can trust and verify</li>
+                        <li><svg class="check" aria-hidden="true"><use href="#i-check"/></svg><span><strong>Reliability:</strong> Proven technologies used by millions of developers and applications worldwide</span></li>
+                        <li><svg class="check" aria-hidden="true"><use href="#i-check"/></svg><span><strong>Performance:</strong> Optimized for speed and efficiency with minimal resource usage</span></li>
+                        <li><svg class="check" aria-hidden="true"><use href="#i-check"/></svg><span><strong>Accuracy:</strong> Netflix's Fast.com provides the most accurate speed measurements available</span></li>
+                        <li><svg class="check" aria-hidden="true"><use href="#i-check"/></svg><span><strong>Privacy:</strong> All processing happens locally on your device - no data sent to third parties</span></li>
+                        <li><svg class="check" aria-hidden="true"><use href="#i-check"/></svg><span><strong>Open Source:</strong> Built on open source foundations you can trust and verify</span></li>
                     </ul>
                 </div>
+            </div>
+            <div class="tech-grid">
+                <article class="tech-card reveal">
+                    <span class="tech-icon"><svg class="icon" aria-hidden="true"><use href="#i-cpu"/></svg></span>
+                    <h3><a href="https://www.rust-lang.org/" target="_blank" rel="noopener nofollow">Rust</a></h3>
+                    <p>A fast, memory-safe systems language. The app is a single native binary with no bundled browser runtime, so it starts instantly and stays lightweight on Windows, macOS, and Linux.</p>
+                </article>
+                <article class="tech-card reveal">
+                    <span class="tech-icon"><svg class="icon" aria-hidden="true"><use href="#i-chart"/></svg></span>
+                    <h3><a href="https://github.com/emilk/egui" target="_blank" rel="noopener nofollow">egui</a></h3>
+                    <p>An immediate-mode GUI toolkit for Rust. Powers the responsive interface and the smooth, interactive speed charts for real-time monitoring and historical trend analysis.</p>
+                </article>
+                <article class="tech-card reveal">
+                    <span class="tech-icon"><svg class="icon" aria-hidden="true"><use href="#i-lightning"/></svg></span>
+                    <h3><a href="https://tokio.rs/" target="_blank" rel="noopener nofollow">Tokio</a></h3>
+                    <p>An asynchronous runtime for Rust. Runs speed tests, scheduling and lookups in the background so the interface always stays responsive.</p>
+                </article>
+                <article class="tech-card reveal">
+                    <span class="tech-icon"><svg class="icon" aria-hidden="true"><use href="#i-gauge"/></svg></span>
+                    <h3><a href="https://fast.com/" target="_blank" rel="noopener nofollow">Fast.com by Netflix</a></h3>
+                    <p>Trusted speed testing service used by millions. Provides accurate, unthrottled speed measurements from Netflix's global CDN network.</p>
+                </article>
             </div>
         </div>
     </section>
@@ -299,31 +322,49 @@
     <!-- Use Cases Section -->
     <section class="use-cases">
         <div class="container">
-            <h2 class="section-title">🎯 Perfect For</h2>
+            <h2 class="section-title">Perfect For</h2>
             <div class="use-cases-grid">
-                <div class="use-case">
-                    <h3>🏠 Home Users</h3>
-                    <p>Monitor your ISP's actual performance vs. promised speeds</p>
+                <div class="use-case reveal">
+                    <span class="use-icon"><svg class="icon" aria-hidden="true"><use href="#i-house"/></svg></span>
+                    <div>
+                        <h3>Home Users</h3>
+                        <p>Monitor your ISP's actual performance vs. promised speeds</p>
+                    </div>
                 </div>
-                <div class="use-case">
-                    <h3>💼 Remote Workers</h3>
-                    <p>Ensure stable internet for video calls and productivity</p>
+                <div class="use-case reveal">
+                    <span class="use-icon"><svg class="icon" aria-hidden="true"><use href="#i-briefcase"/></svg></span>
+                    <div>
+                        <h3>Remote Workers</h3>
+                        <p>Ensure stable internet for video calls and productivity</p>
+                    </div>
                 </div>
-                <div class="use-case">
-                    <h3>🎮 Gamers</h3>
-                    <p>Track connection quality for optimal gaming performance</p>
+                <div class="use-case reveal">
+                    <span class="use-icon"><svg class="icon" aria-hidden="true"><use href="#i-game"/></svg></span>
+                    <div>
+                        <h3>Gamers</h3>
+                        <p>Track connection quality for optimal gaming performance</p>
+                    </div>
                 </div>
-                <div class="use-case">
-                    <h3>🎥 Content Creators</h3>
-                    <p>Monitor upload speeds for streaming and file sharing</p>
+                <div class="use-case reveal">
+                    <span class="use-icon"><svg class="icon" aria-hidden="true"><use href="#i-video"/></svg></span>
+                    <div>
+                        <h3>Content Creators</h3>
+                        <p>Monitor upload speeds for streaming and file sharing</p>
+                    </div>
                 </div>
-                <div class="use-case">
-                    <h3>👨‍💻 IT Professionals</h3>
-                    <p>Document network issues with historical data</p>
+                <div class="use-case reveal">
+                    <span class="use-icon"><svg class="icon" aria-hidden="true"><use href="#i-terminal"/></svg></span>
+                    <div>
+                        <h3>IT Professionals</h3>
+                        <p>Document network issues with historical data</p>
+                    </div>
                 </div>
-                <div class="use-case">
-                    <h3>🎓 Students</h3>
-                    <p>Ensure reliable internet for online classes and research</p>
+                <div class="use-case reveal">
+                    <span class="use-icon"><svg class="icon" aria-hidden="true"><use href="#i-graduation"/></svg></span>
+                    <div>
+                        <h3>Students</h3>
+                        <p>Ensure reliable internet for online classes and research</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -332,68 +373,74 @@
     <!-- Download Section -->
     <section id="download" class="download">
         <div class="container">
-            <h2 class="section-title">📥 Download & Install</h2>
-            <div class="download-content">
-                <div class="download-steps">
-                    <div class="step">
-                        <div class="step-number">1</div>
-                        <div class="step-content">
-                            <h3>Choose Your Platform</h3>
-                            <p>Select the version for your operating system below</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">2</div>
-                        <div class="step-content">
-                            <h3>Install & Run</h3>
-                            <p>Double-click the downloaded file and follow the installation prompts</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">3</div>
-                        <div class="step-content">
-                            <h3>Start Monitoring</h3>
-                            <p>Choose your scheduling mode and configure monitoring patterns to fit your needs</p>
-                        </div>
-                    </div>
+            <div class="download-panel">
+                <div class="download-intro">
+                    <h2 class="section-title">Download &amp; Install</h2>
+                    <ol class="download-steps">
+                        <li class="step">
+                            <span class="step-number">1</span>
+                            <div class="step-content">
+                                <h3>Choose Your Platform</h3>
+                                <p>Select the version for your operating system below</p>
+                            </div>
+                        </li>
+                        <li class="step">
+                            <span class="step-number">2</span>
+                            <div class="step-content">
+                                <h3>Install &amp; Run</h3>
+                                <p>Double-click the downloaded file and follow the installation prompts</p>
+                            </div>
+                        </li>
+                        <li class="step">
+                            <span class="step-number">3</span>
+                            <div class="step-content">
+                                <h3>Start Monitoring</h3>
+                                <p>Choose your scheduling mode and configure monitoring patterns to fit your needs</p>
+                            </div>
+                        </li>
+                    </ol>
                 </div>
-                
-                <div class="download-buttons">
-                    <a href="https://github.com/omrilotan/internet-speed-monitor/releases/download/v2.0.0/Internet.Speed.Monitor-2.0.0-arm64.dmg" class="download-btn" target="_blank" rel="noopener">
-                        <div class="download-icon">🍎</div>
-                        <div class="download-info">
-                            <span class="download-platform">macOS (Apple Silicon)</span>
-                            <span class="download-format">.dmg file</span>
-                        </div>
-                    </a>
-                    <a href="https://github.com/omrilotan/internet-speed-monitor/releases/download/v2.0.0/Internet.Speed.Monitor-2.0.0-x64.dmg" class="download-btn" target="_blank" rel="noopener">
-                        <div class="download-icon">🍎</div>
-                        <div class="download-info">
-                            <span class="download-platform">macOS (Intel)</span>
-                            <span class="download-format">.dmg file</span>
-                        </div>
-                    </a>
-                    <a href="https://github.com/omrilotan/internet-speed-monitor/releases/download/v2.0.0/Internet.Speed.Monitor.Setup.2.0.0.exe" class="download-btn" target="_blank" rel="noopener">
-                        <div class="download-icon">🪟</div>
-                        <div class="download-info">
-                            <span class="download-platform">Windows</span>
-                            <span class="download-format">.exe installer</span>
-                        </div>
-                    </a>
-                    <a href="https://github.com/omrilotan/internet-speed-monitor/releases/download/v2.0.0/internet-speed-monitor_2.0.0_amd64.deb" class="download-btn" target="_blank" rel="noopener">
-                        <div class="download-icon">🐧</div>
-                        <div class="download-info">
-                            <span class="download-platform">Linux</span>
-                            <span class="download-format">.deb package</span>
-                        </div>
-                    </a>
+                <div class="download-side">
+                    <div class="download-buttons">
+                        <a href="https://github.com/omrilotan/internet-speed-monitor/releases/download/v2.0.0/Internet.Speed.Monitor-2.0.0-arm64.dmg" class="download-btn" target="_blank" rel="noopener">
+                            <span class="download-icon"><svg class="icon" aria-hidden="true"><use href="#i-apple"/></svg></span>
+                            <span class="download-info">
+                                <span class="download-platform">macOS (Apple Silicon)</span>
+                                <span class="download-format">.dmg file</span>
+                            </span>
+                            <svg class="download-arrow" aria-hidden="true"><use href="#i-arrow"/></svg>
+                        </a>
+                        <a href="https://github.com/omrilotan/internet-speed-monitor/releases/download/v2.0.0/Internet.Speed.Monitor-2.0.0-x64.dmg" class="download-btn" target="_blank" rel="noopener">
+                            <span class="download-icon"><svg class="icon" aria-hidden="true"><use href="#i-apple"/></svg></span>
+                            <span class="download-info">
+                                <span class="download-platform">macOS (Intel)</span>
+                                <span class="download-format">.dmg file</span>
+                            </span>
+                            <svg class="download-arrow" aria-hidden="true"><use href="#i-arrow"/></svg>
+                        </a>
+                        <a href="https://github.com/omrilotan/internet-speed-monitor/releases/download/v2.0.0/Internet.Speed.Monitor.Setup.2.0.0.exe" class="download-btn" target="_blank" rel="noopener">
+                            <span class="download-icon"><svg class="icon" aria-hidden="true"><use href="#i-windows"/></svg></span>
+                            <span class="download-info">
+                                <span class="download-platform">Windows</span>
+                                <span class="download-format">.exe installer</span>
+                            </span>
+                            <svg class="download-arrow" aria-hidden="true"><use href="#i-arrow"/></svg>
+                        </a>
+                        <a href="https://github.com/omrilotan/internet-speed-monitor/releases/download/v2.0.0/internet-speed-monitor_2.0.0_amd64.deb" class="download-btn" target="_blank" rel="noopener">
+                            <span class="download-icon"><svg class="icon" aria-hidden="true"><use href="#i-linux"/></svg></span>
+                            <span class="download-info">
+                                <span class="download-platform">Linux</span>
+                                <span class="download-format">.deb package</span>
+                            </span>
+                            <svg class="download-arrow" aria-hidden="true"><use href="#i-arrow"/></svg>
+                        </a>
+                    </div>
+                    <p class="upgrade-note">Upgrading from 1.x? Install the new version as usual. It replaces the old one and keeps your speed test history and settings.</p>
+                    <p class="version-info">
+                        Current version: <strong>v2.0.0</strong> &middot;
+                        <a href="https://github.com/omrilotan/internet-speed-monitor/releases" target="_blank" rel="noopener">Release Notes</a>
+                    </p>
                 </div>
-
-                <p class="upgrade-note">Upgrading from 1.x? Install the new version as usual. It replaces the old one and keeps your speed test history and settings.</p>
-
-                <div class="version-info">
-                    Current version: <strong>v2.0.0</strong> • 
-                    <a href="https://github.com/omrilotan/internet-speed-monitor/releases" target="_blank" rel="noopener">Release Notes</a>
             </div>
         </div>
     </section>
@@ -401,31 +448,36 @@
     <!-- Documentation Section -->
     <section id="documentation" class="documentation">
         <div class="container">
-            <h2 class="section-title">📖 Documentation</h2>
+            <h2 class="section-title">Documentation</h2>
             <div class="docs-grid">
-                <div class="doc-card">
+                <a href="quick-start/" class="doc-card reveal">
+                    <span class="doc-icon"><svg class="icon" aria-hidden="true"><use href="#i-rocket"/></svg></span>
                     <h3>Quick Start Guide</h3>
                     <p>Get up and running with Internet Speed Monitor in minutes</p>
-                    <a href="quick-start/" class="doc-link">Read Guide →</a>
-                </div>
-                <div class="doc-card">
+                    <span class="doc-link">Read Guide <svg class="arrow" aria-hidden="true"><use href="#i-arrow"/></svg></span>
+                </a>
+                <a href="user-manual/" class="doc-card reveal">
+                    <span class="doc-icon"><svg class="icon" aria-hidden="true"><use href="#i-book"/></svg></span>
                     <h3>User Manual</h3>
                     <p>Complete guide to all features and functionality</p>
-                    <a href="user-manual/" class="doc-link">Read Manual →</a>
-                </div>
-                <div class="doc-card">
+                    <span class="doc-link">Read Manual <svg class="arrow" aria-hidden="true"><use href="#i-arrow"/></svg></span>
+                </a>
+                <a href="faq/" class="doc-card reveal">
+                    <span class="doc-icon"><svg class="icon" aria-hidden="true"><use href="#i-question"/></svg></span>
                     <h3>FAQ</h3>
                     <p>Frequently asked questions and troubleshooting</p>
-                    <a href="faq/" class="doc-link">View FAQ →</a>
-                </div>
-                <div class="doc-card">
+                    <span class="doc-link">View FAQ <svg class="arrow" aria-hidden="true"><use href="#i-arrow"/></svg></span>
+                </a>
+                <a href="https://github.com/omrilotan/internet-speed-monitor/blob/main/CONTRIBUTING.md" class="doc-card reveal" target="_blank" rel="noopener">
+                    <span class="doc-icon"><svg class="icon" aria-hidden="true"><use href="#i-pull"/></svg></span>
                     <h3>Contributing</h3>
                     <p>Help improve the Internet Speed Monitor</p>
-                    <a href="https://github.com/omrilotan/internet-speed-monitor/blob/main/CONTRIBUTING.md" class="doc-link" target="_blank" rel="noopener">Contribute →</a>
-                </div>
+                    <span class="doc-link">Contribute <svg class="arrow" aria-hidden="true"><use href="#i-arrow"/></svg></span>
+                </a>
             </div>
         </div>
     </section>
+    </main>
 
     <!-- Footer -->
     <footer class="footer">
@@ -433,7 +485,7 @@
             <div class="footer-content">
                 <div class="footer-info">
                     <div class="footer-logo">
-                        <img src="assets/icon-32x32.png" alt="Internet Speed Monitor" class="footer-logo-icon">
+                        <img src="assets/icon-32x32.png" alt="Internet Speed Monitor" class="footer-logo-icon" width="24" height="24">
                         <span>Internet Speed Monitor</span>
                     </div>
                     <p>Monitor your internet connection speed automatically with beautiful visualizations.</p>
@@ -466,7 +518,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>Made with ❤️ for monitoring internet connections.</p>
+                <p>Made with <svg class="heart" aria-hidden="true"><use href="#i-heart"/></svg> for monitoring internet connections.</p>
             </div>
         </div>
     </footer>
