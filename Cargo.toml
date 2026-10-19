@@ -50,7 +50,7 @@ log = "0.4"
 winresource = "0.1"
 
 [dev-dependencies]
-egui_kittest = { version = "0.36", features = ["wgpu", "snapshot"] }
+egui_kittest = { version = "0.37", features = ["wgpu", "snapshot"] }
 
 [profile.release]
 opt-level = 3
