@@ -18,7 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - File menu: "Close Window" keeps the app running, "Quit" stops it. The tray icon menu also has "Quit".
 - macOS: the Dock icon is shown only while the window is open.
 - macOS: the login item runs the executable inside the app bundle.
-- Building from source needs Rust 1.90.
+- Dependencies updated: egui and eframe 0.37, egui_plot 0.38, tokio 1.54, jiff, log, open.
+- The schedule type selector has a name for screen readers.
+- Building from source needs Rust 1.95.
 
 ## [2.0.0]
 

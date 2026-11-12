@@ -54,7 +54,7 @@ fn draw_startup_suggestion(app: &mut App, ctx: &egui::Context) {
         "system tray"
     };
     let mut answer: Option<Option<StartupSuggestion>> = None;
-    let response = egui::Modal::new(egui::Id::new("startup-suggestion"))
+    let response = egui::Modal::new(egui::Id::unique("startup-suggestion"))
         .frame(modal_frame())
         .show(ctx, |ui| {
             ui.set_width(MODAL_WIDTH);
@@ -111,7 +111,7 @@ fn draw_alert(app: &mut App, ctx: &egui::Context) {
         return;
     };
     let mut close = false;
-    let response = egui::Modal::new(egui::Id::new("alert-modal"))
+    let response = egui::Modal::new(egui::Id::unique("alert-modal"))
         .frame(modal_frame())
         .show(ctx, |ui| {
             ui.set_width(MODAL_WIDTH);
@@ -144,7 +144,7 @@ fn draw_confirm_clear_history(app: &mut App, ctx: &egui::Context) {
         return;
     }
     let mut decision: Option<bool> = None;
-    let response = egui::Modal::new(egui::Id::new("confirm-clear-history"))
+    let response = egui::Modal::new(egui::Id::unique("confirm-clear-history"))
         .frame(modal_frame())
         .show(ctx, |ui| {
             ui.set_width(MODAL_WIDTH);
@@ -201,7 +201,7 @@ fn draw_clear_dialog(app: &mut App, ctx: &egui::Context) {
         .parse::<i16>()
         .unwrap_or(2100);
 
-    let response = egui::Modal::new(egui::Id::new("clear-data-modal"))
+    let response = egui::Modal::new(egui::Id::unique("clear-data-modal"))
         .frame(modal_frame())
         .show(ctx, |ui| {
             ui.set_width(MODAL_WIDTH);
@@ -313,7 +313,7 @@ fn draw_export_dialog(app: &mut App, ctx: &egui::Context) {
     let mut action = Action::None;
     let years = dialog.min.year()..=dialog.max.year();
 
-    let response = egui::Modal::new(egui::Id::new("export-modal"))
+    let response = egui::Modal::new(egui::Id::unique("export-modal"))
         .frame(modal_frame())
         .show(ctx, |ui| {
             ui.set_width(MODAL_WIDTH);
@@ -413,7 +413,7 @@ fn draw_about(app: &mut App, ctx: &egui::Context) {
     }
     let mut close = false;
     let mut check = false;
-    let response = egui::Modal::new(egui::Id::new("about-modal"))
+    let response = egui::Modal::new(egui::Id::unique("about-modal"))
         .frame(modal_frame())
         .show(ctx, |ui| {
             ui.set_width(MODAL_WIDTH);

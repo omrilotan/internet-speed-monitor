@@ -2,7 +2,7 @@
 name = "internet-speed-monitor"
 version = "2.1.0"
 edition = "2024"
-rust-version = "1.90"
+rust-version = "1.95"
 description = "Desktop app for monitoring internet connectivity speed at set intervals"
 authors = ["Omri Lotan <omri@omrilotan.com>"]
 license = "Unlicense"
@@ -19,10 +19,11 @@ path = "src/main.rs"
 
 [dependencies]
 # GUI
-eframe = { version = "0.36", default-features = false, features = ["default_fonts", "glow", "wayland", "x11"] }
-egui = "0.36"
-egui_extras = { version = "0.36", features = ["datepicker"] }
-egui_plot = "0.37"
+eframe = { version = "0.37", default-features = false, features = ["default_fonts", "glow", "wayland", "x11"] }
+# monochrome_emoji_fonts: the bundled emoji fonts the menus and buttons rely on.
+egui = { version = "0.37", features = ["monochrome_emoji_fonts"] }
+egui_extras = { version = "0.37", features = ["datepicker"] }
+egui_plot = "0.38"
 # The event loop eframe runs on; owned here so it outlives the window.
 winit = { version = "0.30", default-features = false }
 rfd = "0.17"
@@ -59,7 +60,7 @@ objc2-foundation = { version = "0.3", default-features = false, features = ["std
 winresource = "0.1"
 
 [dev-dependencies]
-egui_kittest = { version = "0.36", features = ["wgpu", "snapshot"] }
+egui_kittest = { version = "0.37", features = ["wgpu", "snapshot"] }
 
 [profile.release]
 opt-level = 3

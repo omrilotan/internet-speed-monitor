@@ -137,7 +137,7 @@ Files: `speed_tests.json`, `settings.json`, `debug.log`. Set `ISM_DATA_DIR=/some
 
 ### Prerequisites
 
-- Rust stable 1.88+ via [rustup](https://rustup.rs/)
+- Rust stable 1.95+ via [rustup](https://rustup.rs/)
 - Linux only: `libgtk-3-dev libxkbcommon-dev libwayland-dev libssl-dev pkg-config`
 - Optional: `cargo install cargo-bundle` for `.app` / `.deb` bundles
 

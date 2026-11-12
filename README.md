@@ -98,7 +98,7 @@ brew install --cask internet-speed-monitor
 ```
 
 #### Option 3: Build from Source
-You need a [Rust toolchain](https://rustup.rs/) (stable, 1.88 or newer).
+You need a [Rust toolchain](https://rustup.rs/) (stable, 1.95 or newer).
 
 ```bash
 # Clone the repository

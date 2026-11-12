@@ -136,12 +136,12 @@ fn build() -> Result<Parts, String> {
         .with_tooltip(crate::APP_NAME)
         .with_menu(Box::new(menu))
         .with_menu_on_left_click(!CLICK_OPENS_WINDOW);
-    // macOS recolours a template image for light and dark menu bars.
-    let builder = if cfg!(target_os = "macos") {
-        builder.with_icon_templated(icon()?)
-    } else {
-        builder.with_icon(icon()?)
-    };
+    // macOS recolours a template image for light and dark menu bars. The builder only
+    // has that method on macOS.
+    #[cfg(target_os = "macos")]
+    let builder = builder.with_icon_templated(icon()?);
+    #[cfg(not(target_os = "macos"))]
+    let builder = builder.with_icon(icon()?);
     let icon = builder.build().map_err(|error| error.to_string())?;
     Ok(Parts {
         icon,
