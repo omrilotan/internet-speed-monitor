@@ -2,11 +2,22 @@
 
 use std::sync::{Arc, Mutex};
 
-use internet_speed_monitor::{APP_NAME, CURRENT_VERSION, app, data_store, logger, paths};
+use internet_speed_monitor::instance::{self, Instance};
+use internet_speed_monitor::{APP_NAME, CURRENT_VERSION, data_store, launch, logger, paths, shell};
 
 fn main() -> eframe::Result {
     let paths = paths::AppPaths::resolve();
     logger::init(paths.debug_log.clone());
+
+    // The login item starts the app in the background; the user starts it to see it.
+    let background = launch::started_in_background();
+    let listener = match instance::acquire(&paths.data_dir, !background) {
+        Instance::Primary(listener) => listener,
+        Instance::AlreadyRunning => {
+            log::info!("{APP_NAME} is already running; left it to that copy");
+            return Ok(());
+        }
+    };
 
     log::info!("=== {APP_NAME} v{CURRENT_VERSION} STARTED ===");
     log::info!(
@@ -32,25 +43,13 @@ fn main() -> eframe::Result {
     };
     let store = Arc::new(Mutex::new(store));
 
-    let icon = eframe::icon_data::from_png_bytes(include_bytes!("../docs/assets/icon-256x256.png"))
-        .expect("bundled icon must be a valid PNG");
-
-    let options = eframe::NativeOptions {
-        viewport: egui::ViewportBuilder::default()
-            .with_title(APP_NAME)
-            .with_app_id("com.omrilotan.internet-speed-monitor")
-            .with_inner_size([1200.0, 800.0])
-            .with_min_inner_size([640.0, 480.0])
-            .with_icon(icon),
-        ..Default::default()
-    };
-
-    let handle = runtime.handle().clone();
-    let result = eframe::run_native(
-        APP_NAME,
-        options,
-        Box::new(move |cc| Ok(Box::new(app::App::new(&cc.egui_ctx, handle, paths, store)))),
-    );
+    let result = shell::run(shell::Launch {
+        handle: runtime.handle().clone(),
+        paths,
+        store,
+        listener,
+        background,
+    });
 
     log::info!("=== APP EXIT ===");
     runtime.shutdown_timeout(std::time::Duration::from_secs(2));

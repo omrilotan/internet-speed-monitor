@@ -20,6 +20,7 @@ use crate::paths::AppPaths;
 use crate::schedule::{self, Schedule};
 use crate::settings::Settings;
 use crate::updates::{self, UpdateInfo};
+use crate::wake::Waker;
 use crate::{CURRENT_VERSION, RELEASES_URL};
 
 pub const HISTORY_WINDOW: usize = 100;
@@ -92,6 +93,14 @@ pub struct ExportDialog {
     pub has_data: bool,
 }
 
+/// The first-run offer to monitor without being asked: the two options as ticked in
+/// the dialog.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct StartupSuggestion {
+    pub auto_start: bool,
+    pub launch_at_startup: bool,
+}
+
 pub struct App {
     pub(crate) handle: Handle,
     pub(crate) paths: AppPaths,
@@ -99,7 +108,10 @@ pub struct App {
     pub(crate) monitor: SpeedMonitor,
     pub(crate) events: Receiver<Event>,
     pub(crate) event_tx: Sender<Event>,
+    pub(crate) waker: Waker,
     pub(crate) settings: Settings,
+    /// Set by "Quit": closing the window alone leaves the app in the background.
+    pub(crate) quit_requested: bool,
 
     // Schedule inputs
     pub(crate) schedule_type: ScheduleType,
@@ -138,6 +150,7 @@ pub struct App {
 
     // Dialogs
     pub(crate) alerts: VecDeque<Alert>,
+    pub(crate) startup_suggestion: Option<StartupSuggestion>,
     pub(crate) confirm_clear_history: bool,
     pub(crate) clear_dialog: Option<ClearDataDialog>,
     pub(crate) export_dialog: Option<ExportDialog>,
@@ -146,20 +159,20 @@ pub struct App {
 }
 
 impl App {
+    /// The app outlives its window: it is created once and keeps running while the
+    /// window is closed. Call [`App::attach`] whenever a window opens.
     pub fn new(
-        ctx: &egui::Context,
         handle: Handle,
         paths: AppPaths,
         store: Arc<Mutex<DataStore>>,
+        waker: Waker,
     ) -> Self {
-        view::install_style(ctx);
-
         let (event_tx, events) = std::sync::mpsc::channel();
         let monitor = SpeedMonitor::new(
             handle.clone(),
             Arc::clone(&store),
             event_tx.clone(),
-            ctx.clone(),
+            waker.clone(),
         );
 
         let mut settings = Settings::load(&paths.settings_file);
@@ -181,6 +194,16 @@ impl App {
             settings.cron_expression.clone()
         };
         let launch_at_startup = launch::get_launch_at_startup();
+        // Login items written before background mode existed open the window at login.
+        // Rewrite an enabled one once. Not in debug builds: that would point the login
+        // item at a development binary.
+        if !settings.background_launch_registered && !cfg!(debug_assertions) {
+            let registered = !launch_at_startup || launch::set_launch_at_startup(true).is_ok();
+            if registered {
+                settings.background_launch_registered = true;
+                settings.save(&paths.settings_file);
+            }
+        }
         let today = format::today();
 
         let mut app = Self {
@@ -190,8 +213,10 @@ impl App {
             monitor,
             events,
             event_tx,
+            waker,
             auto_start: settings.auto_start,
             settings,
+            quit_requested: false,
             schedule_type,
             interval_minutes,
             interval_text: interval_minutes.to_string(),
@@ -217,6 +242,7 @@ impl App {
             update_dismissed: false,
             update_check_busy: false,
             alerts: VecDeque::new(),
+            startup_suggestion: None,
             confirm_clear_history: false,
             clear_dialog: None,
             export_dialog: None,
@@ -230,6 +256,7 @@ impl App {
         }
         app.load_historical_data();
         app.maybe_check_for_updates();
+        app.prepare_startup_suggestion();
 
         if app.auto_start {
             log::info!("Auto-start is enabled, starting monitoring...");
@@ -237,6 +264,84 @@ impl App {
         }
 
         app
+    }
+
+    // ----- Window lifecycle -----
+
+    /// A window opened: style its egui context and send wake-ups to it.
+    pub fn attach(&mut self, ctx: &egui::Context) {
+        view::install_style(ctx);
+        self.waker.attach(ctx.clone());
+    }
+
+    /// The window closed: wake-ups go back to the event loop.
+    pub fn detach(&mut self) {
+        self.waker.detach();
+    }
+
+    /// Work that must happen with or without a window: apply what the background
+    /// tasks reported and start monitoring when that is pending.
+    pub fn pump(&mut self) {
+        self.handle_events();
+        if self.start_pending {
+            self.start_pending = false;
+            self.start_monitoring();
+        }
+    }
+
+    /// Quit instead of going to the background when the window closes.
+    pub fn request_quit(&mut self) {
+        self.quit_requested = true;
+    }
+
+    pub fn quit_requested(&self) -> bool {
+        self.quit_requested
+    }
+
+    /// What the tray icon says about the monitor.
+    pub fn tray_status(&self) -> crate::tray::Status {
+        let headline = if self.test_running {
+            "Running a speed test…".to_string()
+        } else if let Some(next) = self.next_test_time() {
+            format!(
+                "Monitoring: next test at {}",
+                format::time_hm(next.with_timezone(&Local))
+            )
+        } else if self.is_monitoring {
+            "Monitoring".to_string()
+        } else {
+            "Monitoring is off".to_string()
+        };
+        let last_test = match &self.latest {
+            None => "No tests yet".to_string(),
+            Some(test) => {
+                let local = test.local_time();
+                let when = if local.date_naive() == Local::now().date_naive() {
+                    format::time_hm(local)
+                } else {
+                    format::chart_label(local)
+                };
+                // A failed test is stored as zeros with the server set to "Error".
+                if test.server.as_deref() == Some("Error") {
+                    format!("Last test {when}: failed")
+                } else {
+                    format!(
+                        "Last test {when}: {}, {} ping",
+                        format::mbps(test.download),
+                        format::ms(test.ping)
+                    )
+                }
+            }
+        };
+        crate::tray::Status {
+            headline,
+            last_test,
+        }
+    }
+
+    /// Stop background work before the process exits.
+    pub fn shutdown(&mut self) {
+        self.monitor.stop();
     }
 
     // ----- Data -----
@@ -410,6 +515,52 @@ impl App {
         }
     }
 
+    // ----- First-run suggestion -----
+
+    /// Offer once to start monitoring with the app and to start the app with the
+    /// computer. Nothing to offer when both are already on.
+    fn prepare_startup_suggestion(&mut self) {
+        if self.settings.startup_suggestion_answered {
+            return;
+        }
+        if self.auto_start && self.launch_at_startup {
+            self.settings.startup_suggestion_answered = true;
+            self.settings.save(&self.paths.settings_file);
+            return;
+        }
+        // Both ticked: that is the suggestion.
+        self.startup_suggestion = Some(StartupSuggestion {
+            auto_start: true,
+            launch_at_startup: true,
+        });
+    }
+
+    /// Close the suggestion without an answer; it is offered again next time.
+    pub fn hide_startup_suggestion(&mut self) {
+        self.startup_suggestion = None;
+    }
+
+    /// Record the answer. `Some` applies the ticked options, `None` declines.
+    pub(crate) fn answer_startup_suggestion(&mut self, accepted: Option<StartupSuggestion>) {
+        self.startup_suggestion = None;
+        self.settings.startup_suggestion_answered = true;
+        if let Some(choice) = accepted {
+            if choice.auto_start != self.auto_start {
+                self.auto_start = choice.auto_start;
+                self.toggle_auto_start();
+            }
+            if choice.launch_at_startup != self.launch_at_startup {
+                self.launch_at_startup = choice.launch_at_startup;
+                self.toggle_launch_at_startup();
+            }
+            // Someone who asks for automatic monitoring expects it to be running.
+            if choice.auto_start && !self.is_monitoring {
+                self.start_monitoring();
+            }
+        }
+        self.settings.save(&self.paths.settings_file);
+    }
+
     // ----- Monitoring -----
 
     pub(crate) fn toggle_monitoring(&mut self) {
@@ -580,9 +731,11 @@ impl App {
         self.update_check_busy = true;
         let client = self.monitor.client();
         let tx = self.event_tx.clone();
+        let waker = self.waker.clone();
         self.handle.spawn(async move {
             let result = updates::check_for_updates(&client, CURRENT_VERSION).await;
             let _ = tx.send(Event::UpdateCheckFinished { manual, result });
+            waker.wake();
         });
     }
 
@@ -836,11 +989,20 @@ impl App {
     // ----- Misc actions -----
 
     pub(crate) fn alert(&mut self, title: impl Into<String>, message: impl Into<String>) {
-        self.alerts.push_back(Alert {
-            title: title.into(),
-            message: message.into(),
-            download_url: None,
-        });
+        let (title, message) = (title.into(), message.into());
+        // With the window closed nobody dismisses alerts, so a failure that repeats on
+        // every test must not queue up once per test.
+        let queued = self
+            .alerts
+            .iter()
+            .any(|alert| alert.title == title && alert.message == message);
+        if !queued {
+            self.alerts.push_back(Alert {
+                title,
+                message,
+                download_url: None,
+            });
+        }
     }
 
     pub(crate) fn open_external(&mut self, url: &str) {
@@ -894,12 +1056,7 @@ impl App {
 impl App {
     /// One frame of the application: process background events, then draw.
     pub fn frame(&mut self, ui: &mut egui::Ui) {
-        self.handle_events();
-
-        if self.start_pending {
-            self.start_pending = false;
-            self.start_monitoring();
-        }
+        self.pump();
 
         let ctx = ui.ctx().clone();
         view::draw(self, ui);
@@ -910,19 +1067,100 @@ impl App {
     }
 }
 
-impl eframe::App for App {
-    fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
-        self.frame(ui);
-    }
-
-    fn on_exit(&mut self, _gl: Option<&eframe::glow::Context>) {
-        self.monitor.stop();
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::App;
+
+    /// An app on a temporary data folder. `settings` is saved there first.
+    fn test_app(
+        name: &str,
+        settings: crate::settings::Settings,
+    ) -> (App, tokio::runtime::Runtime, std::path::PathBuf) {
+        let runtime = tokio::runtime::Runtime::new().unwrap();
+        let dir = std::env::temp_dir().join(format!("ism-app-{name}-{}", std::process::id()));
+        let paths = crate::paths::AppPaths::in_dir(dir.clone());
+        // A recent update check on record keeps tests off the network.
+        let settings = crate::settings::Settings {
+            last_check_date: Some(chrono::Utc::now().to_rfc3339()),
+            legacy_cleanup_done: true,
+            ..settings
+        };
+        assert!(settings.save(&paths.settings_file));
+        let store = crate::data_store::DataStore::empty(paths.speed_tests_file.clone());
+        let app = App::new(
+            runtime.handle().clone(),
+            paths,
+            std::sync::Arc::new(std::sync::Mutex::new(store)),
+            crate::wake::Waker::window_only(),
+        );
+        (app, runtime, dir)
+    }
+
+    fn saved_settings(app: &App) -> crate::settings::Settings {
+        crate::settings::Settings::load(&app.paths.settings_file)
+    }
+
+    #[test]
+    fn startup_suggestion_is_offered_until_answered() {
+        let (mut app, _runtime, dir) = test_app("suggest", Default::default());
+        assert!(app.startup_suggestion.is_some());
+
+        // Closing it is not an answer.
+        app.hide_startup_suggestion();
+        assert!(!saved_settings(&app).startup_suggestion_answered);
+
+        app.answer_startup_suggestion(None);
+        assert!(app.startup_suggestion.is_none());
+        assert!(!app.auto_start && !app.is_monitoring);
+        assert!(saved_settings(&app).startup_suggestion_answered);
+        let _ = std::fs::remove_dir_all(dir);
+    }
+
+    #[test]
+    fn accepting_startup_suggestion_starts_monitoring() {
+        // A cron schedule that is months away: monitoring starts without a test.
+        let settings = crate::settings::Settings {
+            schedule_type: "cron".to_string(),
+            cron_expression: "0 0 1 1 *".to_string(),
+            ..Default::default()
+        };
+        let (mut app, _runtime, dir) = test_app("accept", settings);
+        // Leave the login item as it is: changing it would touch the real system.
+        let launch_at_startup = app.launch_at_startup;
+        app.answer_startup_suggestion(Some(super::StartupSuggestion {
+            auto_start: true,
+            launch_at_startup,
+        }));
+
+        assert!(app.auto_start && app.is_monitoring);
+        let saved = saved_settings(&app);
+        assert!(saved.auto_start && saved.startup_suggestion_answered);
+        app.shutdown();
+        let _ = std::fs::remove_dir_all(dir);
+    }
+
+    #[test]
+    fn startup_suggestion_is_not_offered_after_an_answer() {
+        let settings = crate::settings::Settings {
+            startup_suggestion_answered: true,
+            ..Default::default()
+        };
+        let (app, _runtime, dir) = test_app("answered", settings);
+        assert!(app.startup_suggestion.is_none());
+        let _ = std::fs::remove_dir_all(dir);
+    }
+
+    #[test]
+    fn repeated_alert_is_queued_once() {
+        let (mut app, _runtime, dir) = test_app("alert", Default::default());
+        app.alerts.clear();
+
+        app.alert("Storage error", "disk full");
+        app.alert("Storage error", "disk full");
+        app.alert("Storage error", "read-only");
+        assert_eq!(app.alerts.len(), 2);
+        let _ = std::fs::remove_dir_all(dir);
+    }
 
     #[test]
     fn median_matches_previous_build() {

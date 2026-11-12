@@ -78,6 +78,7 @@ fn install_fonts(ctx: &egui::Context) {
 
     let fallbacks = [
         "Ubuntu-Light".to_owned(),
+        "egui-icons".to_owned(),
         "NotoEmoji-Regular".to_owned(),
         "emoji-icon-font".to_owned(),
     ];
@@ -220,7 +221,12 @@ pub fn draw(app: &mut App, root: &mut egui::Ui) {
 
 fn draw_menu_bar(app: &mut App, ui: &mut egui::Ui) {
     ui.menu_button("File", |ui| {
+        // Closing the window leaves the app running in the background.
+        if ui.button("Close Window").clicked() {
+            ui.ctx().send_viewport_cmd(egui::ViewportCommand::Close);
+        }
         if ui.button("Quit").clicked() {
+            app.quit_requested = true;
             ui.ctx().send_viewport_cmd(egui::ViewportCommand::Close);
         }
     });
@@ -384,7 +390,7 @@ fn draw_hamburger(app: &mut App, ui: &mut egui::Ui) {
 fn menu_item(ui: &mut egui::Ui, label: &str) -> egui::Response {
     let desired = Vec2::new(ui.available_width(), 36.0);
     let (rect, response) = ui.allocate_exact_size(desired, egui::Sense::click());
-    response.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, label));
+    response.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, label));
     if ui.is_rect_visible(rect) {
         let painter = ui.painter();
         if response.hovered() {
@@ -409,9 +415,7 @@ fn toggle_item(ui: &mut egui::Ui, label: &str, value: &mut bool) -> egui::Respon
         *value = !*value;
         response.mark_changed();
     }
-    response.widget_info(|| {
-        egui::WidgetInfo::selected(egui::WidgetType::Checkbox, true, *value, label)
-    });
+    response.widget_info(|| egui::WidgetInfo::selected(egui::Role::CheckBox, true, *value, label));
     if ui.is_rect_visible(rect) {
         let how_on = ui.ctx().animate_bool(response.id, *value);
         let painter = ui.painter();
@@ -490,7 +494,7 @@ fn action_button(ui: &mut egui::Ui, glyph: &str, label: &str, enabled: bool) -> 
         egui::Sense::hover()
     };
     let (rect, response) = ui.allocate_exact_size(size, sense);
-    response.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, enabled, label));
+    response.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, enabled, label));
     if ui.is_rect_visible(rect) {
         let fill = if !enabled {
             PRIMARY.gamma_multiply(0.45)
@@ -518,16 +522,24 @@ fn draw_controls(app: &mut App, ui: &mut egui::Ui) {
         ui.horizontal_top(|ui| {
             // Schedule type
             let previous = app.schedule_type;
-            egui::ComboBox::from_id_salt("schedule-type")
-                .selected_text(match app.schedule_type {
-                    ScheduleType::Interval => "Interval",
-                    ScheduleType::Cron => "Cron",
-                })
+            let selected = match app.schedule_type {
+                ScheduleType::Interval => "Interval",
+                ScheduleType::Cron => "Cron",
+            };
+            let combo = egui::ComboBox::from_id_salt("schedule-type")
+                .selected_text(selected)
                 .width(120.0)
                 .show_ui(ui, |ui| {
                     ui.selectable_value(&mut app.schedule_type, ScheduleType::Interval, "Interval");
                     ui.selectable_value(&mut app.schedule_type, ScheduleType::Cron, "Cron");
                 });
+            // The box has no visible label; screen readers still need a name for it.
+            combo.response.widget_info(|| {
+                let mut info =
+                    egui::WidgetInfo::labeled(egui::Role::ComboBox, true, "Schedule type");
+                info.current_text_value = Some(selected.to_owned());
+                info
+            });
             if previous != app.schedule_type {
                 if app.schedule_type == ScheduleType::Cron && app.cron_expression.trim().is_empty()
                 {
@@ -598,7 +610,7 @@ fn draw_interval_controls(app: &mut App, ui: &mut egui::Ui) {
                         .id(id)
                         .desired_width(48.0)
                         .margin(egui::Margin::symmetric(8, 7))
-                        .horizontal_align(Align::Center),
+                        .align(egui::Align2::CENTER_TOP),
                 );
                 if response.lost_focus() {
                     app.commit_interval_text();
@@ -1243,7 +1255,7 @@ fn draw_table(app: &App, ui: &mut egui::Ui) {
                 .body(|mut body| {
                     // Hover highlight uses last frame's hovered row (the row response is
                     // only available once its cells have been added).
-                    let hover_id = egui::Id::new("results-table-hovered-row");
+                    let hover_id = egui::Id::unique("results-table-hovered-row");
                     let hovered_row: Option<usize> =
                         body.ui_mut().ctx().data(|d| d.get_temp(hover_id));
                     for (row_index, test) in rows.into_iter().enumerate() {

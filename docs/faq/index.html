@@ -5,26 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- Primary Meta Tags -->
-    <title>FAQ - Internet Speed Monitor Questions & Troubleshooting</title>
-    <meta name="title" content="FAQ - Internet Speed Monitor Questions & Troubleshooting">
-    <meta name="description" content="Frequently asked questions about Internet Speed Monitor. Get help with installation, troubleshooting, features, system requirements, and technical support for the speed monitoring app.">
+    <title>FAQ - Internet Speed Monitor Questions &amp; Troubleshooting</title>
+    <meta name="title" content="FAQ - Internet Speed Monitor Questions &amp; Troubleshooting">
+    <meta name="description" content="Answers about Internet Speed Monitor: installing, running in the background, schedules, accuracy, where data is stored, export and troubleshooting.">
         <meta name="keywords" content="internet speed monitor faq, troubleshooting, common questions, speed test help">
     <meta name="robots" content="index, follow">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="article">
     <meta property="og:url" content="https://omrilotan.github.io/internet-speed-monitor/faq/">
-    <meta property="og:title" content="FAQ - Internet Speed Monitor Questions & Troubleshooting">
-    <meta property="og:description" content="Frequently asked questions about Internet Speed Monitor. Get help with installation, troubleshooting, features, system requirements, and technical support.">
-    <meta property="og:image" content="https://omrilotan.github.io/internet-speed-monitor/screenshot.png">
+    <meta property="og:title" content="FAQ - Internet Speed Monitor Questions &amp; Troubleshooting">
+    <meta property="og:description" content="Answers about Internet Speed Monitor: installing, running in the background, schedules, accuracy, where data is stored, export and troubleshooting.">
+    <meta property="og:image" content="https://omrilotan.github.io/internet-speed-monitor/og-image.png">
     <meta property="og:site_name" content="Internet Speed Monitor">
     
     <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://omrilotan.github.io/internet-speed-monitor/faq/">
-    <meta property="twitter:title" content="FAQ - Internet Speed Monitor Questions & Troubleshooting">
-    <meta property="twitter:description" content="Frequently asked questions about Internet Speed Monitor. Get help with installation, troubleshooting, features, and technical support.">
-    <meta property="twitter:image" content="https://omrilotan.github.io/internet-speed-monitor/screenshot.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://omrilotan.github.io/internet-speed-monitor/faq/">
+    <meta name="twitter:title" content="FAQ - Internet Speed Monitor Questions &amp; Troubleshooting">
+    <meta name="twitter:description" content="Answers about Internet Speed Monitor: installing, running in the background, schedules, accuracy, where data is stored, export and troubleshooting.">
+    <meta name="twitter:image" content="https://omrilotan.github.io/internet-speed-monitor/og-image.png">
     
     <!-- Canonical URL -->
     <link rel="canonical" href="https://omrilotan.github.io/internet-speed-monitor/faq/">
@@ -34,35 +34,192 @@
     {
       "@context": "https://schema.org",
       "@type": "FAQPage",
-      "mainEntity": [{
-        "@type": "Question",
-        "name": "Is Internet Speed Monitor free to use?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Yes! Internet Speed Monitor is completely free and open source software released under the Unlicense. You can use, modify, and distribute it without any restrictions."
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is Internet Speed Monitor free to use?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Internet Speed Monitor is free and open source, released under the Unlicense. You can use, modify and distribute it without restrictions. There is no account and no paid tier."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Which operating systems does it support?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Windows 10 and later, macOS 10.15 and later (Apple Silicon and Intel), and Linux. Downloads: a Windows installer and portable zip, macOS .dmg files, and a Linux .deb plus .tar.gz."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I install Internet Speed Monitor on macOS?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Download the .dmg file for your Mac (arm64 for Apple Silicon, x64 for Intel) from our releases page, double-click it, and drag the app to your Applications folder. If you see a security warning, go to System Preferences > Security & Privacy and click \"Open Anyway\"."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why can't I open the app on macOS?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "This is likely due to macOS Gatekeeper security. Right-click the app and select \"Open\", then click \"Open\" in the dialog. Alternatively, go to System Preferences > Security & Privacy > General and click \"Open Anyway\" after attempting to launch the app."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I install Internet Speed Monitor on Linux?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Download the .deb package and run sudo apt install ./internet-speed-monitor_*_amd64.deb. On other distributions, extract the .tar.gz and run the internet-speed-monitor binary."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Will I lose my history when upgrading from version 1.x?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Version 2 reads the same history and settings files. Installing it replaces 1.x: the macOS app is replaced in Applications, the Windows installer removes 1.x for you, and the Linux .deb upgrades the old package. A copy of your 1.x history is saved as speed_tests.backup-1.x.json before version 2 changes anything. If you used the 1.x AppImage or portable .exe, delete the old file yourself."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does monitoring continue when I close the window?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Closing the window leaves the app running in the system tray (the menu bar on macOS) and tests continue on your schedule. Click the tray icon, or launch the app again, to open the window. To start at login with only the tray icon, turn on \"Start with computer\" and \"Auto-start monitoring\" in the ☰ menu; the app offers both the first time it opens. See Running in the Background in the user manual."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I quit the app completely?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Choose Quit in the tray icon menu, or File → Quit in the window. The window's close button only closes the window. On Linux desktops that do not show tray icons (GNOME without the AppIndicator extension), launch the app again to get the window, then use File → Quit."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How accurate are the speed test results?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Internet Speed Monitor uses the same testing methodology as popular online speed tests. Results are typically within 5-10% of your actual connection speed. Factors like network congestion, server location, and other device usage can affect results."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What scheduling options are available?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The app offers two scheduling modes: Simple Interval: Choose from preset buttons (5m, 15m, 30m, 1h, 1d) for regular testing Cron Expression: Advanced scheduling using UNIX cron syntax for precise timing, including work hours presets and custom patterns For most users, the Simple Interval presets are sufficient. Use Cron Expressions for complex schedules like \"every weekday at 9 AM and 5 PM\"."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Where is my speed test data stored?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "All data is stored locally on your device in JSON format. No data is sent to external servers. The data file locations vary by operating system: macOS: ~/Library/Application Support/Internet Speed Monitor/speed_tests.json Windows: %APPDATA%\\Internet Speed Monitor\\speed_tests.json Linux: ~/.config/Internet Speed Monitor/speed_tests.json"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I create custom cron expressions?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Cron expressions use five fields: minute hour day month weekday. Common examples: 0 9 * * 1-5 - Every weekday at 9 AM */30 9-17 * * 1-5 - Every 30 minutes during work hours 0 */4 * * * - Every 4 hours 0 0 * * 0 - Every Sunday at midnight Use the \"Help with cron expressions\" link in the app to access crontab.guru for interactive help building expressions."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I export my speed test data?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes! Click the \"Export CSV\" button to save all your speed test data to a CSV file. This includes timestamps, download speeds, upload speeds, and ping times. You can then open this file in Excel, Google Sheets, or any spreadsheet application."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How much bandwidth does continuous monitoring use?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Each speed test uses approximately 10-50 MB depending on your connection speed. With a 15-minute interval, this equals roughly 2-10 GB per month. You can adjust the interval to control bandwidth usage."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "The app won't start or crashes on startup",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Try these steps: Restart your computer Make sure you have the latest version installed Check if antivirus software is blocking the app On Windows, try running as administrator If the issue persists, create an issue on our GitHub page with details about your system"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Speed tests are failing or showing \"Connection Error\"",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "This usually indicates a network connectivity issue: Check your internet connection Verify firewall settings aren't blocking the app Try temporarily disabling VPN if you're using one Restart your router/modem Contact your ISP if problems persist"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "The chart isn't updating or shows no data",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Ensure monitoring is running by checking that the \"Start Monitoring\" button shows \"Running\" status. If monitoring is active but no data appears, try: Stopping and restarting monitoring Restarting the application Checking if your firewall is blocking network requests"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What data does the app collect?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Internet Speed Monitor only collects speed test measurements (download speed, upload speed, ping, timestamp). No personal information, browsing data, or other private information is collected. All data stays on your device."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is my data shared with third parties?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. All speed test data is stored locally on your device. The app does not send any data to external servers or third parties. We respect your privacy completely."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I delete my stored data?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. You can clear all stored data by deleting the application's data folder (see \"Where is my data stored?\" above) or by uninstalling and reinstalling the application."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I report a bug or request a feature?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Visit our GitHub Issues page to report bugs or request new features. Please include: Your operating system and version App version (shown in About dialog) Steps to reproduce the issue Any error messages you see"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is the source code available?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes! Internet Speed Monitor is open source. You can view the source code, contribute, or build your own version on our GitHub repository."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How can I contribute to the project?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "We welcome contributions! Check out our Contributing Guide for information on: Reporting issues Submitting pull requests Coding standards Development setup"
+          }
         }
-      },{
-        "@type": "Question",
-        "name": "What platforms does it support?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Internet Speed Monitor works on Windows 10+, macOS 10.15+, and most modern Linux distributions. We provide native installers for all platforms."
-        }
-      },{
-        "@type": "Question",
-        "name": "How accurate are the speed measurements?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "The app uses Netflix's Fast.com service for speed testing, which provides highly accurate measurements from Netflix's global CDN network. Download speeds are real measurements, while upload speeds are estimated."
-        }
-      },{
-        "@type": "Question",
-        "name": "Where is my data stored?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "All your speed test data is stored locally on your device in JSON format. No data is sent to external servers except for the speed tests themselves. You have complete control over your data."
-        }
-      }]
+      ]
     }
     </script>
     
@@ -106,6 +263,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin: 0;
+            font-size: 1rem;
             font-weight: 600;
             color: var(--text-primary);
             transition: background-color 0.2s;
@@ -170,59 +329,95 @@
         <h1>❓ Frequently Asked Questions</h1>
         <p>Find answers to common questions about Internet Speed Monitor.</p>
 
-        <div class="faq-category">Installation & Setup</div>
+        <h2 class="faq-category">Installation & Setup</h2>
 
         <div class="faq-item">
-            <div class="faq-question">
-                How do I install Internet Speed Monitor on macOS?
+            <h3 class="faq-question">
+                Is Internet Speed Monitor free to use?
+            </h3>
+            <div class="faq-answer">
+                <p>Yes. Internet Speed Monitor is free and open source, released under the Unlicense. You can use, modify and distribute it without restrictions. There is no account and no paid tier.</p>
             </div>
+        </div>
+
+        <div class="faq-item">
+            <h3 class="faq-question">
+                Which operating systems does it support?
+            </h3>
+            <div class="faq-answer">
+                <p>Windows 10 and later, macOS 10.15 and later (Apple Silicon and Intel), and Linux. Downloads: a Windows installer and portable zip, macOS <span class="code">.dmg</span> files, and a Linux <span class="code">.deb</span> plus <span class="code">.tar.gz</span>.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <h3 class="faq-question">
+                How do I install Internet Speed Monitor on macOS?
+            </h3>
             <div class="faq-answer">
                 <p>Download the <span class="code">.dmg</span> file for your Mac (<span class="code">arm64</span> for Apple Silicon, <span class="code">x64</span> for Intel) from our releases page, double-click it, and drag the app to your Applications folder. If you see a security warning, go to System Preferences > Security & Privacy and click "Open Anyway".</p>
             </div>
         </div>
 
         <div class="faq-item">
-            <div class="faq-question">
+            <h3 class="faq-question">
                 Why can't I open the app on macOS?
-            </div>
+            </h3>
             <div class="faq-answer">
                 <p>This is likely due to macOS Gatekeeper security. Right-click the app and select "Open", then click "Open" in the dialog. Alternatively, go to System Preferences > Security & Privacy > General and click "Open Anyway" after attempting to launch the app.</p>
             </div>
         </div>
 
         <div class="faq-item">
-            <div class="faq-question">
+            <h3 class="faq-question">
                 How do I install Internet Speed Monitor on Linux?
-            </div>
+            </h3>
             <div class="faq-answer">
                 <p>Download the <span class="code">.deb</span> package and run <span class="code">sudo apt install ./internet-speed-monitor_*_amd64.deb</span>. On other distributions, extract the <span class="code">.tar.gz</span> and run the <span class="code">internet-speed-monitor</span> binary.</p>
             </div>
         </div>
 
         <div class="faq-item">
-            <div class="faq-question">
+            <h3 class="faq-question">
                 Will I lose my history when upgrading from version 1.x?
-            </div>
+            </h3>
             <div class="faq-answer">
                 <p>No. Version 2 reads the same history and settings files. Installing it replaces 1.x: the macOS app is replaced in Applications, the Windows installer removes 1.x for you, and the Linux <span class="code">.deb</span> upgrades the old package. A copy of your 1.x history is saved as <span class="code">speed_tests.backup-1.x.json</span> before version 2 changes anything. If you used the 1.x AppImage or portable <span class="code">.exe</span>, delete the old file yourself.</p>
             </div>
         </div>
 
-        <div class="faq-category">Usage & Features</div>
+        <h2 class="faq-category">Usage & Features</h2>
 
         <div class="faq-item">
-            <div class="faq-question">
-                How accurate are the speed test results?
+            <h3 class="faq-question">
+                Does monitoring continue when I close the window?
+            </h3>
+            <div class="faq-answer">
+                <p>Yes. Closing the window leaves the app running in the system tray (the menu bar on macOS) and tests continue on your schedule. Click the tray icon, or launch the app again, to open the window. To start at login with only the tray icon, turn on "Start with computer" and "Auto-start monitoring" in the ☰ menu; the app offers both the first time it opens. See <a href="../user-manual/#background">Running in the Background</a> in the user manual.</p>
             </div>
+        </div>
+
+        <div class="faq-item">
+            <h3 class="faq-question">
+                How do I quit the app completely?
+            </h3>
+            <div class="faq-answer">
+                <p>Choose Quit in the tray icon menu, or File → Quit in the window. The window's close button only closes the window. On Linux desktops that do not show tray icons (GNOME without the AppIndicator extension), launch the app again to get the window, then use File → Quit.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <h3 class="faq-question">
+                How accurate are the speed test results?
+            </h3>
             <div class="faq-answer">
                 <p>Internet Speed Monitor uses the same testing methodology as popular online speed tests. Results are typically within 5-10% of your actual connection speed. Factors like network congestion, server location, and other device usage can affect results.</p>
             </div>
         </div>
 
         <div class="faq-item">
-            <div class="faq-question">
+            <h3 class="faq-question">
                 What scheduling options are available?
-            </div>
+            </h3>
             <div class="faq-answer">
                 <p>The app offers two scheduling modes:</p>
                 <ul>
@@ -234,9 +429,9 @@
         </div>
 
             <div class="faq-item">
-            <div class="faq-question">
+            <h3 class="faq-question">
                 Where is my speed test data stored?
-            </div>
+            </h3>
             <div class="faq-answer">
                 <p>All data is stored locally on your device in JSON format. No data is sent to external servers. The data file locations vary by operating system:
                 <ul>
@@ -249,9 +444,9 @@
         </div>
 
         <div class="faq-item">
-            <div class="faq-question">
+            <h3 class="faq-question">
                 How do I create custom cron expressions?
-            </div>
+            </h3>
             <div class="faq-answer">
                 <p>Cron expressions use five fields: <span class="code">minute hour day month weekday</span>. Common examples:</p>
                 <ul>
@@ -265,29 +460,29 @@
         </div>
 
         <div class="faq-item">
-            <div class="faq-question">
+            <h3 class="faq-question">
                 Can I export my speed test data?
-            </div>
+            </h3>
             <div class="faq-answer">
                 <p>Yes! Click the "Export CSV" button to save all your speed test data to a CSV file. This includes timestamps, download speeds, upload speeds, and ping times. You can then open this file in Excel, Google Sheets, or any spreadsheet application.</p>
             </div>
         </div>
 
         <div class="faq-item">
-            <div class="faq-question">
+            <h3 class="faq-question">
                 How much bandwidth does continuous monitoring use?
-            </div>
+            </h3>
             <div class="faq-answer">
                 <p>Each speed test uses approximately 10-50 MB depending on your connection speed. With a 15-minute interval, this equals roughly 2-10 GB per month. You can adjust the interval to control bandwidth usage.</p>
             </div>
         </div>
 
-        <div class="faq-category">Troubleshooting</div>
+        <h2 class="faq-category">Troubleshooting</h2>
 
         <div class="faq-item">
-            <div class="faq-question">
+            <h3 class="faq-question">
                 The app won't start or crashes on startup
-            </div>
+            </h3>
             <div class="faq-answer">
                 <p>Try these steps:
                 <ol>
@@ -302,9 +497,9 @@
         </div>
 
         <div class="faq-item">
-            <div class="faq-question">
+            <h3 class="faq-question">
                 Speed tests are failing or showing "Connection Error"
-            </div>
+            </h3>
             <div class="faq-answer">
                 <p>This usually indicates a network connectivity issue:
                 <ul>
@@ -319,9 +514,9 @@
         </div>
 
         <div class="faq-item">
-            <div class="faq-question">
+            <h3 class="faq-question">
                 The chart isn't updating or shows no data
-            </div>
+            </h3>
             <div class="faq-answer">
                 <p>Ensure monitoring is running by checking that the "Start Monitoring" button shows "Running" status. If monitoring is active but no data appears, try:
                 <ul>
@@ -333,41 +528,41 @@
             </div>
         </div>
 
-        <div class="faq-category">Privacy & Security</div>
+        <h2 class="faq-category">Privacy & Security</h2>
 
         <div class="faq-item">
-            <div class="faq-question">
+            <h3 class="faq-question">
                 What data does the app collect?
-            </div>
+            </h3>
             <div class="faq-answer">
                 <p>Internet Speed Monitor only collects speed test measurements (download speed, upload speed, ping, timestamp). No personal information, browsing data, or other private information is collected. All data stays on your device.</p>
             </div>
         </div>
 
         <div class="faq-item">
-            <div class="faq-question">
+            <h3 class="faq-question">
                 Is my data shared with third parties?
-            </div>
+            </h3>
             <div class="faq-answer">
                 <p>No. All speed test data is stored locally on your device. The app does not send any data to external servers or third parties. We respect your privacy completely.</p>
             </div>
         </div>
 
         <div class="faq-item">
-            <div class="faq-question">
+            <h3 class="faq-question">
                 Can I delete my stored data?
-            </div>
+            </h3>
             <div class="faq-answer">
                 <p>Yes. You can clear all stored data by deleting the application's data folder (see "Where is my data stored?" above) or by uninstalling and reinstalling the application.</p>
             </div>
         </div>
 
-        <div class="faq-category">Technical Support</div>
+        <h2 class="faq-category">Technical Support</h2>
 
         <div class="faq-item">
-            <div class="faq-question">
+            <h3 class="faq-question">
                 How do I report a bug or request a feature?
-            </div>
+            </h3>
             <div class="faq-answer">
                 <p>Visit our <a href="https://github.com/omrilotan/internet-speed-monitor/issues" target="_blank">GitHub Issues page</a> to report bugs or request new features. Please include:
                 <ul>
@@ -381,18 +576,18 @@
         </div>
 
         <div class="faq-item">
-            <div class="faq-question">
+            <h3 class="faq-question">
                 Is the source code available?
-            </div>
+            </h3>
             <div class="faq-answer">
                 <p>Yes! Internet Speed Monitor is open source. You can view the source code, contribute, or build your own version on our <a href="https://github.com/omrilotan/internet-speed-monitor" target="_blank">GitHub repository</a>.</p>
             </div>
         </div>
 
         <div class="faq-item">
-            <div class="faq-question">
+            <h3 class="faq-question">
                 How can I contribute to the project?
-            </div>
+            </h3>
             <div class="faq-answer">
                 <p>We welcome contributions! Check out our <a href="https://github.com/omrilotan/internet-speed-monitor/blob/main/CONTRIBUTING.md" target="_blank">Contributing Guide</a> for information on:
                 <ul>

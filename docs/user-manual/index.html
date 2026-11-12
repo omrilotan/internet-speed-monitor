@@ -5,26 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- Primary Meta Tags -->
-    <title>User Manual - Internet Speed Monitor Complete Guide & Features</title>
-    <meta name="title" content="User Manual - Internet Speed Monitor Complete Guide & Features">
-    <meta name="description" content="Complete user manual for Internet Speed Monitor. Learn all features: automatic monitoring, real-time charts, data export, performance tracking, troubleshooting and advanced settings.">
+    <title>Internet Speed Monitor User Manual - Features and Settings</title>
+    <meta name="title" content="Internet Speed Monitor User Manual - Features and Settings">
+    <meta name="description" content="How to use Internet Speed Monitor: schedules, background mode and the tray icon, charts, CSV export, data cleanup and troubleshooting.">
         <meta name="keywords" content="internet speed monitor user manual, network monitoring guide, speed test documentation, app features">
     <meta name="robots" content="index, follow">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="article">
     <meta property="og:url" content="https://omrilotan.github.io/internet-speed-monitor/user-manual/">
-    <meta property="og:title" content="User Manual - Internet Speed Monitor Complete Guide & Features">
-    <meta property="og:description" content="Complete user manual for Internet Speed Monitor. Learn all features: automatic monitoring, real-time charts, data export, performance tracking, troubleshooting and advanced settings.">
-    <meta property="og:image" content="https://omrilotan.github.io/internet-speed-monitor/screenshot.png">
+    <meta property="og:title" content="Internet Speed Monitor User Manual - Features and Settings">
+    <meta property="og:description" content="How to use Internet Speed Monitor: schedules, background mode and the tray icon, charts, CSV export, data cleanup and troubleshooting.">
+    <meta property="og:image" content="https://omrilotan.github.io/internet-speed-monitor/og-image.png">
     <meta property="og:site_name" content="Internet Speed Monitor">
     
     <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://omrilotan.github.io/internet-speed-monitor/user-manual/">
-    <meta property="twitter:title" content="User Manual - Internet Speed Monitor Complete Guide & Features">
-    <meta property="twitter:description" content="Complete user manual for Internet Speed Monitor. Learn all features: automatic monitoring, real-time charts, data export, performance tracking.">
-    <meta property="twitter:image" content="https://omrilotan.github.io/internet-speed-monitor/screenshot.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://omrilotan.github.io/internet-speed-monitor/user-manual/">
+    <meta name="twitter:title" content="Internet Speed Monitor User Manual - Features and Settings">
+    <meta name="twitter:description" content="How to use Internet Speed Monitor: schedules, background mode and the tray icon, charts, CSV export, data cleanup and troubleshooting.">
+    <meta name="twitter:image" content="https://omrilotan.github.io/internet-speed-monitor/og-image.png">
     
     <!-- Canonical URL -->
     <link rel="canonical" href="https://omrilotan.github.io/internet-speed-monitor/user-manual/">
@@ -154,11 +154,11 @@
                     <p>Real-time view of your latest speed test results including download, upload, and ping measurements.</p>
                 </div>
                 <div class="feature-item">
-                    <h4>� Median Statistics</h4>
+                    <h4>🎯 Median Statistics</h4>
                     <p>Median values across all historical data providing better insights into typical performance.</p>
                 </div>
                 <div class="feature-item">
-                    <h4>�📈 Speed History Chart</h4>
+                    <h4>📈 Speed History Chart</h4>
                     <p>Interactive chart showing your internet performance over time with customizable time ranges.</p>
                 </div>
                 <div class="feature-item">
@@ -339,6 +339,19 @@
                 <li><strong>Preset Buttons:</strong> Quick-select common scheduling patterns</li>
                 <li><strong>Clear Data:</strong> Remove all stored speed test history</li>
             </ul>
+
+            <h3 id="background">Running in the Background</h3>
+            <p>Closing the window does not stop monitoring. The app stays in the system tray (the menu bar on macOS) and keeps testing on your schedule.</p>
+            <ul>
+                <li><strong>Open the window:</strong> Click the tray icon (on macOS, click it and choose "Open Internet Speed Monitor"), or launch the app again</li>
+                <li><strong>Close the window:</strong> Use the window's close button or File → Close Window. Monitoring continues</li>
+                <li><strong>Quit:</strong> Choose Quit in the tray icon menu or File → Quit. Monitoring stops</li>
+                <li><strong>Start with computer:</strong> With this option on (☰ menu), the app starts at login with only the tray icon. Turn on "Auto-start monitoring" as well to begin testing without opening the window</li>
+                <li><strong>First launch:</strong> The app offers to turn on both options. They stay off unless you choose "Turn On"</li>
+            </ul>
+            <p><img src="../screenshots/file-menu.png" alt="File menu with Close Window and Quit" width="560" loading="lazy" style="max-width: 100%; height: auto; border: 1px solid var(--border); border-radius: 8px;"></p>
+            <p>Only one copy of the app runs at a time: launching it again shows the window of the copy that is already running. On macOS the Dock icon is shown only while the window is open.</p>
+            <p><strong>Linux:</strong> the tray icon needs a desktop that shows StatusNotifier icons. KDE does; GNOME needs the AppIndicator extension. Without one, launch the app again to get the window back.</p>
         </div>
 
         <div class="manual-section">
@@ -352,15 +365,11 @@
                 </div>
                 <div class="feature-item">
                     <h4>📤 Upload Speed</h4>
-                    <p>Measures how quickly you can send data to the internet. Critical for video calls, cloud backups, and content sharing.</p>
+                    <p>How quickly you can send data to the internet. Critical for video calls, cloud backups, and content sharing. This figure is an estimate based on the download result: Fast.com's public API measures download only.</p>
                 </div>
                 <div class="feature-item">
                     <h4>⚡ Ping/Latency</h4>
                     <p>Measures response time to servers. Lower is better for gaming, video calls, and real-time applications.</p>
-                </div>
-                <div class="feature-item">
-                    <h4>📈 Jitter</h4>
-                    <p>Variation in ping times. Consistent low jitter indicates a stable connection quality.</p>
                 </div>
             </div>
 
@@ -374,10 +383,8 @@
 
             <h3>Chart Features</h3>
             <ul>
-                <li><strong>Zoom:</strong> Click and drag to zoom into specific time periods</li>
                 <li><strong>Hover Details:</strong> Mouse over data points for exact values and timestamps</li>
-                <li><strong>Legend:</strong> Click legend items to show/hide specific metrics</li>
-                <li><strong>Time Range:</strong> Select from predefined ranges or set custom periods</li>
+                <li><strong>Time Range:</strong> Show the last 20 tests, the last day, the last 7 days or a date range you choose</li>
             </ul>
         </div>
 
@@ -387,7 +394,7 @@
             <h3>CSV Export</h3>
             <p>Export your speed test data for analysis in external tools:</p>
             <ol>
-                <li>Click the "Export CSV" button in the monitoring controls</li>
+                <li>Open the ☰ menu and choose "Export as CSV", then pick the date range</li>
                 <li>Choose a location and filename for your export</li>
                 <li>Open the file in Excel, Google Sheets, or other spreadsheet applications</li>
             </ol>
@@ -395,12 +402,12 @@
             <h3>Export Data Format</h3>
             <p>The exported CSV contains the following columns:</p>
             <ul>
-                <li><code>timestamp</code> - Date and time of the test (ISO 8601 format)</li>
-                <li><code>download_speed</code> - Download speed in Mbps</li>
-                <li><code>upload_speed</code> - Upload speed in Mbps</li>
-                <li><code>ping</code> - Ping time in milliseconds</li>
-                <li><code>jitter</code> - Jitter in milliseconds (if available)</li>
-                <li><code>server_location</code> - Test server location</li>
+                <li><code>Date</code> and <code>Time</code> - When the test ran, in your local time</li>
+                <li><code>Download Speed (Mbps)</code></li>
+                <li><code>Upload Speed (Mbps)</code> - Estimated</li>
+                <li><code>Ping (ms)</code></li>
+                <li><code>Network Interface</code> - Wi-Fi, Ethernet or other</li>
+                <li><code>ISP</code> - Your provider at the time of the test</li>
             </ul>
 
             <h3>Data Backup</h3>
@@ -470,49 +477,6 @@
                 <li><strong>Open Source:</strong> Code is publicly auditable on GitHub</li>
                 <li><strong>Regular Updates:</strong> Security patches are released promptly</li>
             </ul>
-        </div>
-
-        <div class="manual-section">
-            <h2>⌨️ Keyboard Shortcuts</h2>
-            
-            <div class="table-responsive">
-                <table class="settings-table">
-                    <thead>
-                        <tr>
-                            <th>Action</th>
-                            <th>Windows/Linux</th>
-                            <th>macOS</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Start/Stop Monitoring</td>
-                            <td><span class="keyboard-key">Space</span></td>
-                            <td><span class="keyboard-key">Space</span></td>
-                        </tr>
-                        <tr>
-                            <td>Run Manual Test</td>
-                            <td><span class="keyboard-key">Ctrl</span> + <span class="keyboard-key">T</span></td>
-                            <td><span class="keyboard-key">⌘</span> + <span class="keyboard-key">T</span></td>
-                        </tr>
-                        <tr>
-                            <td>Export Data</td>
-                            <td><span class="keyboard-key">Ctrl</span> + <span class="keyboard-key">E</span></td>
-                            <td><span class="keyboard-key">⌘</span> + <span class="keyboard-key">E</span></td>
-                        </tr>
-                        <tr>
-                            <td>Clear Data</td>
-                            <td><span class="keyboard-key">Ctrl</span> + <span class="keyboard-key">Shift</span> + <span class="keyboard-key">Delete</span></td>
-                            <td><span class="keyboard-key">⌘</span> + <span class="keyboard-key">Shift</span> + <span class="keyboard-key">Delete</span></td>
-                        </tr>
-                        <tr>
-                            <td>Quit Application</td>
-                            <td><span class="keyboard-key">Ctrl</span> + <span class="keyboard-key">Q</span></td>
-                            <td><span class="keyboard-key">⌘</span> + <span class="keyboard-key">Q</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
         </div>
 
         <div style="text-align: center; margin-top: 60px;">

@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0]
+
+### ✨ Features
+- The app keeps monitoring in the background. Closing the window leaves a tray (menu bar) icon; open the window again from that icon or by launching the app.
+- "Start with computer" now starts the app in the background, without a window. An entry that was already enabled is updated on first launch.
+- On first launch the app offers to turn on "Auto-start monitoring" and "Start with computer". Both stay off unless you accept. People upgrading see the offer once if either is off.
+- The tray menu and tooltip show what the monitor is doing, the next test time and the latest result.
+- Only one copy runs at a time: launching the app again shows the window of the running copy.
+
+### 🛠 Changes
+- File menu: "Close Window" keeps the app running, "Quit" stops it. The tray icon menu also has "Quit".
+- macOS: the Dock icon is shown only while the window is open.
+- macOS: the login item runs the executable inside the app bundle.
+- Dependencies updated: egui and eframe 0.37, egui_plot 0.38, tokio 1.54, jiff, log, open.
+- The schedule type selector has a name for screen readers.
+- Building from source needs Rust 1.95.
+
 ## [2.0.0]
 
 ### 🦀 Rewrite

@@ -12,6 +12,7 @@ use crate::data_store::{DataStore, SpeedTest};
 use crate::schedule::{Schedule, ScheduleError};
 use crate::speedtest::{self, FastConfig};
 use crate::updates::UpdateInfo;
+use crate::wake::Waker;
 
 /// Messages from background work to the UI thread.
 #[derive(Debug)]
@@ -34,7 +35,7 @@ pub type EventSender = std::sync::mpsc::Sender<Event>;
 struct Shared {
     store: Arc<Mutex<DataStore>>,
     events: EventSender,
-    repaint: egui::Context,
+    waker: Waker,
     client: reqwest::Client,
     config: FastConfig,
     test_in_progress: AtomicBool,
@@ -44,7 +45,7 @@ struct Shared {
 impl Shared {
     fn notify(&self, event: Event) {
         let _ = self.events.send(event);
-        self.repaint.request_repaint();
+        self.waker.wake();
     }
 
     /// Run one test unless one is already running. Returns false if skipped.
@@ -91,14 +92,14 @@ impl SpeedMonitor {
         handle: Handle,
         store: Arc<Mutex<DataStore>>,
         events: EventSender,
-        repaint: egui::Context,
+        waker: Waker,
     ) -> Self {
         Self {
             handle,
             shared: Arc::new(Shared {
                 store,
                 events,
-                repaint,
+                waker,
                 client: speedtest::build_client(),
                 config: FastConfig::default(),
                 test_in_progress: AtomicBool::new(false),
@@ -166,6 +167,8 @@ impl SpeedMonitor {
                     }
                 };
                 *shared.next_run.lock().unwrap_or_else(|p| p.into_inner()) = Some(next);
+                // The tray shows the next run and nothing else repaints it without a window.
+                shared.waker.wake();
                 let wait = (next - Utc::now())
                     .to_std()
                     .unwrap_or(std::time::Duration::ZERO);
@@ -239,8 +242,12 @@ mod tests {
         std::fs::create_dir_all(&dir).unwrap();
         let store = Arc::new(Mutex::new(DataStore::empty(dir.join("speed_tests.json"))));
         let (tx, rx) = std::sync::mpsc::channel();
-        let ctx = egui::Context::default();
-        let mut monitor = SpeedMonitor::new(runtime.handle().clone(), Arc::clone(&store), tx, ctx);
+        let mut monitor = SpeedMonitor::new(
+            runtime.handle().clone(),
+            Arc::clone(&store),
+            tx,
+            Waker::window_only(),
+        );
 
         monitor.start(Schedule::interval(1)).unwrap();
         assert!(monitor.is_running());

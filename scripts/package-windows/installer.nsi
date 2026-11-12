@@ -196,7 +196,7 @@ Section "Install"
 
   ; Same value the app writes for "Start with computer" (see src/launch.rs).
   ${If} $HadLegacyAutostart == 1
-    WriteRegStr HKCU "${RUN_KEY}" "${APP_NAME}" '"$INSTDIR\${APP_EXE}" '
+    WriteRegStr HKCU "${RUN_KEY}" "${APP_NAME}" '"$INSTDIR\${APP_EXE}" --background'
   ${EndIf}
 SectionEnd
 
