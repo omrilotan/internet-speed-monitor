@@ -3,7 +3,9 @@
 //! The binary in `main.rs` wires this together; examples and tests reuse these modules.
 
 pub mod app;
+pub mod command;
 pub mod data_store;
+pub mod instance;
 pub mod isp;
 pub mod launch;
 pub mod legacy;
@@ -11,10 +13,14 @@ pub mod logger;
 pub mod monitor;
 pub mod network;
 pub mod paths;
+pub mod platform;
 pub mod schedule;
 pub mod settings;
+pub mod shell;
 pub mod speedtest;
+pub mod tray;
 pub mod updates;
+pub mod wake;
 
 pub const APP_NAME: &str = "Internet Speed Monitor";
 pub const CURRENT_VERSION: &str = env!("CARGO_PKG_VERSION");

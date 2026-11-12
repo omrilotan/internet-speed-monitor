@@ -15,6 +15,12 @@ internet-speed-monitor/
 │   │   ├── view.rs             # Main window layout, styling, chart and table
 │   │   ├── dialogs.rs          # Modal dialogs (alerts, export, clear data, about, debug log)
 │   │   └── format.rs           # Date/number formatting helpers
+│   ├── shell.rs                # Event loop: window while open, tray icon only otherwise
+│   ├── tray.rs                 # Tray (menu bar) icon and its menu
+│   ├── instance.rs             # Single instance: a second launch shows the running copy
+│   ├── command.rs              # Open / Quit requests from the tray, a second launch, the OS
+│   ├── wake.rs                 # Wakes the window or the event loop when background work reports
+│   ├── platform.rs             # macOS Dock icon and reopen handling
 │   ├── monitor.rs              # Background scheduler and test runner
 │   ├── speedtest.rs            # Fast.com download measurement, TCP ping, result assembly
 │   ├── schedule.rs             # Interval and cron schedules, descriptions, presets
@@ -118,7 +124,7 @@ Files: `speed_tests.json`, `settings.json`, `debug.log`. Set `ISM_DATA_DIR=/some
 
 #### Settings
 
-`settings.json` (camelCase, unchanged from before): `scheduleType`, `interval`, `cronExpression`, `autoStart`, `launchAtStartup`, `lastCheckDate`, `lastCheckedVersion`.
+`settings.json` (camelCase, unchanged from before): `scheduleType`, `interval`, `cronExpression`, `autoStart`, `launchAtStartup`, `lastCheckDate`, `lastCheckedVersion`, plus the one-time flags `legacyCleanupDone`, `backgroundLaunchRegistered` and `startupSuggestionAnswered`.
 
 ### User interface (`src/app/`)
 
@@ -166,9 +172,24 @@ run docs/screenshots/recent-tests.png 1200 1560 main --scale 2 --crop 28,905,114
 run docs/screenshots/options-menu.png 1200 1000 cron-menu --scale 2 --crop 540,48,652,292
 run docs/screenshots/export-csv.png 640 620 export --scale 2
 run docs/screenshots/clear-data.png 640 620 clear --scale 2
+run docs/screenshots/file-menu.png 1200 1000 file --scale 2 --crop 8,8,560,134
+run docs/screenshots/welcome.png 640 620 welcome --scale 2   # settings.json without startupSuggestionAnswered
 ```
 
 The crop rectangles assume an interval schedule in `settings.json`; adjust them if the layout changes.
+
+The website also uses three images derived from `docs/screenshot.png`. Regenerate them whenever that file changes (`brew install webp`):
+
+```bash
+cwebp -lossless docs/screenshot.png -o docs/screenshot.webp
+cwebp -lossless -resize 1200 0 docs/screenshot.png -o docs/screenshot-1200.webp
+# 1200x630 link preview (og:image), cut from the top of the screenshot
+cwebp -lossless -crop 0 0 2400 1260 -resize 1200 630 docs/screenshot.png -o /tmp/og.webp && dwebp /tmp/og.webp -o docs/og-image.png
+```
+
+### Website structured data
+
+`docs/faq/index.html` carries a `FAQPage` JSON-LD block. Search engines require it to match the visible questions and answers, so update both when adding or changing a question.
 
 ### Logging
 
@@ -249,6 +270,14 @@ eframe uses OpenGL through `glow`. On Linux make sure Mesa/GPU drivers are insta
 ### "Start with computer" does not stick
 
 The login item points at the executable that was running when the toggle was enabled. If you move the app, disable and re-enable the toggle.
+
+### Background mode
+
+The app outlives its window. `shell.rs` owns one winit event loop and alternates between two handlers: eframe while the window is open, and a handler with no window that only keeps the tray icon alive. Closing the window destroys it; `App` and the monitor keep running and the next window attaches to the same `App`.
+
+- `--background` starts without a window. The login item passes it.
+- A second launch finds the running copy through the loopback port in `instance.port` (data folder), asks it to open its window and exits. Use a separate `ISM_DATA_DIR` to run a development copy next to an installed one.
+- Without a tray icon (creation failed) closing the window quits, as before.
 
 ## Version Management
 

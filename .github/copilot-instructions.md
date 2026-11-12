@@ -3,7 +3,9 @@
 This is a native desktop application written in Rust that monitors internet connectivity speed at set intervals and stores the data locally.
 
 ## Project Structure
-- `src/main.rs` — executable entry point (window setup, async runtime, logging)
+- `src/main.rs` — executable entry point (single-instance check, async runtime, logging)
+- `src/shell.rs` — owns the event loop: eframe window while open, tray icon only otherwise
+- `src/tray.rs`, `src/instance.rs`, `src/command.rs`, `src/wake.rs`, `src/platform.rs` — tray icon, single instance, Open/Quit requests, wake-ups, macOS specifics
 - `src/lib.rs` — library crate root exposing the modules below
 - `src/app/` — egui user interface (`mod.rs` state and actions, `view.rs` main layout, `dialogs.rs` modals)
 - `src/monitor.rs` — background scheduler that runs tests and reports events to the UI
@@ -15,6 +17,7 @@ This is a native desktop application written in Rust that monitors internet conn
 ## Development Guidelines
 - Keep the JSON file formats (`speed_tests.json`, `settings.json`) backwards compatible
 - Network and file work runs on the tokio runtime; the UI thread only reads shared state and drains the event channel
+- `App` outlives the window: anything that must happen while the window is closed goes in `App::pump`, not in drawing code
 - Run `cargo fmt`, `cargo clippy --all-targets -- -D warnings` and `cargo test` before pushing
 - Bump the version in `Cargo.toml` to publish a release; CI tags and builds when the tag does not exist yet
 

@@ -33,6 +33,17 @@ Every result is kept with its server, network interface and ISP.
 
 ![Table of recent speed tests with time, download, upload, ping, server, network interface and ISP](./docs/screenshots/recent-tests.png)
 
+### Runs in the background
+Closing the window does not stop monitoring. The app stays in the system tray (the menu bar on macOS): click the icon, or launch the app again, to open the window. Use **Quit** in the tray menu or the File menu to stop it. With "Start with computer" on, the app starts at login with only the tray icon.
+
+<img src="./docs/screenshots/file-menu.png" alt="File menu with Close Window and Quit" width="560">
+
+The first time it opens, the app offers to start monitoring by itself and to start with your computer. Both are off until you accept, and both can be changed later in the ☰ menu.
+
+<img src="./docs/screenshots/welcome.png" alt="First-run dialog offering to start monitoring when the app opens and to start the app with the computer" width="560">
+
+On Linux the tray icon needs a desktop that shows StatusNotifier icons (KDE does; GNOME needs the AppIndicator extension). Without one, launch the app again to get the window back.
+
 ### Options menu
 Export, auto-start, launch at login and history cleanup live behind the ☰ button.
 

@@ -18,6 +18,9 @@
 //! - `menu`: the ☰ options menu (`cron-menu`: same, over the cron controls).
 //! - `export`, `clear`, `about`: the matching dialogs (`clear` also clicks Preview).
 //! - `help`: the Help menu.
+//! - `file`: the File menu (Close Window, Quit).
+//! - `welcome`: the first-run suggestion (needs a data directory whose `settings.json`
+//!   has no `startupSuggestionAnswered`).
 //! - `last7`: chart in "Last 7 days" mode.
 //! - `range`: chart in "Date range" mode with the full range applied.
 
@@ -91,23 +94,30 @@ fn main() {
     let handle = runtime.handle().clone();
 
     let mut app: Option<app::App> = None;
+    let scene = options.scene.clone();
     let mut harness = egui_kittest::Harness::builder()
         .with_size(egui::Vec2::new(options.width, options.height))
         .with_pixels_per_point(options.scale)
         .wgpu()
         .build_ui(move |ui| {
-            // Fonts registered by `App::new` only apply from the next frame on, so the
+            // Fonts registered by `App::attach` only apply from the next frame on, so the
             // frame that creates the app draws nothing (eframe creates the app before
             // its first frame, so the real binary never hits this).
             match app.as_mut() {
                 Some(app) => app.frame(ui),
                 None => {
-                    app = Some(app::App::new(
-                        ui.ctx(),
+                    let mut created = app::App::new(
                         handle.clone(),
                         paths.clone(),
                         Arc::clone(&store),
-                    ));
+                        internet_speed_monitor::wake::Waker::window_only(),
+                    );
+                    created.attach(ui.ctx());
+                    // The first-run suggestion would cover every other scene.
+                    if scene != "welcome" {
+                        created.hide_startup_suggestion();
+                    }
+                    app = Some(created);
                 }
             }
         });
@@ -146,6 +156,7 @@ fn main() {
             harness.get_by_label("About Internet Speed Monitor").click();
         }
         "help" => harness.get_by_label("Help").click(),
+        "file" => harness.get_by_label("File").click(),
         "cron" => select_cron(&mut harness),
         "sleeping" => {
             select_cron(&mut harness);

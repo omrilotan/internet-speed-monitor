@@ -220,7 +220,12 @@ pub fn draw(app: &mut App, root: &mut egui::Ui) {
 
 fn draw_menu_bar(app: &mut App, ui: &mut egui::Ui) {
     ui.menu_button("File", |ui| {
+        // Closing the window leaves the app running in the background.
+        if ui.button("Close Window").clicked() {
+            ui.ctx().send_viewport_cmd(egui::ViewportCommand::Close);
+        }
         if ui.button("Quit").clicked() {
+            app.quit_requested = true;
             ui.ctx().send_viewport_cmd(egui::ViewportCommand::Close);
         }
     });

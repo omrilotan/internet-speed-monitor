@@ -29,6 +29,12 @@ pub struct Settings {
     /// Set once the files Electron left in the data folder have been removed.
     #[serde(default, deserialize_with = "lenient::bool")]
     pub legacy_cleanup_done: bool,
+    /// Set once the login item starts the app in the background (`--background`).
+    #[serde(default, deserialize_with = "lenient::bool")]
+    pub background_launch_registered: bool,
+    /// Set once the user has answered the first-run suggestion to monitor automatically.
+    #[serde(default, deserialize_with = "lenient::bool")]
+    pub startup_suggestion_answered: bool,
     /// Keys this version does not know about, kept so saving never drops them.
     #[serde(flatten)]
     pub extra: serde_json::Map<String, serde_json::Value>,
@@ -75,6 +81,8 @@ impl Default for Settings {
             last_check_date: None,
             last_checked_version: None,
             legacy_cleanup_done: false,
+            background_launch_registered: false,
+            startup_suggestion_answered: false,
             extra: serde_json::Map::new(),
         }
     }

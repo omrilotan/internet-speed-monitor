@@ -6,7 +6,7 @@ use super::format;
 use super::view::{
     BORDER, DANGER, HEADING, LINK, MUTED, PRIMARY, SECONDARY, bold, semibold, solid_button,
 };
-use super::{App, ExportDialog};
+use super::{App, ExportDialog, StartupSuggestion};
 use crate::CURRENT_VERSION;
 
 const MODAL_WIDTH: f32 = 460.0;
@@ -34,12 +34,76 @@ fn filled_button(label: &str, fill: Color32) -> egui::Button<'static> {
 }
 
 pub fn draw(app: &mut App, ctx: &egui::Context) {
+    // First, so every other dialog opens on top of it.
+    draw_startup_suggestion(app, ctx);
     draw_debug_log(app, ctx);
     draw_about(app, ctx);
     draw_export_dialog(app, ctx);
     draw_clear_dialog(app, ctx);
     draw_confirm_clear_history(app, ctx);
     draw_alert(app, ctx);
+}
+
+fn draw_startup_suggestion(app: &mut App, ctx: &egui::Context) {
+    let Some(mut choice) = app.startup_suggestion else {
+        return;
+    };
+    let tray = if cfg!(target_os = "macos") {
+        "menu bar"
+    } else {
+        "system tray"
+    };
+    let mut answer: Option<Option<StartupSuggestion>> = None;
+    let response = egui::Modal::new(egui::Id::new("startup-suggestion"))
+        .frame(modal_frame())
+        .show(ctx, |ui| {
+            ui.set_width(MODAL_WIDTH);
+            modal_title(ui, "Keep monitoring automatically?");
+            ui.label(
+                RichText::new(format!(
+                    "Internet Speed Monitor is most useful when it runs on its own. \
+                     It stays in the {tray} after you close this window."
+                ))
+                .color(MUTED),
+            );
+            ui.add_space(14.0);
+            ui.checkbox(
+                &mut choice.auto_start,
+                RichText::new("Start monitoring when the app opens, and now").color(HEADING),
+            );
+            ui.add_space(4.0);
+            ui.checkbox(
+                &mut choice.launch_at_startup,
+                RichText::new("Start the app with the computer, in the background").color(HEADING),
+            );
+            ui.add_space(14.0);
+            ui.label(
+                RichText::new("You can change both at any time in the ☰ menu.")
+                    .size(13.0)
+                    .color(MUTED),
+            );
+            ui.add_space(16.0);
+            ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
+                if ui.add(filled_button("No Thanks", SECONDARY)).clicked() {
+                    answer = Some(None);
+                }
+                let any = choice.auto_start || choice.launch_at_startup;
+                if ui
+                    .add_enabled(any, filled_button("Turn On", PRIMARY))
+                    .clicked()
+                {
+                    answer = Some(Some(choice));
+                }
+            });
+        });
+    if let Some(answer) = answer {
+        app.answer_startup_suggestion(answer);
+    } else if response.should_close() {
+        // Escape or a click outside is not an answer: offer again next time.
+        app.hide_startup_suggestion();
+    } else {
+        app.startup_suggestion = Some(choice);
+    }
 }
 
 fn draw_alert(app: &mut App, ctx: &egui::Context) {
