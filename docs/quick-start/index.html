@@ -51,44 +51,85 @@
     <link rel="stylesheet" href="../styles.css?v=2.0.0-20261013">
     <style>
         .guide-content {
-            max-width: 800px;
+            max-width: 820px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 48px 20px;
+        }
+        .guide-content > h1 {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+        }
+        .guide-content > p {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+            margin-bottom: 32px;
         }
         .guide-step {
-            margin-bottom: 40px;
-            padding: 24px;
-            background: var(--surface);
-            border-radius: var(--border-radius);
+            margin-bottom: 24px;
+            padding: 28px;
+            background: var(--surface-raised);
+            border-radius: var(--radius);
             border: 1px solid var(--border);
+            box-shadow: var(--shadow);
         }
         .guide-step h3 {
-            color: var(--primary-color);
-            margin-bottom: 16px;
+            color: var(--text-primary);
+            font-size: 1.25rem;
+            margin-bottom: 14px;
+        }
+        .guide-step h4 {
+            margin: 18px 0 8px;
+            color: var(--text-primary);
+        }
+        .guide-step ul,
+        .guide-step ol {
+            padding-left: 20px;
+            margin: 8px 0;
+        }
+        .guide-step li {
+            margin: 6px 0;
+            color: var(--text-secondary);
+        }
+        .guide-step li strong {
+            color: var(--text-primary);
+        }
+        .guide-content code {
+            background: var(--primary-soft);
+            color: var(--primary-dark);
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-family: ui-monospace, 'SF Mono', 'Menlo', monospace;
+            font-size: 0.88em;
         }
         .code-block {
-            background: #1e293b;
-            color: #e2e8f0;
+            background: #0f1b2d;
+            color: #e7edf6;
             padding: 16px;
-            border-radius: 6px;
-            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            border-radius: var(--radius-sm);
+            font-family: ui-monospace, 'Menlo', monospace;
             font-size: 14px;
             margin: 16px 0;
             overflow-x: auto;
         }
-        .note {
-            background: #dbeafe;
-            border-left: 4px solid var(--primary-color);
-            padding: 16px;
+        .note,
+        .warning {
+            padding: 14px 16px;
             margin: 16px 0;
-            border-radius: 0 6px 6px 0;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--surface);
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+        .note {
+            border-left: 3px solid var(--primary-color);
         }
         .warning {
-            background: #fef3c7;
-            border-left: 4px solid #d97706;
-            padding: 16px;
-            margin: 16px 0;
-            border-radius: 0 6px 6px 0;
+            border-left: 3px solid #d9892b;
+        }
+        .note strong,
+        .warning strong {
+            color: var(--text-primary);
         }
     </style>
 </head>

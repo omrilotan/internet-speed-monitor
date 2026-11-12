@@ -42,6 +42,20 @@ document.addEventListener('DOMContentLoaded', () => {
         revealables.forEach((el) => el.classList.add('is-visible'));
     }
 
+    // Arriving at or clicking an in-page anchor must show the target section and
+    // its reveal items (the observer only fires on scroll) and land on it reliably.
+    const revealTarget = () => {
+        const id = decodeURIComponent(location.hash.slice(1));
+        if (!id) return;
+        const target = document.getElementById(id);
+        if (!target) return;
+        target.classList.add('is-visible');
+        target.querySelectorAll('.reveal').forEach((el) => el.classList.add('is-visible'));
+        requestAnimationFrame(() => target.scrollIntoView({ block: 'start' }));
+    };
+    window.addEventListener('hashchange', revealTarget);
+    revealTarget();
+
     // Mobile menu
     const nav = document.querySelector('.nav');
     const navLinks = document.querySelector('.nav-links');
