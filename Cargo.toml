@@ -26,7 +26,7 @@ egui_extras = { version = "0.37", features = ["datepicker"] }
 egui_plot = "0.38"
 # The event loop eframe runs on; owned here so it outlives the window.
 winit = { version = "0.30", default-features = false }
-rfd = "0.17"
+rfd = "0.18"
 jiff = "0.2"
 
 # Async + networking
