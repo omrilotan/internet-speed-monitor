@@ -27,7 +27,7 @@ egui_plot = "0.38"
 # The event loop eframe runs on; owned here so it outlives the window.
 winit = { version = "0.30", default-features = false }
 rfd = "0.17"
-jiff = "0.2"
+jiff = "1.0"
 
 # Async + networking
 tokio = { version = "1", features = ["rt-multi-thread", "macros", "time", "net", "sync"] }
